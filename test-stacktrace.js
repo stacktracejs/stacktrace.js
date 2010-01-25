@@ -37,13 +37,13 @@ test("printStackTrace options", function() {
 
 test("mode", function() {
     expect(1);
-    equals("firefox other opera".indexOf(printStackTrace.implementation.prototype.mode()) >= 0,true);
+    equals("chrome firefox other opera".indexOf(printStackTrace.implementation.prototype.mode()) >= 0,true);
 });
 
 test("run mode", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.other = p.firefox = p.opera = function() { equals(1,1,'called'); };
+    p.other = p.firefox = p.chrome = p.opera = function() { equals(1,1,'called'); };
     p.run();
 });
 
@@ -96,12 +96,41 @@ test("firefox", function() {
     for(var i = 0; i < e.length; i++) {
         var message = printStackTrace.implementation.prototype.firefox(e[i]);
         var message_string = message.join("\n");
-        equals(message_string, '', 'debug');
-        //FIXME: Fails on Chrome 4
-        //equals(message_string.indexOf('discarded'), -1, 'discarded');
+        //equals(message_string, '', 'debug');
+        equals(message_string.indexOf('discarded'), -1, 'discarded');
         equals(message[0].indexOf('f1(1,"abc")') >= 0, true, 'f1');
         equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 anonymous');
         equals(message[2].indexOf('@:0'), -1, '@:0 discarded');
+    }
+});
+
+test("chrome", function() {
+    var mode = printStackTrace.implementation.prototype.mode();
+    var e = [];
+    e.push({ stack: 'ignored\nignored\n at discarded (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'});
+    if(mode == 'chrome') {
+        function discarded() {
+            try {(0)();} catch (exception) {
+                e.push(exception);
+            }
+        }
+        function f1(arg1, arg2) {
+            discarded();
+        }
+        var f2 = function() {
+            f1(1, "abc");
+        };
+        f2();
+    }
+    expect(4 * e.length);
+    for(var i = 0; i < e.length; i++) {
+        var message = printStackTrace.implementation.prototype.chrome(e[i]);
+        var message_string = message.join("\n");
+        equals(message, '', 'debug');
+        equals(message_string.indexOf('discarded'), -1, 'discarded');
+        equals(message[0].indexOf('f1') >= 0, true, 'f1');
+        equals(message[1].indexOf('<anonymous>') >= 0, true, 'f2 anonymous');
+        equals(message[2].indexOf('unknown source'), -1, 'unknown source discarded');
     }
 });
 
@@ -127,9 +156,9 @@ test("opera", function() {
     for(var i = 0; i < e.length; i++) {
         var message = printStackTrace.implementation.prototype.opera(e[i]);
         var message_string = message.join("\n");
-        equals(message_string, '', 'debug');
-        //equals(message_string.indexOf('ignored'), -1, 'ignored');
-        //FIXME: Failing here on Opera 10
+        //equals(message_string, '', 'debug');
+        equals(message_string.indexOf('ignored'), -1, 'ignored');
+        //FIXME: Failing here on Opera
         equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
         equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
         equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous');
@@ -211,8 +240,8 @@ test("getSource cache hit", function() {
 test("sync ajax", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    var data = p.ajax(document.url);
-    ok(data.indexOf('printstacktrace') >= 0, 'synchronous get');
+    var data = p.ajax(document.location.href);
+    ok(data.indexOf('stacktrace') >= 0, 'synchronous get');
 });
 
 test("guessFunctionName", function() {
@@ -257,8 +286,37 @@ test("guessFunctions firefox", function() {
     
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
-	    //FIXME: Fails on Chrome 4
         equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
+    }
+});
+
+test("guessFunctions chrome", function() {
+    var results = [];
+    var mode = printStackTrace.implementation.prototype.mode();
+    var p = new printStackTrace.implementation();
+    p.mode = function() {
+        return 'chrome';
+    };
+    var file = 'file:///test';
+    p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
+    results.push(['at f2 ('+file+':2:1)']);
+        
+    if (mode == 'chrome') {
+        var f2 = function() {
+            try {
+                (0)();
+            } catch(e) {
+                results.push(p.run());
+            }
+        };
+        f2();
+    }
+    
+    expect(results.length * 1);
+    for (var i = 0; i < results.length; ++i) {
+	    //FIXME: Fails on Chrome
+	    equals((results[i]), '', 'debug');
+        equals(p.guessFunctions(results[i])[0].indexOf('f2'), 3, 'f2');
     }
 });
 
