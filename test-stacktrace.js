@@ -126,7 +126,7 @@ test("chrome", function() {
     for(var i = 0; i < e.length; i++) {
         var message = printStackTrace.implementation.prototype.chrome(e[i]);
         var message_string = message.join("\n");
-        equals(message, '', 'debug');
+        //equals(message_string, '', 'debug');
         equals(message_string.indexOf('discarded'), -1, 'discarded');
         equals(message[0].indexOf('f1') >= 0, true, 'f1');
         equals(message[1].indexOf('<anonymous>') >= 0, true, 'f2 anonymous');
@@ -314,8 +314,8 @@ test("guessFunctions chrome", function() {
     
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
-	    //FIXME: Fails on Chrome
-	    equals((results[i]), '', 'debug');
+	    //FIXME: Fails on Chrome - f2 not shown anywhere in stack - why?
+	    //equals((results[i]), '', 'debug');
         equals(p.guessFunctions(results[i])[0].indexOf('f2'), 3, 'f2');
     }
 });
