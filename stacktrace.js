@@ -71,9 +71,27 @@ printStackTrace.implementation.prototype = {
     mode: function() {
         var mode;
         try {(0)();} catch (e) {
-            mode = e.stack ? 'firefox' : window.opera ? 'opera' : 'other';
+	        if (e.arguments) {
+		        mode = 'chrome';
+	        } else if (e.stack) {
+	        	mode = 'firefox';
+            } else if (e.messageString && window.opera) {
+            	mode = 'opera';
+            } else {
+            	mode = 'other';
+            }
         }
         return mode;
+    },
+
+    chrome: function(e) {
+        return e.stack.replace(/^.*?\n/,'').
+        replace(/^.*?\n/,'').
+        replace(/^.*?\n/,'').
+        replace(/^[^\(]+?\n/gm,'').
+        replace(/^\s+at unknown source.*?\n$/gm,'').
+        replace(/^\(/gm,'{anonymous}(').
+        split("\n");
     },
     
     firefox: function(e) {
@@ -135,11 +153,44 @@ printStackTrace.implementation.prototype = {
     sourceCache : {},
 
     ajax: function(url) {
-    return jQuery.ajax({
-            url: url,
-            async: false
-        }).responseText;    
+	    var req = this.createXMLHTTPObject();
+	    if (!req) {
+	        return;
+	    }
+	    req.open('GET', url, false);
+	    req.setRequestHeader("User-Agent", "XMLHTTP/1.0");
+	    req.send('');
+		return req.responseText;
     },
+
+	createXMLHTTPObject: function() {
+		var XMLHttpFactories = [
+		    function () {
+		        return new XMLHttpRequest();
+		    },
+		    function () {
+		        return new ActiveXObject("Msxml2.XMLHTTP");
+		    },
+		    function () {
+		        return new ActiveXObject("Msxml3.XMLHTTP");
+		    },
+		    function () {
+		        return new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		];
+	    var xmlhttp = false;
+	    for (var i = 0; i < XMLHttpFactories.length; i++) {
+	        try {
+	            xmlhttp = XMLHttpFactories[i]();
+	        }
+	        catch (e) {
+	            e = null;
+	            continue;
+	        }
+	        break;
+	    }
+	    return xmlhttp;
+	},
 
     getSource: function(url) {
         var self = this;
