@@ -129,7 +129,7 @@ test("chrome", function() {
         //equals(message_string, '', 'debug');
         equals(message_string.indexOf('discarded'), -1, 'discarded');
         equals(message[0].indexOf('f1') >= 0, true, 'f1');
-        equals(message[1].indexOf('<anonymous>') >= 0, true, 'f2 anonymous');
+        equals(message[1].indexOf('anonymous') >= 0, true, 'f2 anonymous');
         equals(message[2].indexOf('unknown source'), -1, 'unknown source discarded');
     }
 });
@@ -299,7 +299,7 @@ test("guessFunctions chrome", function() {
     };
     var file = 'file:///test';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['at f2 ('+file+':2:1)']);
+    results.push(['f2 ('+file+':2:1)']);
         
     if (mode == 'chrome') {
         var f2 = function() {
@@ -312,11 +312,11 @@ test("guessFunctions chrome", function() {
         f2();
     }
     
-    expect(results.length * 1);
+    expect(results.length);
     for (var i = 0; i < results.length; ++i) {
 	    //FIXME: Fails on Chrome - f2 not shown anywhere in stack - why?
 	    //equals((results[i]), '', 'debug');
-        equals(p.guessFunctions(results[i])[0].indexOf('f2'), 3, 'f2');
+        equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
     }
 });
 

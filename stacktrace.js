@@ -88,9 +88,9 @@ printStackTrace.implementation.prototype = {
         return e.stack.replace(/^.*?\n/,'').
         replace(/^.*?\n/,'').
         replace(/^.*?\n/,'').
-        replace(/^[^\(]+?\n/gm,'').
-        replace(/^\s+at unknown source.*?\n$/gm,'').
-        replace(/^\(/gm,'{anonymous}(').
+        replace(/^[^\(]+?[\n$]/gm,'').
+        replace(/^\s+at\s+/gm,'').
+        replace(/^Object.<anonymous>/gm,'{anonymous}()').
         split("\n");
     },
     

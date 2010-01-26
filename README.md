@@ -23,12 +23,12 @@ Some people recommend just assigning it to `window.onerror`:
 
 # What browsers does Javascript Stacktrace support? #
 It is currently tested and working on:
-* Firefox 2+
+* Firefox (and Iceweasel) 0.9+
 * Safari 3+
-* Opera 9
 * IE 5.5+
+* Konqueror 3.5+
+* Flock 1.0+
 
-Untested but likely working on:
+Working (readable, valid stack trace) but not perfectly formatted on:
 * Chrome 1+
-* Safari 1-2
-* Opera 8 and 10
+* Opera 7+
