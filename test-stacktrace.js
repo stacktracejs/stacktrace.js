@@ -56,15 +56,6 @@ test("run firefox", function() {
     p.run();
 });
 
-test("run opera", function() {
-    expect(1);
-    var p = new printStackTrace.implementation();
-    p.mode = function() { return 'opera'; };
-    p.other = p.firefox = function() { equals(1,0,'must not be called'); };
-    p.opera = function() { equals(1,1,'called'); };
-    p.run();
-});
-
 test("run other", function() {
     expect(1);
     var p = new printStackTrace.implementation();
@@ -131,38 +122,6 @@ test("chrome", function() {
         equals(message[0].indexOf('f1') >= 0, true, 'f1');
         equals(message[1].indexOf('anonymous') >= 0, true, 'f2 anonymous');
         equals(message[2].indexOf('unknown source'), -1, 'unknown source discarded');
-    }
-});
-
-test("opera", function() {
-    var mode = printStackTrace.implementation.prototype.mode();
-    var e = [];
-    e.push({ message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n \tf1(1, "abc")\nignored\nignored'});
-    if(mode == 'opera') {
-        function discarded() {
-            try {(0)();} catch (exception) {
-                e.push(exception);
-            }
-        }
-        function f1(arg1, arg2) {
-            discarded();
-        }
-        var f2 = function() {
-            f1(1, "abc");
-        };
-        f2();
-    }
-    expect(5 * e.length);
-    for(var i = 0; i < e.length; i++) {
-        var message = printStackTrace.implementation.prototype.opera(e[i]);
-        var message_string = message.join("\n");
-        //equals(message_string, '', 'debug');
-        equals(message_string.indexOf('ignored'), -1, 'ignored');
-        //FIXME: Failing here on Opera
-        equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
-        equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
-        equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous');
-        equals(message[1].indexOf('f1(1, "abc")') >= 0, true, 'f2 statement');
     }
 });
 
@@ -320,35 +279,6 @@ test("guessFunctions chrome", function() {
     }
 });
 
-test("guessFunctions opera", function() {
-    var results = [];
-    var mode = printStackTrace.implementation.prototype.mode();
-    var p = new printStackTrace.implementation();
-    p.mode = function() {
-        return 'opera';
-    };
-    var file = 'file:///test';
-    p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['{anonymous}()@'+file+':2 -- code']);
-    
-    if (mode == 'opera') {
-        var f2 = function() {
-            try {
-                (0)();
-            } catch(e) {
-                results.push(p.run());
-            }
-        };
-        f2();
-    }
-    
-    expect(results.length * 1);
-    for (var i = 0; i < results.length; ++i) {
-	    //FIXME: Failing here on Opera 10
-        equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
-    }
-});
-
 test("guessFunctions other", function() {
     var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
@@ -373,6 +303,7 @@ test("guessFunctions other", function() {
     
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
+	    //equals((results[i]), '', 'debug');
         equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number on other');
     }
 });

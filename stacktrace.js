@@ -44,12 +44,11 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 function printStackTrace(options) {
     if (options && options.guess) {
-    var p = new printStackTrace.implementation();
-    var result = p.run();
-    return p.guessFunctions(result);
+        var p = new printStackTrace.implementation();
+        var result = p.run();
+        return p.guessFunctions(result);
     }
     return (new printStackTrace.implementation()).run();
 }
@@ -75,8 +74,6 @@ printStackTrace.implementation.prototype = {
 		        mode = 'chrome';
 	        } else if (e.stack) {
 	        	mode = 'firefox';
-            } else if (e.messageString && window.opera) {
-            	mode = 'opera';
             } else {
             	mode = 'other';
             }
@@ -101,38 +98,23 @@ printStackTrace.implementation.prototype = {
         split("\n");
     },
 
-    opera: function(e) {
-        var lines = e.message.split("\n"),
-        ANON = '{anonymous}',
-        lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i,
-        i,j,len;
-
-        for (i=4,j=0,len=lines.length; i<len; i+=2) {
-            if (lineRE.test(lines[i])) {
-                lines[j++] = (RegExp.$3 ?
-                              RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 :
-                              ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) +
-                    ' -- ' + lines[i+1].replace(/^\s+/,'');
-            }
-        }
-
-        lines.splice(j,lines.length-j);
-        return lines;
-    },
-
     other: function(curr) {
         var ANON = "{anonymous}",
         fnRE  = /function\s*([\w\-$]+)?\s*\(/i,
-        stack = [],j=0,
-        fn,args;
+        stack = [],j=0,fn,args;
 
-        while (curr) {
+		var maxStackSize = 10;
+        while (curr && stack.length < maxStackSize) {
             fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
             args = Array.prototype.slice.call(curr['arguments']);
             stack[j++] = fn + '(' + printStackTrace.implementation.prototype.stringifyArguments(args) + ')';
-            curr = curr.caller;
-        }
 
+			//Opera bug: if curr.caller does not exist, Opera returns curr (WTF)
+            if (curr === curr.caller && window.opera) {
+	            break;
+	        } 
+	        curr = curr.caller;
+        }
         return stack;
     },
 
@@ -140,17 +122,17 @@ printStackTrace.implementation.prototype = {
         for (var i = 0; i < args.length; ++i) {
             var argument = args[i];
             if (typeof argument  == 'object') {
-            args[i] = '#object';
+                args[i] = '#object';
             } else if (typeof argument == 'function') {
-            args[i] = '#function';
+                args[i] = '#function';
             } else if (typeof argument == 'string') {
-            args[i] = '"'+argument+'"';
+                args[i] = '"'+argument+'"';
             }
         }
         return args.join(',');
     },
     
-    sourceCache : {},
+    sourceCache: {},
 
     ajax: function(url) {
 	    var req = this.createXMLHTTPObject();
