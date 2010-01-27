@@ -2,7 +2,7 @@
 A Javascript tool that allows you to debug your Javascript by giving you a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify)
 
 # How do I use Javascript Stacktrace? #
-stacktrace.js does NOT require [jQuery](http://jquery.com) to use but it and QUnit are used for unit-testing. Just include stacktrace.js file on your page, and call it like so:
+Just include stacktrace.js file on your page, and call it like so:
     
     <script type="text/javascript" src="path/to/stacktrace.js" />
     <script type="text/javascript">
@@ -29,6 +29,6 @@ It is currently tested and working on:
 * Konqueror 3.5+
 * Flock 1.0+
 
-Working (readable, valid stack trace) but not perfectly formatted on:
+Working (readable, valid stack trace) but not perfectly tested on:
 * Chrome 1+
 * Opera 7+
