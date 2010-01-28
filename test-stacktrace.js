@@ -132,7 +132,7 @@ test("other", function() {
         this.caller = caller;
         this.fun = fun;
     };
-    frame.prototype.toString = function() { return 'function '+this.fun +'() {}'; };
+    frame.prototype.toString = function() { return 'function '+this.fun+'() {}'; };
     function f10() {}
     var frame_f2 = new frame([], '', undefined);
     var frame_f1 = new frame([1, 'abc', f10, {1: {2: {3: 4} } }], 'FUNCTION f1  (a,b,c)', frame_f2);
@@ -258,7 +258,7 @@ test("guessFunctions chrome", function() {
     };
     var file = 'file:///test';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['f2 ('+file+':2:1)']);
+    results.push(['{anonymous}() ('+file+':2:1)']);
         
     if (mode == 'chrome') {
         var f2 = function() {
@@ -275,7 +275,7 @@ test("guessFunctions chrome", function() {
     for (var i = 0; i < results.length; ++i) {
 	    //FIXME: Fails on Chrome - f2 not shown anywhere in stack - why?
 	    //equals((results[i]), '', 'debug');
-        equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
+        equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}()'), 0, 'anonymous function');
     }
 });
 
