@@ -74,7 +74,9 @@ printStackTrace.implementation.prototype = {
 		        mode = 'chrome';
 	        } else if (e.stack) {
 	        	mode = 'firefox';
-            } else {
+            } else if (!e.stacktrace && window.opera) { //Opera 9-
+	            mode = 'opera';
+	        } else {
             	mode = 'other';
             }
         }
@@ -96,6 +98,25 @@ printStackTrace.implementation.prototype = {
         replace(/(?:\n@:0)?\s+$/m,'').
         replace(/^\(/gm,'{anonymous}(').
         split("\n");
+    },
+
+    opera: function(e) {
+        var lines = e.message.split("\n"),
+        ANON = '{anonymous}',
+        lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i,
+        i,j,len;
+
+        for (i=4,j=0,len=lines.length; i<len; i+=2) {
+            if (lineRE.test(lines[i])) {
+                lines[j++] = (RegExp.$3 ?
+                              RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 :
+                              ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) +
+                    ' -- ' + lines[i+1].replace(/^\s+/,'');
+            }
+        }
+
+        lines.splice(j,lines.length-j);
+        return lines;
     },
 
     other: function(curr) {
