@@ -125,6 +125,38 @@ test("chrome", function() {
     }
 });
 
+test("opera", function() {
+    var mode = printStackTrace.implementation.prototype.mode();
+    var e = [];
+    e.push({ message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n \tf1(1, "abc")\nignored\nignored'});
+    if(mode == 'opera') {
+        function discarded() {
+            try {(0)();} catch (exception) {
+                e.push(exception);
+            }
+        }
+        function f1(arg1, arg2) {
+            discarded();
+        }
+        var f2 = function() {
+            f1(1, "abc");
+        };
+        f2();
+    }
+    expect(5 * e.length);
+    for(var i = 0; i < e.length; i++) {
+        var message = printStackTrace.implementation.prototype.opera(e[i]);
+        var message_string = message.join("\n");
+        //equals(message_string, '', 'debug');
+        equals(message_string.indexOf('ignored'), -1, 'ignored');
+        equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
+        equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
+        equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous');
+        equals(message[1].indexOf('f1(1, "abc")') >= 0, true, 'f2 statement');
+    }
+});
+
+
 test("other", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var frame = function(args, fun, caller) {
@@ -153,6 +185,25 @@ test("other", function() {
             f1(1, 'abc', f10, {1: {2: {3: 4} } });
         };
         f2();
+    }
+});
+
+test("recursion other", function() {
+    var mode = printStackTrace.implementation.prototype.mode();
+    expect(mode == 'other' ? 2 : 0);
+    if (mode == 'other') {
+	    function recurse(b) {
+		    if (b) {
+	            var message = printStackTrace.implementation.prototype.other(arguments.callee);
+	            var message_string = message.join("\n");
+	            equals(message_string, '', 'debug');
+			    equals(message[0].indexOf('recurse(false)') >= 0, true, 'first recurse false');
+			    equals(message[1].indexOf('recurse(true)') >= 0, true, 'second recurse true');
+		    } else {
+			    recurse(true);
+		    }
+	    }
+	    recurse(false);
     }
 });
 
@@ -273,10 +324,39 @@ test("guessFunctions chrome", function() {
     
     expect(results.length);
     for (var i = 0; i < results.length; ++i) {
-	    //FIXME: Fails on Chrome - f2 not shown anywhere in stack - why?
-	    //equals((results[i]), '', 'debug');
+        //FIXME: Fails on Chrome - f2 not shown anywhere in stack - why?
+        //equals((results[i]), '', 'debug');
         equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}()'), 0, 'anonymous function');
     }
+});
+
+test("guessFunctions opera", function() {
+	var results = [];
+    var mode = printStackTrace.implementation.prototype.mode();
+	var p = new printStackTrace.implementation();
+	p.mode = function() {
+	    return 'opera';
+	};
+	var file = 'file:///test';
+	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
+	results.push(['{anonymous}()@'+file+':2 -- code']);
+	
+	if (mode == 'opera') {
+	    var f2 = function() {
+	        try {
+	            (0)();
+	        } catch(e) {
+	            results.push(p.run());
+	        }
+	    };
+	    f2();
+	}
+	
+	expect(results.length * 1);
+	for (var i = 0; i < results.length; ++i) {
+		equals(p.guessFunctions(results[i]), '', 'debug');
+	    equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}()'), 0, 'anonymous function');
+	}
 });
 
 test("guessFunctions other", function() {
@@ -303,7 +383,7 @@ test("guessFunctions other", function() {
     
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
-	    //equals((results[i]), '', 'debug');
+        //equals((results[i]), '', 'debug');
         equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number on other');
     }
 });

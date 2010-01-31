@@ -74,7 +74,7 @@ printStackTrace.implementation.prototype = {
 		        mode = 'chrome';
 	        } else if (e.stack) {
 	        	mode = 'firefox';
-            } else if (!e.stacktrace && window.opera) { //Opera 9-
+            } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
 	            mode = 'opera';
 	        } else {
             	mode = 'other';
