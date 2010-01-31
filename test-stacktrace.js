@@ -193,10 +193,10 @@ test("recursion other", function() {
     expect(mode == 'other' ? 2 : 0);
     if (mode == 'other') {
 	    function recurse(b) {
-		    if (b) {
+		    if (!b) {
 	            var message = printStackTrace.implementation.prototype.other(arguments.callee);
 	            var message_string = message.join("\n");
-	            equals(message_string, '', 'debug');
+	            //equals(message_string, '', 'debug');
 			    equals(message[0].indexOf('recurse(false)') >= 0, true, 'first recurse false');
 			    equals(message[1].indexOf('recurse(true)') >= 0, true, 'second recurse true');
 		    } else {
@@ -339,7 +339,7 @@ test("guessFunctions opera", function() {
 	};
 	var file = 'file:///test';
 	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-	results.push(['{anonymous}()@'+file+':2 -- code']);
+	results.push(['f2()@'+file+':2 -- code']);
 	
 	if (mode == 'opera') {
 	    var f2 = function() {
@@ -354,8 +354,8 @@ test("guessFunctions opera", function() {
 	
 	expect(results.length * 1);
 	for (var i = 0; i < results.length; ++i) {
-		equals(p.guessFunctions(results[i]), '', 'debug');
-	    equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}()'), 0, 'anonymous function');
+		//equals(p.guessFunctions(results[i]), '', 'debug');
+	    equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
 	}
 });
 
