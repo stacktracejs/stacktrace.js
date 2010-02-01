@@ -50,7 +50,7 @@ test("run mode", function() {
 test("run firefox", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.mode = function() { return 'firefox'; };
+    p._mode = 'firefox';
     p.other = p.opera = function() { equals(1,0,'must not be called'); };
     p.firefox = function() { equals(1,1,'called'); };
     p.run();
@@ -59,7 +59,7 @@ test("run firefox", function() {
 test("run other", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.mode = function() { return 'other'; };
+    p._mode = 'other';
     p.opera = p.firefox = function() { equals(1,0,'must not be called'); };
     p.other = function() { equals(1,1,'called'); };
     p.run();
@@ -128,7 +128,7 @@ test("chrome", function() {
 test("opera", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var e = [];
-    e.push({ message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n \tf1(1, "abc")\nignored\nignored'});
+    e.push({ message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n     f1(1, "abc")\nignored\nignored'});
     if(mode == 'opera') {
         function discarded() {
             try {(0)();} catch (exception) {
@@ -155,7 +155,6 @@ test("opera", function() {
         equals(message[1].indexOf('f1(1, "abc")') >= 0, true, 'f2 statement');
     }
 });
-
 
 test("other", function() {
     var mode = printStackTrace.implementation.prototype.mode();
@@ -276,12 +275,10 @@ test("guessFunctions firefox", function() {
     var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
-    p.mode = function() {
-        return 'firefox';
-    };
+    p._mode = 'firefox';
     var file = 'file:///test';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['{anonymous}()@'+file+':2']);
+    results.push(['run() ('+file+':1)', 'f2()@'+file+':1']);
         
     if (mode == 'firefox') {
         var f2 = function() {
@@ -296,7 +293,8 @@ test("guessFunctions firefox", function() {
     
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
-        equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
+        //equals(p.guessFunctions(results[i]), '', 'debug');
+        equals(p.guessFunctions(results[i])[1].indexOf('f2'), 0, 'f2');
     }
 });
 
@@ -304,12 +302,10 @@ test("guessFunctions chrome", function() {
     var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
-    p.mode = function() {
-        return 'chrome';
-    };
+    p._mode = 'chrome';
     var file = 'file:///test';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['{anonymous}() ('+file+':2:1)']);
+    results.push(['run() ('+file+':1:1)', 'f2() ('+file+':1:1)']);
         
     if (mode == 'chrome') {
         var f2 = function() {
@@ -324,9 +320,8 @@ test("guessFunctions chrome", function() {
     
     expect(results.length);
     for (var i = 0; i < results.length; ++i) {
-        //FIXME: Fails on Chrome - f2 not shown anywhere in stack - why?
         //equals((results[i]), '', 'debug');
-        equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}()'), 0, 'anonymous function');
+        equals(p.guessFunctions(results[i])[1].indexOf('f2()'), 0, 'f2');
     }
 });
 
@@ -334,9 +329,7 @@ test("guessFunctions opera", function() {
 	var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
 	var p = new printStackTrace.implementation();
-	p.mode = function() {
-	    return 'opera';
-	};
+	p._mode = 'opera';
 	var file = 'file:///test';
 	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
 	results.push(['f2()@'+file+':2 -- code']);
