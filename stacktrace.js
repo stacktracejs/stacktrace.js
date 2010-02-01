@@ -177,7 +177,7 @@ printStackTrace.implementation.prototype = {
     },
     
     createXMLHTTPObject: function(){
-        var XMLHttpFactories = [function(){
+        var xmlhttp, XMLHttpFactories = [function(){
             return new XMLHttpRequest();
         }, function(){
             return new ActiveXObject("Msxml2.XMLHTTP");
@@ -187,18 +187,16 @@ printStackTrace.implementation.prototype = {
             return new ActiveXObject("Microsoft.XMLHTTP");
         }
 ];
-        var xmlhttp = false;
         for (var i = 0; i < XMLHttpFactories.length; i++) {
             try {
                 xmlhttp = XMLHttpFactories[i]();
+                // Use memoization to cache the factory
+                this.createXMLHTTPObject = XMLHttpFactories[i];
+                return xmlhttp;
             } 
             catch (e) {
-                e = null;
-                continue;
             }
-            break;
         }
-        return xmlhttp;
     },
     
     getSource: function(url){
