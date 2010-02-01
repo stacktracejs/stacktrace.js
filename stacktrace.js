@@ -200,21 +200,18 @@ printStackTrace.implementation.prototype = {
     },
     
     getSource: function(url){
-        var self = this;
-        if (!(url in self.sourceCache)) {
-            self.sourceCache[url] = self.ajax(url).split("\n");
+        if (!(url in this.sourceCache)) {
+            this.sourceCache[url] = this.ajax(url).split("\n");
         }
-        return self.sourceCache[url];
+        return this.sourceCache[url];
     },
     
     guessFunctions: function(stack){
         for (var i = 0; i < stack.length; ++i) {
             var reStack = /{anonymous}\(.*\)@(.*):(\d+)/;
-            var frame = stack[i];
-            var m = reStack.exec(frame);
+            var frame = stack[i], m = reStack.exec(frame);
             if (m) {
-                var file = m[1];
-                var lineno = m[2];
+                var file = m[1], lineno = m[2];
                 if (file && lineno) {
                     var functionName = this.guessFunctionName(file, lineno);
                     stack[i] = frame.replace('{anonymous}', functionName);
@@ -225,14 +222,12 @@ printStackTrace.implementation.prototype = {
     },
     
     guessFunctionName: function(url, lineNo){
-        var source;
         try {
-            source = this.getSource(url);
+            return this.guessFunctionNameFromLines(lineNo, this.getSource(url));
         } 
         catch (e) {
             return 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
-        return this.guessFunctionNameFromLines(lineNo, source);
     },
     
     guessFunctionNameFromLines: function(lineNo, source){
@@ -240,8 +235,7 @@ printStackTrace.implementation.prototype = {
         var reGuessFunction = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(function|eval|new Function)/;
         // Walk backwards from the first line in the function until we find the line which
         // matches the pattern above, which is the function definition
-        var line = "";
-        var maxLines = 10;
+        var line = "", maxLines = 10;
         for (var i = 0; i < maxLines; ++i) {
             line = source[lineNo - i] + line;
             if (line !== undefined) {
