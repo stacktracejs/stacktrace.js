@@ -15,6 +15,21 @@ Just include stacktrace.js file on your page, and call it like so:
         ... more code of yours ...
     </script>
 
+*New!* You can also pass in your own Error to get a stacktrace:
+
+    <script type="text/javascript">
+		var lastError;
+		try {
+		    // error producing code
+		} catch(e) {
+		   lastError = e;
+		   // do something else with error
+		}
+
+		// Returns stacktrace from lastError!
+		printStackTrace({e: lastError});
+    </script>
+
 Some people recommend just assigning it to `window.onerror`:
 
     window.onerror = function() {
@@ -25,6 +40,7 @@ Some people recommend just assigning it to `window.onerror`:
 It is currently tested and working on:
 
  - Firefox (and Iceweasel) 0.9+  
+ - Google Chrome 1+  
  - Safari 3.0+  
  - IE 5.5+  
  - Konqueror 3.5+  
@@ -36,5 +52,4 @@ It is currently tested and working on:
 
 Working (readable, valid stack trace) but not perfectly tested on:  
 
- - Google Chrome  
  - Opera 7+
