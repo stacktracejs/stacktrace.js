@@ -1,3 +1,6 @@
+/*jslint evil: true, browser: true, immed: true, passfail: false, undef: true, newcap: true*/
+/*global XMLHttpRequest, ActiveXObject */
+
 // Domain Public by Eric Wendelin http://eriwen.com/ (2008)
 //                  Luke Smith http://lucassmith.name/ (2008)
 //                  Loic Dachary <loic@dachary.org> (2008)
