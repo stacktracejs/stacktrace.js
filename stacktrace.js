@@ -47,56 +47,61 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+/**
+ *
+ * @cfg {Error} e The error to create a stacktrace from (optional)
+ * @cfg {Boolean} guess If we should try to resolve the names of anonymous functions
+ */
 function printStackTrace(options){
-    if (options && options.guess) {
-        var p = new printStackTrace.implementation();
-        var result = p.run();
-        return p.guessFunctions(result);
-    }
-    return (new printStackTrace.implementation()).run();
+    var ex = (options && options.e) ? options.e : null;
+    var guess = (options && options.guess) ? options.guess : false;
+    
+    var p = new printStackTrace.implementation();
+    var result = p.run(ex);
+    return (guess) ? p.guessFunctions(result) : result;
 }
 
 printStackTrace.implementation = function(){
+
 };
 
 printStackTrace.implementation.prototype = {
-    run: function(){
-        mode = this.mode();
-        if (mode != 'other') {
-            try {
-                (0)();
-            } 
-            catch (e) {
-                return this[mode](e);
-            }
+    run: function(ex){
+        // Use either the stored mode, or resolve it
+        var mode = this._mode || this.mode();
+        if (mode === 'other') {
+            return this.other(arguments.callee);
         }
         else {
-            return this.other(arguments.callee);
+            ex = ex ||
+            (function(){
+                try {
+                    (0)();
+                } 
+                catch (e) {
+                    return e;
+                }
+            })();
+            return this[mode](ex);
         }
     },
     
     mode: function(){
-        var mode;
         try {
             (0)();
         } 
         catch (e) {
             if (e.arguments) {
-                mode = 'chrome';
+                return (this._mode = 'chrome');
             }
-            else 
-                if (e.stack) {
-                    mode = 'firefox';
-                }
-                else 
-                    if (window.opera && !('stacktrace' in e)) { //Opera 9-
-                        mode = 'opera';
-                    }
-                    else {
-                        mode = 'other';
-                    }
+            if (e.stack) {
+                return (this._mode = 'firefox');
+            }
+            if (window.opera && !('stacktrace' in e)) { //Opera 9-
+                return (this._mode = 'opera');
+            }
         }
-        return mode;
+        return (this._mode = 'other');
     },
     
     chrome: function(e){
