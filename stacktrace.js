@@ -44,7 +44,7 @@
 // IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-function printStackTrace(options) {
+function printStackTrace(options){
     if (options && options.guess) {
         var p = new printStackTrace.implementation();
         var result = p.run();
@@ -53,157 +53,155 @@ function printStackTrace(options) {
     return (new printStackTrace.implementation()).run();
 }
 
-printStackTrace.implementation = function() {};
+printStackTrace.implementation = function(){
+};
 
 printStackTrace.implementation.prototype = {
-    run: function() {
+    run: function(){
         mode = this.mode();
-        if(mode != 'other') {
-            try {(0)();} catch (e) {
+        if (mode != 'other') {
+            try {
+                (0)();
+            } 
+            catch (e) {
                 return this[mode](e);
             }
-        } else {
+        }
+        else {
             return this.other(arguments.callee);
         }
     },
-
-    mode: function() {
+    
+    mode: function(){
         var mode;
-        try {(0)();} catch (e) {
-	        if (e.arguments) {
-		        mode = 'chrome';
-	        } else if (e.stack) {
-	        	mode = 'firefox';
-            } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
-	            mode = 'opera';
-	        } else {
-            	mode = 'other';
+        try {
+            (0)();
+        } 
+        catch (e) {
+            if (e.arguments) {
+                mode = 'chrome';
             }
+            else 
+                if (e.stack) {
+                    mode = 'firefox';
+                }
+                else 
+                    if (window.opera && !('stacktrace' in e)) { //Opera 9-
+                        mode = 'opera';
+                    }
+                    else {
+                        mode = 'other';
+                    }
         }
         return mode;
     },
-
-    chrome: function(e) {
-        return e.stack.replace(/^.*?\n/,'').
-        replace(/^.*?\n/,'').
-        replace(/^.*?\n/,'').
-        replace(/^[^\(]+?[\n$]/gm,'').
-        replace(/^\s+at\s+/gm,'').
-        replace(/^Object.<anonymous>/gm,'{anonymous}()').
-        split("\n");
+    
+    chrome: function(e){
+        return e.stack.replace(/^.*?\n/, '').replace(/^.*?\n/, '').replace(/^.*?\n/, '').replace(/^[^\(]+?[\n$]/gm, '').replace(/^\s+at\s+/gm, '').replace(/^Object.<anonymous>/gm, '{anonymous}()').split("\n");
     },
     
-    firefox: function(e) {
-        return e.stack.replace(/^.*?\n/,'').
-        replace(/(?:\n@:0)?\s+$/m,'').
-        replace(/^\(/gm,'{anonymous}(').
-        split("\n");
+    firefox: function(e){
+        return e.stack.replace(/^.*?\n/, '').replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(').split("\n");
     },
-
-    opera: function(e) {
-        var lines = e.message.split("\n"),
-        ANON = '{anonymous}',
-        lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i,
-        i,j,len;
-
-        for (i=4,j=0,len=lines.length; i<len; i+=2) {
+    
+    opera: function(e){
+        var lines = e.message.split("\n"), ANON = '{anonymous}', lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, i, j, len;
+        
+        for (i = 4, j = 0, len = lines.length; i < len; i += 2) {
             if (lineRE.test(lines[i])) {
-                lines[j++] = (RegExp.$3 ?
-                              RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 :
-                              ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) +
-                    ' -- ' + lines[i+1].replace(/^\s+/,'');
+                lines[j++] = (RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) +
+                ' -- ' +
+                lines[i + 1].replace(/^\s+/, '');
             }
         }
-
-        lines.splice(j,lines.length-j);
+        
+        lines.splice(j, lines.length - j);
         return lines;
     },
-
-    other: function(curr) {
-        var ANON = "{anonymous}",
-        fnRE  = /function\s*([\w\-$]+)?\s*\(/i,
-        stack = [],j=0,fn,args;
-
-		var maxStackSize = 10;
+    
+    other: function(curr){
+        var ANON = "{anonymous}", fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], j = 0, fn, args;
+        
+        var maxStackSize = 10;
         while (curr && stack.length < maxStackSize) {
             fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
             args = Array.prototype.slice.call(curr['arguments']);
             stack[j++] = fn + '(' + printStackTrace.implementation.prototype.stringifyArguments(args) + ')';
-
-			//Opera bug: if curr.caller does not exist, Opera returns curr (WTF)
+            
+            //Opera bug: if curr.caller does not exist, Opera returns curr (WTF)
             if (curr === curr.caller && window.opera) {
-	            break;
-	        } 
-	        curr = curr.caller;
+                break;
+            }
+            curr = curr.caller;
         }
         return stack;
     },
-
-    stringifyArguments: function(args) {
+    
+    stringifyArguments: function(args){
         for (var i = 0; i < args.length; ++i) {
             var argument = args[i];
-            if (typeof argument  == 'object') {
+            if (typeof argument == 'object') {
                 args[i] = '#object';
-            } else if (typeof argument == 'function') {
-                args[i] = '#function';
-            } else if (typeof argument == 'string') {
-                args[i] = '"'+argument+'"';
             }
+            else 
+                if (typeof argument == 'function') {
+                    args[i] = '#function';
+                }
+                else 
+                    if (typeof argument == 'string') {
+                        args[i] = '"' + argument + '"';
+                    }
         }
         return args.join(',');
     },
     
     sourceCache: {},
-
-    ajax: function(url) {
-	    var req = this.createXMLHTTPObject();
-	    if (!req) {
-	        return;
-	    }
-	    req.open('GET', url, false);
-	    req.setRequestHeader("User-Agent", "XMLHTTP/1.0");
-	    req.send('');
-		return req.responseText;
+    
+    ajax: function(url){
+        var req = this.createXMLHTTPObject();
+        if (!req) {
+            return;
+        }
+        req.open('GET', url, false);
+        req.setRequestHeader("User-Agent", "XMLHTTP/1.0");
+        req.send('');
+        return req.responseText;
     },
-
-	createXMLHTTPObject: function() {
-		var XMLHttpFactories = [
-		    function () {
-		        return new XMLHttpRequest();
-		    },
-		    function () {
-		        return new ActiveXObject("Msxml2.XMLHTTP");
-		    },
-		    function () {
-		        return new ActiveXObject("Msxml3.XMLHTTP");
-		    },
-		    function () {
-		        return new ActiveXObject("Microsoft.XMLHTTP");
-		    }
-		];
-	    var xmlhttp = false;
-	    for (var i = 0; i < XMLHttpFactories.length; i++) {
-	        try {
-	            xmlhttp = XMLHttpFactories[i]();
-	        }
-	        catch (e) {
-	            e = null;
-	            continue;
-	        }
-	        break;
-	    }
-	    return xmlhttp;
-	},
-
-    getSource: function(url) {
+    
+    createXMLHTTPObject: function(){
+        var XMLHttpFactories = [function(){
+            return new XMLHttpRequest();
+        }, function(){
+            return new ActiveXObject("Msxml2.XMLHTTP");
+        }, function(){
+            return new ActiveXObject("Msxml3.XMLHTTP");
+        }, function(){
+            return new ActiveXObject("Microsoft.XMLHTTP");
+        }
+];
+        var xmlhttp = false;
+        for (var i = 0; i < XMLHttpFactories.length; i++) {
+            try {
+                xmlhttp = XMLHttpFactories[i]();
+            } 
+            catch (e) {
+                e = null;
+                continue;
+            }
+            break;
+        }
+        return xmlhttp;
+    },
+    
+    getSource: function(url){
         var self = this;
         if (!(url in self.sourceCache)) {
             self.sourceCache[url] = self.ajax(url).split("\n");
         }
         return self.sourceCache[url];
     },
-
-    guessFunctions: function(stack) {
+    
+    guessFunctions: function(stack){
         for (var i = 0; i < stack.length; ++i) {
             var reStack = /{anonymous}\(.*\)@(.*):(\d+)/;
             var frame = stack[i];
@@ -219,18 +217,19 @@ printStackTrace.implementation.prototype = {
         }
         return stack;
     },
-
-    guessFunctionName: function(url, lineNo) {      
+    
+    guessFunctionName: function(url, lineNo){
         var source;
         try {
             source = this.getSource(url);
-        } catch (e) {
+        } 
+        catch (e) {
             return 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
         return this.guessFunctionNameFromLines(lineNo, source);
     },
-
-    guessFunctionNameFromLines: function(lineNo, source) {
+    
+    guessFunctionNameFromLines: function(lineNo, source){
         var reFunctionArgNames = /function ([^(]*)\(([^)]*)\)/;
         var reGuessFunction = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(function|eval|new Function)/;
         // Walk backwards from the first line in the function until we find the line which
@@ -238,14 +237,15 @@ printStackTrace.implementation.prototype = {
         var line = "";
         var maxLines = 10;
         for (var i = 0; i < maxLines; ++i) {
-            line = source[lineNo-i] + line;
+            line = source[lineNo - i] + line;
             if (line !== undefined) {
                 var m = reGuessFunction.exec(line);
                 if (m) {
                     return m[1];
-                } else {
+                }
+                else {
                     m = reFunctionArgNames.exec(line);
-                } 
+                }
                 if (m && m[1]) {
                     return m[1];
                 }
