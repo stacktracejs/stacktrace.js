@@ -1,0 +1,1 @@
+javascript:(function(){s=document.createElement('SCRIPT');s.type='text/javascript';s.src='http://eriwen.com/js/stacktrace.js';document.getElementsByTagName('head')[0].appendChild(s);})();
