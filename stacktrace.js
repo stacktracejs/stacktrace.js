@@ -53,7 +53,7 @@
  */
 function printStackTrace(options) {
     var ex = (options && options.e) ? options.e : null;
-    var guess = (options && options.guess) ? options.guess : false;
+    var guess = (options && options.guess) ? options.guess : true;
     
     var p = new printStackTrace.implementation();
     var result = p.run(ex);
@@ -88,11 +88,9 @@ printStackTrace.implementation.prototype = {
         } catch (e) {
             if (e.arguments) {
                 return (this._mode = 'chrome');
-            }
-            if (e.stack) {
+            } else if (e.stack) {
                 return (this._mode = 'firefox');
-            }
-            if (window.opera && !('stacktrace' in e)) { //Opera 9-
+            } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
                 return (this._mode = 'opera');
             }
         }
