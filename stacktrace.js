@@ -2,7 +2,7 @@
 //                  Luke Smith http://lucassmith.name/ (2008)
 //                  Loic Dachary <loic@dachary.org> (2008)
 //                  Johan Euphrosine <proppy@aminche.com> (2008)
-//                  Øyvind Sean Kinsey http://kinsey.no/blog
+//                  Øyvind Sean Kinsey http://kinsey.no/blog (2010)
 //
 // Information and discussions
 // http://jspoker.pokersource.info/skin/test-printstacktrace.html
@@ -68,8 +68,7 @@ printStackTrace.implementation.prototype = {
         var mode = this._mode || this.mode();
         if (mode === 'other') {
             return this.other(arguments.callee);
-        }
-        else {
+        } else {
             ex = ex ||
                 (function() {
                     try {
@@ -104,19 +103,19 @@ printStackTrace.implementation.prototype = {
                 replace(/^[^\(]+?[\n$]/gm, '').
                 replace(/^\s+at\s+/gm, '').
                 replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').
-                split("\n");
+                split('\n');
     },
     
     firefox: function(e) {
         return e.stack.replace(/^.*?\n/, '').
                 replace(/(?:\n@:0)?\s+$/m, '').
                 replace(/^\(/gm, '{anonymous}(').
-                split("\n");
+                split('\n');
     },
     
     // Opera 7.x and 8.x only!
     opera: function(e) {
-        var lines = e.message.split("\n"), ANON = '{anonymous}', 
+        var lines = e.message.split('\n'), ANON = '{anonymous}', 
             lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, i, j, len;
         
         for (i = 4, j = 0, len = lines.length; i < len; i += 2) {
@@ -133,7 +132,7 @@ printStackTrace.implementation.prototype = {
     
     // Safari, Opera 9+, IE, and others
     other: function(curr) {
-        var ANON = "{anonymous}", fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], j = 0, fn, args;
+        var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], j = 0, fn, args;
         
         var maxStackSize = 10;
         while (curr && stack.length < maxStackSize) {
@@ -143,7 +142,7 @@ printStackTrace.implementation.prototype = {
             
             //Opera bug: if curr.caller does not exist, Opera returns curr (WTF)
             if (curr === curr.caller && window.opera) {
-	            //TODO: check for same arguments if possible
+                //TODO: check for same arguments if possible
                 break;
             }
             curr = curr.caller;
@@ -151,6 +150,9 @@ printStackTrace.implementation.prototype = {
         return stack;
     },
     
+    /**
+     * @return given arguments array as a String, subsituting type names for non-string types.
+     */
     stringifyArguments: function(args) {
         for (var i = 0; i < args.length; ++i) {
             var argument = args[i];
@@ -167,28 +169,31 @@ printStackTrace.implementation.prototype = {
     
     sourceCache: {},
     
+    /**
+     * @return the text from a given URL.
+     */
     ajax: function(url) {
         var req = this.createXMLHTTPObject();
         if (!req) {
             return;
         }
         req.open('GET', url, false);
-        req.setRequestHeader("User-Agent", "XMLHTTP/1.0");
+        req.setRequestHeader('User-Agent', 'XMLHTTP/1.0');
         req.send('');
         return req.responseText;
     },
     
     createXMLHTTPObject: function() {
-	    // Try XHR methods in order and store XHR factory
+        // Try XHR methods in order and store XHR factory
         var xmlhttp, XMLHttpFactories = [
             function() {
                 return new XMLHttpRequest();
             }, function() {
-                return new ActiveXObject("Msxml2.XMLHTTP");
+                return new ActiveXObject('Msxml2.XMLHTTP');
             }, function() {
-                return new ActiveXObject("Msxml3.XMLHTTP");
+                return new ActiveXObject('Msxml3.XMLHTTP');
             }, function() {
-                return new ActiveXObject("Microsoft.XMLHTTP");
+                return new ActiveXObject('Microsoft.XMLHTTP');
             }
         ];
         for (var i = 0; i < XMLHttpFactories.length; i++) {
@@ -203,7 +208,7 @@ printStackTrace.implementation.prototype = {
     
     getSource: function(url) {
         if (!(url in this.sourceCache)) {
-            this.sourceCache[url] = this.ajax(url).split("\n");
+            this.sourceCache[url] = this.ajax(url).split('\n');
         }
         return this.sourceCache[url];
     },
@@ -241,17 +246,16 @@ printStackTrace.implementation.prototype = {
             line = source[lineNo - i] + line;
             if (line !== undefined) {
                 var m = reGuessFunction.exec(line);
-                if (m) {
-                    return m[1];
-                }
-                else {
-                    m = reFunctionArgNames.exec(line);
-                }
                 if (m && m[1]) {
                     return m[1];
+                } else {
+                    m = reFunctionArgNames.exec(line);
+                    if (m && m[1]) {
+                        return m[1];
+                    }
                 }
             }
         }
-        return "(?)";
+        return '(?)';
     }
 };
