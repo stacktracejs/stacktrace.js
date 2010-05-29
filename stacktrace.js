@@ -53,7 +53,7 @@
  */
 function printStackTrace(options) {
     var ex = (options && options.e) ? options.e : null;
-    var guess = (options && options.guess) ? options.guess : true;
+    var guess = options ? !!options.guess : true;
     
     var p = new printStackTrace.implementation();
     var result = p.run(ex);

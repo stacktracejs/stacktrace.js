@@ -8,7 +8,7 @@ Just include stacktrace.js file on your page, and call it like so:
     <script type="text/javascript">
         ... your code ...
         if (errorCondition) {
-	         var trace = printStacktrace();
+	         var trace = printStackTrace();
 	         //Output however you want!
 	         alert(trace.join('\n\n'));
         }
@@ -35,7 +35,7 @@ You can also pass in your own Error to get a stacktrace:
 Some people recommend just assigning it to `window.onerror`:
 
     window.onerror = function() {
-	    alert(printStacktrace().join('\n\n'));
+	    alert(printStackTrace().join('\n\n'));
     }
 
 # What browsers does Javascript Stacktrace support? #
