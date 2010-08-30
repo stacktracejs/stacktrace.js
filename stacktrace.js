@@ -120,9 +120,7 @@ printStackTrace.implementation.prototype = {
         
         for (i = 4, j = 0, len = lines.length; i < len; i += 2) {
             if (lineRE.test(lines[i])) {
-                lines[j++] = (RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) +
-                ' -- ' +
-                lines[i + 1].replace(/^\s+/, '');
+                lines[j++] = (RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) + ' -- ' + lines[i + 1].replace(/^\s+/, '');
             }
         }
         
@@ -155,13 +153,22 @@ printStackTrace.implementation.prototype = {
      */
     stringifyArguments: function(args) {
         for (var i = 0; i < args.length; ++i) {
-            var argument = args[i];
-            if (typeof argument == 'object') {
+            var arg = args[i];
+            if (!arg || !arg.constructor) {
+                return;
+            }
+            if (arg.constructor === Array) {
+                if (arg.length < 3) {
+                    args[i] = '[' + this.stringifyArguments(arg) + ']';
+                } else {
+                    args[i] = '[' + this.stringifyArguments(Array.prototype.slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(Array.prototype.slice.call(arg, -1)) + ']';
+                }
+            } else if (arg.constructor === Object) {
                 args[i] = '#object';
-            } else if (typeof argument == 'function') {
+            } else if (arg.constructor === Function) {
                 args[i] = '#function';
-            } else if (typeof argument == 'string') {
-                args[i] = '"' + argument + '"';
+            } else if (arg.constructor === String) {
+                args[i] = '"' + arg + '"';
             }
         }
         return args.join(',');

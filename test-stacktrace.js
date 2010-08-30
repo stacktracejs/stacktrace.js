@@ -22,7 +22,7 @@ module("printstacktrace");
 test("printStackTrace", function() {
     expect(1);
     var r = printStackTrace();
-    equals(typeof r, 'object', 'printStackTrace returns an array');
+    equals(r.constructor, Array, 'printStackTrace returns an array');
 });
 
 test("printStackTrace options", function() {
@@ -207,9 +207,11 @@ test("recursion other", function() {
 });
 
 test("stringify", function() {
-    expect(3);
+    expect(5);
     equals(printStackTrace.implementation.prototype.stringifyArguments(["a", 1, {}, function() {}]), '"a",1,#object,#function');
     equals(printStackTrace.implementation.prototype.stringifyArguments([1, 2, 3]), '1,2,3');
+    equals(printStackTrace.implementation.prototype.stringifyArguments([['a', 'b']]), '["a","b"]');
+    equals(printStackTrace.implementation.prototype.stringifyArguments([[2, 4, 6, 8, 10, 12, 14]]), '[2...14]');
     equals(printStackTrace.implementation.prototype.stringifyArguments([]), '');
 });
 
