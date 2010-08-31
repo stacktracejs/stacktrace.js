@@ -208,9 +208,9 @@ test("recursion other", function() {
 
 test("stringify", function() {
     expect(5);
-    equals(printStackTrace.implementation.prototype.stringifyArguments(["a", 1, {}, function() {}]), '"a",1,#object,#function');
-    equals(printStackTrace.implementation.prototype.stringifyArguments([1, 2, 3]), '1,2,3');
-    equals(printStackTrace.implementation.prototype.stringifyArguments([['a', 'b']]), '["a","b"]');
+    equals(printStackTrace.implementation.prototype.stringifyArguments(["a", 1, {}, function() {}, undefined]), '"a",1,#object,#function,undefined');
+    equals(printStackTrace.implementation.prototype.stringifyArguments([0, 1, 2, 3]), '0,1,2,3');
+    equals(printStackTrace.implementation.prototype.stringifyArguments([['a', null]]), '["a",null]');
     equals(printStackTrace.implementation.prototype.stringifyArguments([[2, 4, 6, 8, 10, 12, 14]]), '[2...14]');
     equals(printStackTrace.implementation.prototype.stringifyArguments([]), '');
 });

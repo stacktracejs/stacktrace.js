@@ -154,21 +154,24 @@ printStackTrace.implementation.prototype = {
     stringifyArguments: function(args) {
         for (var i = 0; i < args.length; ++i) {
             var arg = args[i];
-            if (!arg || !arg.constructor) {
-                return;
-            }
-            if (arg.constructor === Array) {
-                if (arg.length < 3) {
-                    args[i] = '[' + this.stringifyArguments(arg) + ']';
-                } else {
-                    args[i] = '[' + this.stringifyArguments(Array.prototype.slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(Array.prototype.slice.call(arg, -1)) + ']';
+            if (arg === undefined) {
+                args[i] = 'undefined';
+            } else if (arg === null) {
+                args[i] = 'null';
+            } else if (arg.constructor) {
+                if (arg.constructor === Array) {
+                    if (arg.length < 3) {
+                        args[i] = '[' + this.stringifyArguments(arg) + ']';
+                    } else {
+                        args[i] = '[' + this.stringifyArguments(Array.prototype.slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(Array.prototype.slice.call(arg, -1)) + ']';
+                    }
+                } else if (arg.constructor === Object) {
+                    args[i] = '#object';
+                } else if (arg.constructor === Function) {
+                    args[i] = '#function';
+                } else if (arg.constructor === String) {
+                    args[i] = '"' + arg + '"';
                 }
-            } else if (arg.constructor === Object) {
-                args[i] = '#object';
-            } else if (arg.constructor === Function) {
-                args[i] = '#function';
-            } else if (arg.constructor === String) {
-                args[i] = '"' + arg + '"';
             }
         }
         return args.join(',');
