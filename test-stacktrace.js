@@ -317,7 +317,7 @@ test("sync ajax", function() {
 test("guessFunctionName", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    var file = 'http://' + location.hostname + '/file.js';
+    var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var a = function() {', 'var b = 2;', '};'];
     equals(p.guessFunctionName(file, 2), 'a');
 });
@@ -337,7 +337,7 @@ test("guessFunctions firefox", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
     p._mode = 'firefox';
-    var file = 'http://' + location.hostname + '/file.js';
+    var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['run() ('+file+':1)', 'f2()@'+file+':1']);
         
@@ -364,7 +364,7 @@ test("guessFunctions chrome", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
     p._mode = 'chrome';
-    var file = 'http://' + location.hostname + '/file.js';
+    var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['run() ('+file+':1:1)', 'f2() ('+file+':1:1)']);
         
@@ -386,38 +386,12 @@ test("guessFunctions chrome", function() {
     }
 });
 
-test("guessFunctions opera10", function() {
-	var results = [];
-    var mode = printStackTrace.implementation.prototype.mode();
-	var p = new printStackTrace.implementation();
-	p._mode = 'opera10';
-	var file = 'http://' + location.hostname + '/file.js';
-	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['{anonymous}()']);
-	
-	if (mode == 'opera10') {
-		var f2 = function(arg1) {
-			var blah = arg1;
-	        try { (0)(); } catch(e) {
-	            results.push(p.run());
-	        }
-		}
-	    f2('bogus');
-	}
-	
-	expect(2 * results.length);
-	for (var i = 0; i < results.length; ++i) {
-		// equals(p.guessFunctions(results[i]), '', 'debug');
-        equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number on opera 10');
-	}
-});
-
 test("guessFunctions opera", function() {
 	var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
 	var p = new printStackTrace.implementation();
 	p._mode = 'opera';
-	var file = 'http://' + location.hostname + '/file.js';
+	var file = 'http://' + window.location.hostname + '/file.js';
 	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
 	results.push(['f2()@'+file+':2 -- code']);
 	
@@ -444,7 +418,7 @@ test("guessFunctions other", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
     p._mode = 'other';
-    var file = 'http://' + location.hostname + '/file.js';
+    var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['{anonymous}()']);
        

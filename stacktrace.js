@@ -118,11 +118,11 @@ printStackTrace.implementation.prototype = {
 	opera10: function(e) {
 		var stack = e.stacktrace;
 		var lines = stack.split('\n'), ANON = '{anonymous}',
-			lineRE = /.*?line (\d+)\, column (\d+) in (.*?)$/i, i, j, len;
+			lineRE = /.*?line (\d+), column (\d+) in ((<anonymous function\:?\s*(\S+))|([^\(]+)\([^\)]*\))(?: in )?(.*)\s*$/i, i, j, len;
 		for (i = 2, j = 0, len = lines.length; i < len - 2; i++) {
 	        if (lineRE.test(lines[i])) {
 				var location = RegExp.$6 + ':' + RegExp.$1 + ':' + RegExp.$2;
-				var fnName = RegExp.$3 || RegExp.$4;
+				var fnName = RegExp.$3;
 				fnName = fnName.replace(/<anonymous function\s?(\S+)?>/g, ANON);
 				lines[j++] = fnName + '@' + location;
 	        }
@@ -243,7 +243,7 @@ printStackTrace.implementation.prototype = {
 	 * Get source code from given URL if in the same domain.
 	 *
 	 * @param url <String> JS source URL
-	 * @return <String> Source codeß
+	 * @return <String> Source code
 	 */
     getSource: function(url) {
         if (!(url in this.sourceCache)) {
