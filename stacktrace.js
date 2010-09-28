@@ -87,7 +87,9 @@ printStackTrace.implementation.prototype = {
         } catch (e) {
             if (e.arguments) {
                 return (this._mode = 'chrome');
-            } else if (e.stack) {
+            } else if (window.opera && e.stacktrace) {
+				return (this._mode = 'opera10');
+			} else if (e.stack) {
                 return (this._mode = 'firefox');
             } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
                 return (this._mode = 'opera');
@@ -112,8 +114,25 @@ printStackTrace.implementation.prototype = {
                 replace(/^\(/gm, '{anonymous}(').
                 split('\n');
     },
+
+	opera10: function(e) {
+		var stack = e.stacktrace;
+		var lines = stack.split('\n'), ANON = '{anonymous}',
+			lineRE = /.*?line (\d+)\, column (\d+) in (.*?)$/i, i, j, len;
+		for (i = 2, j = 0, len = lines.length; i < len - 2; i++) {
+	        if (lineRE.test(lines[i])) {
+				var location = RegExp.$6 + ':' + RegExp.$1 + ':' + RegExp.$2;
+				var fnName = RegExp.$3 || RegExp.$4;
+				fnName = fnName.replace(/<anonymous function\s?(\S+)?>/g, ANON);
+				lines[j++] = fnName + '@' + location;
+	        }
+		}
+        
+        lines.splice(j, lines.length - j);
+        return lines;
+	},
     
-    // Opera 7.x and 8.x only!
+    // Opera 7.x-9.x only!
     opera: function(e) {
         var lines = e.message.split('\n'), ANON = '{anonymous}', 
             lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, i, j, len;
@@ -128,7 +147,7 @@ printStackTrace.implementation.prototype = {
         return lines;
     },
     
-    // Safari, Opera 9+, IE, and others
+    // Safari, IE, and others
     other: function(curr) {
         var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], j = 0, fn, args;
         
@@ -137,12 +156,6 @@ printStackTrace.implementation.prototype = {
             fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
             args = Array.prototype.slice.call(curr['arguments']);
             stack[j++] = fn + '(' + printStackTrace.implementation.prototype.stringifyArguments(args) + ')';
-            
-            //Opera bug: if curr.caller does not exist, Opera returns curr (WTF)
-            if (curr === curr.caller && window.opera) {
-                //TODO: check for same arguments if possible
-                break;
-            }
             curr = curr.caller;
         }
         return stack;
@@ -215,7 +228,23 @@ printStackTrace.implementation.prototype = {
             } catch (e) {}
         }
     },
+
+	/**
+	 * Given a URL, check if it is in the same domain (so we can get the source via Ajax).
+	 *
+	 * @param url <String> source url
+	 * @return False if we need a cross-domain request
+	 */
+	isSameDomain: function(url) {
+		return url.indexOf(location.hostname) !== -1;
+	},
     
+	/**
+	 * Get source code from given URL if in the same domain.
+	 *
+	 * @param url <String> JS source URL
+	 * @return <String> Source codeß
+	 */
     getSource: function(url) {
         if (!(url in this.sourceCache)) {
             this.sourceCache[url] = this.ajax(url).split('\n');
@@ -229,7 +258,7 @@ printStackTrace.implementation.prototype = {
             var frame = stack[i], m = reStack.exec(frame);
             if (m) {
                 var file = m[1], lineno = m[4]; //m[7] is character position in Chrome
-                if (file && lineno) {
+                if (file && this.isSameDomain(file) && lineno) {
                     var functionName = this.guessFunctionName(file, lineno);
                     stack[i] = frame.replace('{anonymous}', functionName);
                 }

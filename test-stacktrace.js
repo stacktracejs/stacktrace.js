@@ -17,7 +17,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-module("printstacktrace");
+module("invocation");
 
 test("printStackTrace", function() {
     expect(1);
@@ -35,15 +35,17 @@ test("printStackTrace options", function() {
     var r = printStackTrace({guess: true});
 });
 
+module("mode");
+
 test("mode", function() {
     expect(1);
-    equals("chrome firefox other opera".indexOf(printStackTrace.implementation.prototype.mode()) >= 0,true);
+    equals("chrome firefox other opera opera10".indexOf(printStackTrace.implementation.prototype.mode()) >= 0,true);
 });
 
 test("run mode", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.other = p.firefox = p.chrome = p.opera = function() { equals(1,1,'called'); };
+    p.other = p.firefox = p.chrome = p.opera = p.opera10 = function() { equals(1,1,'called'); };
     p.run();
 });
 
@@ -53,6 +55,24 @@ test("run firefox", function() {
     p._mode = 'firefox';
     p.other = p.opera = function() { equals(1,0,'must not be called'); };
     p.firefox = function() { equals(1,1,'called'); };
+    p.run();
+});
+
+test("run opera", function() {
+    expect(1);
+    var p = new printStackTrace.implementation();
+    p._mode = 'opera';
+    p.opera10 = p.other = p.firefox = p.chrome = function() { equals(1,0,'must not be called'); };
+    p.opera = function() { equals(1,1,'called'); };
+    p.run();
+});
+
+test("run opera10", function() {
+    expect(1);
+    var p = new printStackTrace.implementation();
+    p._mode = 'opera10';
+    p.opera = p.other = p.firefox = p.chrome = function() { equals(1,0,'must not be called'); };
+    p.opera10 = function() { equals(1,1,'called'); };
     p.run();
 });
 
@@ -85,13 +105,13 @@ test("firefox", function() {
     }
     expect(4 * e.length);
     for(var i = 0; i < e.length; i++) {
-        var message = printStackTrace.implementation.prototype.firefox(e[i]);
-        var message_string = message.join("\n");
+        var stack = printStackTrace.implementation.prototype.firefox(e[i]);
+        var stack_string = stack.join("\n");
         //equals(message_string, '', 'debug');
-        equals(message_string.indexOf('discarded'), -1, 'discarded');
-        equals(message[0].indexOf('f1(1,"abc")') >= 0, true, 'f1');
-        equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 anonymous');
-        equals(message[2].indexOf('@:0'), -1, '@:0 discarded');
+        equals(stack_string.indexOf('discarded'), -1, 'discarded');
+        equals(stack[0].indexOf('f1(1,"abc")') >= 0, true, 'f1');
+        equals(stack[1].indexOf('{anonymous}()@') >= 0, true, 'f2 anonymous');
+        equals(stack[2].indexOf('@:0'), -1, '@:0 discarded');
     }
 });
 
@@ -125,6 +145,38 @@ test("chrome", function() {
     }
 });
 
+test("opera10", function() {
+	var mode = printStackTrace.implementation.prototype.mode();
+	var e = [];
+	e.push({ stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
+	 	stacktrace: 'ignored\nError thrown at line 1, column 55 in discarded():\n    (0)();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();' });
+	if (mode == 'opera10') {
+        function discarded() {
+            try {(0)();} catch (exception) {
+                e.push(exception);
+            }
+        }
+        function f1(arg1, arg2) {
+			var blah = arg1;
+            discarded();
+        }
+        var f2 = function() {
+            f1(1, "abc");
+        };
+        f2();
+	}
+    expect(3 * e.length);
+    for(var i = 0; i < e.length; i++) {
+        var stack = printStackTrace.implementation.prototype.opera10(e[i]);
+		var stack_string = stack.join('\n');
+		// equals(stack[1], '', 'debug');
+        equals(stack_string.indexOf('ignored'), -1, 'ignored');
+        equals(stack[0].indexOf('f1(') >= 0, true, 'f1 function name');
+        equals(stack[1].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous');
+		//FIXME: Clean up stack[2], opera has some internal stack weirdness
+    }
+});
+
 test("opera", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var e = [];
@@ -147,7 +199,6 @@ test("opera", function() {
     for(var i = 0; i < e.length; i++) {
         var message = printStackTrace.implementation.prototype.opera(e[i]);
         var message_string = message.join("\n");
-        //equals(message_string, '', 'debug');
         equals(message_string.indexOf('ignored'), -1, 'ignored');
         equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
         equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
@@ -187,6 +238,8 @@ test("other", function() {
     }
 });
 
+module("util");
+
 test("recursion other", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     expect(mode == 'other' ? 2 : 0);
@@ -213,6 +266,12 @@ test("stringify", function() {
     equals(printStackTrace.implementation.prototype.stringifyArguments([['a', null]]), '["a",null]');
     equals(printStackTrace.implementation.prototype.stringifyArguments([[2, 4, 6, 8, 10, 12, 14]]), '[2...14]');
     equals(printStackTrace.implementation.prototype.stringifyArguments([]), '');
+});
+
+test("isSameDomain", function() {
+	expect(1);
+	ok(printStackTrace.implementation.prototype.isSameDomain(location.href));
+	
 });
 
 test("guessFunctionNameFromLines", function() {
@@ -258,7 +317,7 @@ test("sync ajax", function() {
 test("guessFunctionName", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    var file = 'file:///test';
+    var file = 'http://' + location.hostname + '/file.js';
     p.sourceCache[file] = ['var a = function() {', 'var b = 2;', '};'];
     equals(p.guessFunctionName(file, 2), 'a');
 });
@@ -278,7 +337,7 @@ test("guessFunctions firefox", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
     p._mode = 'firefox';
-    var file = 'file:///test';
+    var file = 'http://' + location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['run() ('+file+':1)', 'f2()@'+file+':1']);
         
@@ -305,7 +364,7 @@ test("guessFunctions chrome", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
     p._mode = 'chrome';
-    var file = 'file:///test';
+    var file = 'http://' + location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['run() ('+file+':1:1)', 'f2() ('+file+':1:1)']);
         
@@ -327,12 +386,38 @@ test("guessFunctions chrome", function() {
     }
 });
 
+test("guessFunctions opera10", function() {
+	var results = [];
+    var mode = printStackTrace.implementation.prototype.mode();
+	var p = new printStackTrace.implementation();
+	p._mode = 'opera10';
+	var file = 'http://' + location.hostname + '/file.js';
+	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
+    results.push(['{anonymous}()']);
+	
+	if (mode == 'opera10') {
+		var f2 = function(arg1) {
+			var blah = arg1;
+	        try { (0)(); } catch(e) {
+	            results.push(p.run());
+	        }
+		}
+	    f2('bogus');
+	}
+	
+	expect(2 * results.length);
+	for (var i = 0; i < results.length; ++i) {
+		// equals(p.guessFunctions(results[i]), '', 'debug');
+        equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number on opera 10');
+	}
+});
+
 test("guessFunctions opera", function() {
 	var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
 	var p = new printStackTrace.implementation();
 	p._mode = 'opera';
-	var file = 'file:///test';
+	var file = 'http://' + location.hostname + '/file.js';
 	p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
 	results.push(['f2()@'+file+':2 -- code']);
 	
@@ -349,7 +434,7 @@ test("guessFunctions opera", function() {
 	
 	expect(results.length * 1);
 	for (var i = 0; i < results.length; ++i) {
-		//equals(p.guessFunctions(results[i]), '', 'debug');
+		// equals(p.guessFunctions(results[i]), '', 'debug');
 	    equals(p.guessFunctions(results[i])[0].indexOf('f2'), 0, 'f2');
 	}
 });
@@ -358,25 +443,21 @@ test("guessFunctions other", function() {
     var results = [];
     var mode = printStackTrace.implementation.prototype.mode();
     var p = new printStackTrace.implementation();
-    p.mode = function() {
-        return 'other';
-    };
-    var file = 'file:///test';
+    p._mode = 'other';
+    var file = 'http://' + location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['{anonymous}()']);
        
     if (mode == 'other') {
         var f2 = function() {
-            try {
-                (0)();
-            } catch(e) {
+            try { (0)(); } catch(e) {
                 results.push(p.run());
             }
         };
         f2();
     }
     
-    expect(results.length * 1);
+    expect(1 * results.length);
     for (var i = 0; i < results.length; ++i) {
         //equals((results[i]), '', 'debug');
         equals(p.guessFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number on other');
