@@ -15,7 +15,7 @@ Just include stacktrace.js file on your page, and call it like so:
         ... more code of yours ...
     </script>
 
-*New!* bookmarklet available on the [project home page](http://emwendelin.github.com/javascript-stacktrace/). 
+Bookmarklet available on the [project home page](http://emwendelin.github.com/javascript-stacktrace/). 
 
 You can also pass in your own Error to get a stacktrace:
 
@@ -32,11 +32,30 @@ You can also pass in your own Error to get a stacktrace:
 		printStackTrace({e: lastError});
     </script>
 
-Some people recommend just assigning it to `window.onerror`:
+Some people recommend just assigning it to `window.onerror` (Only in IE and FF):
 
-    window.onerror = function() {
+    window.onerror = function(msg, file, line) {
 	    alert(printStackTrace().join('\n\n'));
     }
+
+# Function Instrumentation #
+You can now have any (public or privileged) function give you a stacktrace when it is called:
+
+    var p = new printStackTrace.implementation();
+    p.instrumentFunction(this, 'bar', logStackTrace);
+    function logStackTrace(stack) {
+    	console.log(stack.join('\n'));
+    }
+    function foo() {
+    	var a = 1;
+    	bar();
+    }
+    function bar() {
+    	baz();
+    }
+    foo(); //Will log a stacktrace when 'bar()' is called containing 'foo()'!
+    
+    p.deinstrumentFunction(this, 'bar'); //Remove function instrumentation
 
 # What browsers does Javascript Stacktrace support? #
 It is currently tested and working on:
