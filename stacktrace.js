@@ -109,7 +109,6 @@ printStackTrace.implementation.prototype = {
 	 * @param {Function} function to call with a stack trace on invocation
 	 */
 	instrumentFunction: function(context, functionName, callback) {
-				debugger;
 		context = context || window;
 		context['_old' + functionName] = context[functionName];
 		context[functionName] = function() { 
