@@ -9,9 +9,6 @@
 // http://eriwen.com/javascript/js-stack-trace/
 // http://eriwen.com/javascript/stacktrace-update/
 // http://pastie.org/253058
-// http://browsershots.org/http://jspoker.pokersource.info/skin/test-printstacktrace.html
-//
-
 //
 // guessFunctionNameFromLines comes from firebug
 //
@@ -47,9 +44,11 @@
 // OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /**
+ * Main function giving a function stack trace with a forced or passed in Error 
  *
  * @cfg {Error} e The error to create a stacktrace from (optional)
  * @cfg {Boolean} guess If we should try to resolve the names of anonymous functions
+ * @return {Array} of Strings with functions, lines, files, and arguments where possible 
  */
 function printStackTrace(options) {
     var ex = (options && options.e) ? options.e : null;
@@ -81,6 +80,9 @@ printStackTrace.implementation.prototype = {
         }
     },
     
+	/**
+	 * @return {String} mode of operation for the environment in question.
+	 */
     mode: function() {
         try {
             (0)();
@@ -97,7 +99,48 @@ printStackTrace.implementation.prototype = {
         }
         return (this._mode = 'other');
     },
+
+	/**
+	 * Given a context, function name, and callback function, overwrite it so that it calls
+	 * printStackTrace() first with a callback and then runs the rest of the body.
+	 * 
+	 * @param {Object} context of execution (e.g. window)
+	 * @param {String} functionName to instrument
+	 * @param {Function} function to call with a stack trace on invocation
+	 */
+	instrumentFunction: function(context, functionName, callback) {
+				debugger;
+		context = context || window;
+		context['_old' + functionName] = context[functionName];
+		context[functionName] = function() { 
+			callback.call(this, printStackTrace());
+			return context['_old' + functionName].apply(this, arguments);
+		}
+		context[functionName]._instrumented = true;
+	},
+	
+	/**
+	 * Given a context and function name of a function that has been
+	 * instrumented, revert the function to it's original (non-instrumented)
+	 * state.
+	 *
+	 * @param {Object} context of execution (e.g. window)
+	 * @param {String} functionName to de-instrument
+	 */
+	deinstrumentFunction: function(context, functionName) {
+		if (context[functionName].constructor === Function
+				&& context[functionName]._instrumented
+				&& context['_old' + functionName].constructor === Function) {
+			context[functionName] = context['_old' + functionName];
+		}
+	},
     
+	/**
+	 * Given an Error object, return a formatted Array based on Chrome's stack string.
+	 * 
+	 * @param e - Error object to inspect
+	 * @return Array<String> of function calls, files and line numbers
+	 */
     chrome: function(e) {
         return e.stack.replace(/^.*?\n/, '').
                 replace(/^.*?\n/, '').
@@ -107,7 +150,13 @@ printStackTrace.implementation.prototype = {
                 replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').
                 split('\n');
     },
-    
+
+	/**
+	 * Given an Error object, return a formatted Array based on Firefox's stack string.
+	 * 
+	 * @param e - Error object to inspect
+	 * @return Array<String> of function calls, files and line numbers
+	 */
     firefox: function(e) {
         return e.stack.replace(/^.*?\n/, '').
                 replace(/(?:\n@:0)?\s+$/m, '').
@@ -115,6 +164,12 @@ printStackTrace.implementation.prototype = {
                 split('\n');
     },
 
+	/**
+	 * Given an Error object, return a formatted Array based on Opera 10's stacktrace string.
+	 * 
+	 * @param e - Error object to inspect
+	 * @return Array<String> of function calls, files and line numbers
+	 */
 	opera10: function(e) {
 		var stack = e.stacktrace;
 		var lines = stack.split('\n'), ANON = '{anonymous}',
@@ -135,9 +190,11 @@ printStackTrace.implementation.prototype = {
     // Opera 7.x-9.x only!
     opera: function(e) {
         var lines = e.message.split('\n'), ANON = '{anonymous}', 
-            lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, i, j, len;
+            lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, 
+			i, j, len;
         
         for (i = 4, j = 0, len = lines.length; i < len; i += 2) {
+			//TODO: RegExp.exec() would probably be cleaner here
             if (lineRE.test(lines[i])) {
                 lines[j++] = (RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) + ' -- ' + lines[i + 1].replace(/^\s+/, '');
             }
@@ -149,20 +206,24 @@ printStackTrace.implementation.prototype = {
     
     // Safari, IE, and others
     other: function(curr) {
-        var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], j = 0, fn, args;
+        var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i,
+	 		stack = [], j = 0, fn, args;
         
         var maxStackSize = 10;
         while (curr && stack.length < maxStackSize) {
             fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
             args = Array.prototype.slice.call(curr['arguments']);
-            stack[j++] = fn + '(' + printStackTrace.implementation.prototype.stringifyArguments(args) + ')';
+            stack[j++] = fn + '(' + this.stringifyArguments(args) + ')';
             curr = curr.caller;
         }
         return stack;
     },
     
     /**
-     * @return given arguments array as a String, subsituting type names for non-string types.
+     * Given arguments array as a String, subsituting type names for non-string types.
+     *
+     * @param {Arguments} object
+     * @return {Array} of Strings with stringified arguments
      */
     stringifyArguments: function(args) {
         for (var i = 0; i < args.length; ++i) {
@@ -206,8 +267,12 @@ printStackTrace.implementation.prototype = {
         return req.responseText;
     },
     
+	/**
+	 * Try XHR methods in order and store XHR factory.
+	 *
+	 * @return <Function> XHR function or equivalent
+	 */
     createXMLHTTPObject: function() {
-        // Try XHR methods in order and store XHR factory
         var xmlhttp, XMLHttpFactories = [
             function() {
                 return new XMLHttpRequest();
@@ -230,7 +295,8 @@ printStackTrace.implementation.prototype = {
     },
 
 	/**
-	 * Given a URL, check if it is in the same domain (so we can get the source via Ajax).
+	 * Given a URL, check if it is in the same domain (so we can get the source
+	 * via Ajax).
 	 *
 	 * @param url <String> source url
 	 * @return False if we need a cross-domain request

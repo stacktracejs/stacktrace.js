@@ -85,6 +85,18 @@ test("run other", function() {
     p.run();
 });
 
+test("function instrumentation", function() {
+	expect(4);
+	this.toInstrument = function() { equals(1, 1, 'called instrumented function'); }
+	this.callback = function(stacktrace) { ok(typeof stacktrace !== 'undefined', 'called callback'); }
+	printStackTrace.implementation.prototype.instrumentFunction(this, 'toInstrument', this.callback);
+	ok(this.toInstrument._instrumented, 'function instrumented');
+	this.toInstrument();
+	printStackTrace.implementation.prototype.deinstrumentFunction(this, 'toInstrument');
+	ok(!this.toInstrument._instrumented, 'function deinstrumented');
+	this.toInstrument = this.callback = null;
+});
+
 test("firefox", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var e = [];
