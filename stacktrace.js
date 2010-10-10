@@ -141,9 +141,9 @@ printStackTrace.implementation.prototype = {
 	 * @return Array<String> of function calls, files and line numbers
 	 */
     chrome: function(e) {
-        return e.stack.replace(/^.*?\n/, '').
-                replace(/^.*?\n/, '').
-                replace(/^.*?\n/, '').
+        return e.stack.replace(/^[^\n]*\n/, '').
+                replace(/^[^\n]*\n/, '').
+                replace(/^[^\n]*\n/, '').
                 replace(/^[^\(]+?[\n$]/gm, '').
                 replace(/^\s+at\s+/gm, '').
                 replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').
@@ -157,7 +157,7 @@ printStackTrace.implementation.prototype = {
 	 * @return Array<String> of function calls, files and line numbers
 	 */
     firefox: function(e) {
-        return e.stack.replace(/^.*?\n/, '').
+        return e.stack.replace(/^[^\n]*\n/, '').
                 replace(/(?:\n@:0)?\s+$/m, '').
                 replace(/^\(/gm, '{anonymous}(').
                 split('\n');
@@ -172,7 +172,7 @@ printStackTrace.implementation.prototype = {
 	opera10: function(e) {
 		var stack = e.stacktrace;
 		var lines = stack.split('\n'), ANON = '{anonymous}',
-			lineRE = /.*?line (\d+), column (\d+) in ((<anonymous function\:?\s*(\S+))|([^\(]+)\([^\)]*\))(?: in )?(.*)\s*$/i, i, j, len;
+			lineRE = /.*line (\d+), column (\d+) in ((<anonymous function\:?\s*(\S+))|([^\(]+)\([^\)]*\))(?: in )?(.*)\s*$/i, i, j, len;
 		for (i = 2, j = 0, len = lines.length; i < len - 2; i++) {
 	        if (lineRE.test(lines[i])) {
 				var location = RegExp.$6 + ':' + RegExp.$1 + ':' + RegExp.$2;
@@ -189,7 +189,7 @@ printStackTrace.implementation.prototype = {
     // Opera 7.x-9.x only!
     opera: function(e) {
         var lines = e.message.split('\n'), ANON = '{anonymous}', 
-            lineRE = /Line\s+(\d+).*?script\s+(http\S+)(?:.*?in\s+function\s+(\S+))?/i, 
+            lineRE = /Line\s+(\d+).*script\s+(http\S+)(?:.*in\s+function\s+(\S+))?/i, 
 			i, j, len;
         
         for (i = 4, j = 0, len = lines.length; i < len; i += 2) {
