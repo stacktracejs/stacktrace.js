@@ -103,7 +103,7 @@ test("firefox", function() {
     e.push({ stack: 'discarded()...\nf1(1,"abc")@file.js:40\n()@file.js:41\n@:0  \nf44()@file.js:494'});
     if(mode == 'firefox') {
         function discarded() {
-            try {(0)();} catch (exception) {
+            try {var _err = __undef__ << 1;} catch (exception) {
                 e.push(exception);
             }
         }
@@ -130,10 +130,10 @@ test("firefox", function() {
 test("chrome", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var e = [];
-    e.push({ stack: 'ignored\nignored\n at discarded (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'});
+    e.push({ stack: 'ignored\n at discarded (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'});
     if(mode == 'chrome') {
         function discarded() {
-            try {(0)();} catch (exception) {
+            try {var _err = __undef__ << 1;} catch (exception) {
                 e.push(exception);
             }
         }
@@ -161,10 +161,10 @@ test("opera10", function() {
 	var mode = printStackTrace.implementation.prototype.mode();
 	var e = [];
 	e.push({ stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
-	 	stacktrace: 'ignored\nError thrown at line 1, column 55 in discarded():\n    (0)();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();' });
+	 	stacktrace: 'ignored\nError thrown at line 1, column 55 in discarded():\n    var _err = __undef__ << 1;\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();' });
 	if (mode == 'opera10') {
         function discarded() {
-            try {(0)();} catch (exception) {
+            try {var _err = __undef__ << 1;} catch (exception) {
                 e.push(exception);
             }
         }
@@ -195,7 +195,7 @@ test("opera", function() {
     e.push({ message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n     f1(1, "abc")\nignored\nignored'});
     if(mode == 'opera') {
         function discarded() {
-            try {(0)();} catch (exception) {
+            try {var _err = __undef__ << 1;} catch (exception) {
                 e.push(exception);
             }
         }
@@ -356,7 +356,7 @@ test("guessFunctions firefox", function() {
     if (mode == 'firefox') {
         var f2 = function() {
             try {
-                (0)();
+                var _err = __undef__ << 1;
             } catch(e) {
                 results.push(p.run());
             }
@@ -383,7 +383,7 @@ test("guessFunctions chrome", function() {
     if (mode == 'chrome') {
         var f2 = function() {
             try {
-                (0)();
+                var _err = __undef__ << 1;
             } catch(e) {
                 results.push(p.run());
             }
@@ -393,7 +393,7 @@ test("guessFunctions chrome", function() {
     
     expect(results.length);
     for (var i = 0; i < results.length; ++i) {
-        //equals((results[i]), '', 'debug');
+        // equals((results[i]), '', 'debug');
         equals(p.guessFunctions(results[i])[1].indexOf('f2()'), 0, 'f2');
     }
 });
@@ -410,7 +410,7 @@ test("guessFunctions opera", function() {
 	if (mode == 'opera') {
 	    var f2 = function() {
 	        try {
-	            (0)();
+	            var _err = __undef__ << 1;
 	        } catch(e) {
 	            results.push(p.run());
 	        }
@@ -436,7 +436,7 @@ test("guessFunctions other", function() {
        
     if (mode == 'other') {
         var f2 = function() {
-            try { (0)(); } catch(e) {
+            try { var _err = __undef__ << 1; } catch(e) {
                 results.push(p.run());
             }
         };
