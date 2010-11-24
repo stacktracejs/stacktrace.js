@@ -100,27 +100,23 @@ test("function instrumentation", function() {
 test("firefox", function() {
     var mode = printStackTrace.implementation.prototype.mode();
     var e = [];
-    e.push({ stack: 'discarded()...\nf1(1,"abc")@file.js:40\n()@file.js:41\n@:0  \nf44()@file.js:494'});
+    e.push({ stack: 'f1(1,"abc")@file.js:40\n()@file.js:41\n@:0  \nf44()@file.js:494'});
     if(mode == 'firefox') {
-        function discarded() {
+        function f1(arg1, arg2) {
             try {var _err = __undef__ << 1;} catch (exception) {
                 e.push(exception);
             }
-        }
-        function f1(arg1, arg2) {
-            discarded();
         }
         var f2 = function() {
             f1(1, "abc");
         };
         f2();
     }
-    expect(4 * e.length);
+    expect(3 * e.length);
     for(var i = 0; i < e.length; i++) {
         var stack = printStackTrace.implementation.prototype.firefox(e[i]);
         var stack_string = stack.join("\n");
         //equals(message_string, '', 'debug');
-        equals(stack_string.indexOf('discarded'), -1, 'discarded');
         equals(stack[0].indexOf('f1(1,"abc")') >= 0, true, 'f1');
         equals(stack[1].indexOf('{anonymous}()@') >= 0, true, 'f2 anonymous');
         equals(stack[2].indexOf('@:0'), -1, '@:0 discarded');
@@ -283,7 +279,6 @@ test("stringify", function() {
 test("isSameDomain", function() {
 	expect(1);
 	ok(printStackTrace.implementation.prototype.isSameDomain(location.href));
-	
 });
 
 test("guessFunctionNameFromLines", function() {
@@ -351,7 +346,7 @@ test("guessFunctions firefox", function() {
     p._mode = 'firefox';
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['run() ('+file+':1)', 'f2()@'+file+':1']);
+    results.push(['(?)()@'+file+':74','run()@'+file+':72','f2()@'+file+':1']);
         
     if (mode == 'firefox') {
         var f2 = function() {
@@ -366,8 +361,8 @@ test("guessFunctions firefox", function() {
     
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
-        //equals(p.guessFunctions(results[i]), '', 'debug');
-        equals(p.guessFunctions(results[i])[1].indexOf('f2'), 0, 'f2');
+        // equals(p.guessFunctions(results[i]), '', 'debug');
+        equals(p.guessFunctions(results[i])[2].indexOf('f2'), 0, 'guessed f2 as 3rd result');
     }
 });
 
