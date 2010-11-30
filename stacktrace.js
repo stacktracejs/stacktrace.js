@@ -63,19 +63,19 @@ printStackTrace.implementation = function() {};
 
 printStackTrace.implementation.prototype = {
     run: function(ex) {
+        ex = ex ||
+            (function() {
+                try {
+                    var _err = __undef__ << 1;
+                } catch (e) {
+                    return e;
+                }
+            })();
         // Use either the stored mode, or resolve it
-        var mode = this._mode || this.mode();
+        var mode = this._mode || this.mode(ex);
         if (mode === 'other') {
             return this.other(arguments.callee);
         } else {
-            ex = ex ||
-                (function() {
-                    try {
-                        var _err = __undef__ << 1;
-                    } catch (e) {
-                        return e;
-                    }
-                })();
             return this[mode](ex);
         }
     },
@@ -83,19 +83,15 @@ printStackTrace.implementation.prototype = {
     /**
      * @return {String} mode of operation for the environment in question.
      */
-    mode: function() {
-        try {
-            var _err = __undef__ << 1;
-        } catch (e) {
-            if (e['arguments']) {
-                return (this._mode = 'chrome');
-            } else if (window.opera && e.stacktrace) {
-                return (this._mode = 'opera10');
-            } else if (e.stack) {
-                return (this._mode = 'firefox');
-            } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
-                return (this._mode = 'opera');
-            }
+    mode: function(e) {
+        if (e['arguments']) {
+            return (this._mode = 'chrome');
+        } else if (window.opera && e.stacktrace) {
+            return (this._mode = 'opera10');
+        } else if (e.stack) {
+            return (this._mode = 'firefox');
+        } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
+            return (this._mode = 'opera');
         }
         return (this._mode = 'other');
     },
