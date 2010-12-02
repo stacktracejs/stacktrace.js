@@ -153,9 +153,9 @@
 	test("chrome", function() {
 	    var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createGenericError());
 	    var e = [];
-	    e.push({ stack: 'ignored\n at discarded (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'});
+	    e.push({ stack: 'ignored\n at f0 (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'});
 	    if(mode == 'chrome') {
-	        function discarded() {
+	        function f0() {
 	            try {var _err = __undef__ << 1;} catch (exception) {
 	                e.push(exception);
 	            }
@@ -172,10 +172,10 @@
 	    for(var i = 0; i < e.length; i++) {
 	        var message = printStackTrace.implementation.prototype.chrome(e[i]);
 	        //equals(message.join("\n"), '', 'debug');
-	        equals(message.join("\n").indexOf('discarded'), -1, 'discarded');
-	        equals(message[0].indexOf('f1') >= 0, true, 'f1');
-	        equals(message[1].indexOf('anonymous') >= 0, true, 'f2 anonymous');
-	        equals(message[2].indexOf('unknown source'), -1, 'unknown source discarded');
+	        equals(message[0].indexOf('f0') >= 0, true, 'f0 is top of stack');
+	        equals(message[1].indexOf('f1') >= 0, true, 'f1 is second called function');
+	        equals(message[2].indexOf('anonymous') >= 0, true, 'f2 anonymous function called');
+	        equals(message[3].indexOf('unknown source'), -1, 'unknown source discarded');
 	    }
 	});
 
