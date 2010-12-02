@@ -164,7 +164,7 @@ printStackTrace.implementation.prototype = {
             if (lineRE.test(lines[i])) {
                 var location = RegExp.$6 + ':' + RegExp.$1 + ':' + RegExp.$2;
                 var fnName = RegExp.$3;
-                fnName = fnName.replace(/<anonymous function\s?(\S+)?>/g, ANON);
+                fnName = fnName.replace(/<anonymous function\:?\s?(\S+)?>/g, ANON);
                 lines[j++] = fnName + '@' + location;
             }
         }
