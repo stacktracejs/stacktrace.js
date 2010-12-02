@@ -294,7 +294,7 @@ printStackTrace.implementation.prototype = {
      * Get source code from given URL if in the same domain.
      *
      * @param url <String> JS source URL
-     * @return <String> Source code
+     * @return <Array> Array of source code lines
      */
     getSource: function(url) {
         if (!(url in this.sourceCache)) {
