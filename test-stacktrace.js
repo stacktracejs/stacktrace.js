@@ -161,7 +161,7 @@
 	            }
 	        }
 	        function f1(arg1, arg2) {
-	            discarded();
+	            f0();
 	        }
 	        var f2 = function() {
 	            f1(1, "abc");
