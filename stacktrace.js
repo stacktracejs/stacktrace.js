@@ -3,6 +3,7 @@
 //                  Loic Dachary <loic@dachary.org> (2008)
 //                  Johan Euphrosine <proppy@aminche.com> (2008)
 //                  Øyvind Sean Kinsey http://kinsey.no/blog (2010)
+//                  Victor Homyakov (2010)
 //
 // Information and discussions
 // http://jspoker.pokersource.info/skin/test-printstacktrace.html
