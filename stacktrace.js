@@ -321,7 +321,8 @@ printStackTrace.implementation.prototype = {
     
     guessFunctionName: function(url, lineNo) {
         try {
-            return this.guessFunctionNameFromLines(lineNo, this.getSource(url));
+            var ret = this.guessFunctionNameFromLines(lineNo, this.getSource(url));
+			return ret;
         } catch (e) {
             return 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
