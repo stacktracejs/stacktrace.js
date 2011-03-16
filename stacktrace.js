@@ -67,7 +67,8 @@ printStackTrace.implementation.prototype = {
         ex = ex ||
             (function() {
                 try {
-                    var _err = undef.voidprop
+                    this.undef();
+					return null;
                 } catch (e) {
                     return e;
                 }
