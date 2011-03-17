@@ -67,7 +67,8 @@ printStackTrace.implementation.prototype = {
         ex = ex ||
             (function() {
                 try {
-                    var _err = __undef__ << 1;
+                    this.undef();
+					return null;
                 } catch (e) {
                     return e;
                 }
@@ -320,11 +321,13 @@ printStackTrace.implementation.prototype = {
     },
     
     guessFunctionName: function(url, lineNo) {
+		var ret;
         try {
-            return this.guessFunctionNameFromLines(lineNo, this.getSource(url));
+            ret = this.guessFunctionNameFromLines(lineNo, this.getSource(url));
         } catch (e) {
-            return 'getSource failed with url: ' + url + ', exception: ' + e.toString();
+            ret = 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
+		return ret;
     },
     
     guessFunctionNameFromLines: function(lineNo, source) {
