@@ -88,11 +88,11 @@ printStackTrace.implementation.prototype = {
     mode: function(e) {
         if (e['arguments']) {
             return (this._mode = 'chrome');
-        } else if (window.opera && e.stacktrace) {
+        } else if (typeof window !== 'undefined' && window.opera && e.stacktrace) {
             return (this._mode = 'opera10');
         } else if (e.stack) {
             return (this._mode = 'firefox');
-        } else if (window.opera && !('stacktrace' in e)) { //Opera 9-
+        } else if (typeof window !== 'undefined' && window.opera && !('stacktrace' in e)) { //Opera 9-
             return (this._mode = 'opera');
         }
         return (this._mode = 'other');
