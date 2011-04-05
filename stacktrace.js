@@ -3,7 +3,7 @@
 //                  Loic Dachary <loic@dachary.org> (2008)
 //                  Johan Euphrosine <proppy@aminche.com> (2008)
 //                  Øyvind Sean Kinsey http://kinsey.no/blog (2010)
-//                  Victor Homyakov (2010)
+//                  Victor Homyakov <victor-homyakov@users.sourceforge.net> (2010)
 //
 // Information and discussions
 // http://jspoker.pokersource.info/skin/test-printstacktrace.html
@@ -68,7 +68,7 @@ printStackTrace.implementation.prototype = {
             (function() {
                 try {
                     this.undef();
-					return null;
+                    return null;
                 } catch (e) {
                     return e;
                 }
@@ -321,13 +321,13 @@ printStackTrace.implementation.prototype = {
     },
     
     guessFunctionName: function(url, lineNo) {
-		var ret;
+        var ret;
         try {
             ret = this.guessFunctionNameFromLines(lineNo, this.getSource(url));
         } catch (e) {
             ret = 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
-		return ret;
+        return ret;
     },
     
     guessFunctionNameFromLines: function(lineNo, source) {
