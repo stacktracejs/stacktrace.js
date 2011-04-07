@@ -86,7 +86,7 @@ printStackTrace.implementation.prototype = {
      * @return {String} mode of operation for the environment in question.
      */
     mode: function(e) {
-        if (e['arguments']) {
+        if (e['arguments'] && e.stack) {
             return (this._mode = 'chrome');
         } else if (typeof window !== 'undefined' && window.opera && e.stacktrace) {
             return (this._mode = 'opera10');
