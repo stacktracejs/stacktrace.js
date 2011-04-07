@@ -198,28 +198,28 @@
 		e.push({ stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
 		 	stacktrace: 'ignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 594, column 2 in process():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 1, column 55 in discarded():\n    this.undef();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();' });
 		if (mode == 'opera10') {
-	        function discarded() {
-	            try {this.undef();} catch (exception) {
-	                e.push(exception);
-	            }
-	        }
-	        function f1(arg1, arg2) {
-				var blah = arg1;
-	            discarded();
-	        }
-	        var f2 = function() {
-	            f1(1, "abc");
-	        };
-	        f2();
+		    function discarded() {
+			try {this.undef();} catch (exception) {
+			    e.push(exception);
+			}
+		    }
+		    function f1(arg1, arg2) {
+			var blah = arg1;
+			discarded();
+		    }
+		    var f2 = function() {
+			f1(1, "abc");
+		    };
+		    f2();
 		}
 	    expect(3 * e.length);
 	    for(var i = 0; i < e.length; i++) {
 	        var stack = printStackTrace.implementation.prototype.opera10(e[i]);
-			var stack_string = stack.join('\n');
-			//equals(stack_string, '', 'debug');
+		var stack_string = stack.join('\n');
+		//equals(stack_string, '', 'debug');
 	        equals(stack_string.indexOf('ignored'), -1, 'ignored');
-	        equals(stack[5].indexOf('f1(') >= 0, true, 'f1 function name');
-	        equals(stack[6].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous');
+	        equals(stack[5].indexOf('f1(') >= 0, true, 'f1 function name: ' + stack[5]);
+	        equals(stack[6].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous: ' + stack[6]);
 			//FIXME: Clean up stack[2], opera has some internal stack weirdness
 	    }
 	});
@@ -384,28 +384,28 @@
 
 	test("guessFunctions firefox", function() {
 	    var results = [];
-	    var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createErrorWithNoChromeArguments());
+	    //var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createErrorWithNoChromeArguments());
 	    var p = new printStackTrace.implementation();
-	    p._mode = 'firefox';
+	    //p._mode = 'firefox';
 	    var file = 'http://' + window.location.hostname + '/file.js';
 	    p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-	    results.push(['(?)()@'+file+':74','run()@'+file+':72','f2()@'+file+':1']);
+	    results.push(['(?)()@' + file + ':74', 'run()@' + file + ':72', 'f2()@'+file+':1']);
 
-	    if (mode == 'firefox') {
-	        var f2 = function() {
+	    if (p.mode(p.createException()) == 'firefox') {
+	        (function f2() {
 	            try {
 	                this.undef();
 	            } catch(e) {
+			//alert(p.run().join('\n\n'));
 	                results.push(p.run());
 	            }
-	        };
-	        f2();
+	        })();
 	    }
 
 	    expect(results.length * 1);
 	    for (var i = 0; i < results.length; ++i) {
-	        // equals(p.guessFunctions(results[i]), '', 'debug');
-	        equals(p.guessFunctions(results[i])[2].substring(0, 2), 'f2', 'guessed f2 as 3rd result: ' + p.guessFunctions(results[i])[2]);
+	        //equals(p.guessFunctions(results[i]), '', 'debug');
+	        equals(p.guessFunctions(results[i])[2].substring(0, 4), 'f2()', 'guessed f2 as 3rd result: ' + p.guessFunctions(results[i])[2]);
 	        //equals(p.guessFunctions(results[i])[2].indexOf('f2'), 0, 'guessed f2 as 3rd result');
 	    }
 	});
@@ -439,7 +439,7 @@
 
 	test("guessFunctions opera", function() {
 		var results = [];
-	    var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createGenericError());
+		var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createGenericError());
 		var p = new printStackTrace.implementation();
 		p._mode = 'opera';
 		var file = 'http://' + window.location.hostname + '/file.js';
@@ -475,7 +475,9 @@
 
 	    if (mode == 'other') {
 	        var f2 = function() {
-	            try { this.undef(); } catch(e) {
+	            try {
+	                this.undef();
+	            } catch(e) {
 	                results.push(p.run());
 	            }
 	        };
