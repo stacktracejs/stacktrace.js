@@ -73,8 +73,9 @@ printStackTrace.implementation.prototype = {
                     return e;
                 }
             })();
-        // Use either the stored mode, or resolve it
-        var mode = this._mode || this.mode(ex);
+        // Do not use the stored mode: different exceptions in Chrome
+        // may or may not have arguments or stack
+        var mode = this.mode(ex);
         if (mode === 'other') {
             return this.other(arguments.callee);
         } else {
