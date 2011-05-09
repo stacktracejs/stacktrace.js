@@ -199,7 +199,7 @@ printStackTrace.implementation.prototype = {
         
         while (curr && stack.length < maxStackSize) {
             fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
-            args = Array.prototype.slice.call(curr['arguments']);
+            args = Array.prototype.slice.call(curr['arguments'] || []);
             stack[stack.length] = fn + '(' + this.stringifyArguments(args) + ')';
             curr = curr.caller;
         }
