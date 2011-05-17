@@ -1,3 +1,4 @@
+/*global module, test, equals, expect, ok, printStackTrace*/
 //
 //     Copyright (C) 2008 Loic Dachary <loic@dachary.org>
 //     Copyright (C) 2008 Johan Euphrosine <proppy@aminche.com>
@@ -128,8 +129,8 @@
 
 	test("function instrumentation", function() {
 	    expect(4);
-	    this.toInstrument = function() { equals(1, 1, 'called instrumented function'); }
-	    this.callback = function(stacktrace) { ok(typeof stacktrace !== 'undefined', 'called callback'); }
+	    this.toInstrument = function() { equals(1, 1, 'called instrumented function'); };
+	    this.callback = function(stacktrace) { ok(typeof stacktrace !== 'undefined', 'called callback'); };
 	    printStackTrace.implementation.prototype.instrumentFunction(this, 'toInstrument', this.callback);
 	    ok(this.toInstrument._instrumented, 'function instrumented');
 	    this.toInstrument();
