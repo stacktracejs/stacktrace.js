@@ -199,19 +199,19 @@
 		e.push({ stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
 		 	stacktrace: 'ignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 594, column 2 in process():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 1, column 55 in discarded():\n    this.undef();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();' });
 		if (mode == 'opera10') {
-	        function discarded() {
-	            try {this.undef();} catch (exception) {
-	                e.push(exception);
-	            }
-	        }
-	        function f1(arg1, arg2) {
-				var blah = arg1;
-	            discarded();
-	        }
-	        var f2 = function() {
-	            f1(1, "abc");
-	        };
-	        f2();
+		    function discarded() {
+			try {this.undef();} catch (exception) {
+			    e.push(exception);
+			}
+		    }
+		    function f1(arg1, arg2) {
+			var blah = arg1;
+			discarded();
+		    }
+		    var f2 = function() {
+			f1(1, "abc");
+		    };
+		    f2();
 		}
 	    expect(3 * e.length);
 	    for(var i = 0; i < e.length; i++) {
