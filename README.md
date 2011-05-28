@@ -15,7 +15,7 @@ Just include stacktrace.js file on your page, and call it like so:
         ... more code of yours ...
     </script>
 
-Bookmarklet available on the [project home page](http://emwendelin.github.com/javascript-stacktrace/). 
+Bookmarklet available on the [project home page](http://stacktracejs.org). 
 
 You can also pass in your own Error to get a stacktrace *not in IE or Safari, though :(*
 
@@ -32,7 +32,7 @@ You can also pass in your own Error to get a stacktrace *not in IE or Safari, th
 		printStackTrace({e: lastError});
     </script>
 
-Some people recommend just assigning it to `window.onerror` *Only in IE and FF*
+Some people recommend just assigning it to `window.onerror`. Make sure that you have script debugging turned off for IE. *Only in IE, FF and Chrome*
 
     window.onerror = function(msg, file, line) {
 	    alert(printStackTrace().join('\n\n'));
@@ -63,6 +63,7 @@ It is currently tested and working on:
  - Firefox (and Iceweasel) 0.9+  
  - Google Chrome 1+  
  - Safari 3.0+  
+ - Opera 10+
  - IE 5.5+  
  - Konqueror 3.5+  
  - Flock 1.0+  
@@ -73,4 +74,4 @@ It is currently tested and working on:
 
 Working (readable, valid stack trace) but not perfectly tested on:  
 
- - Opera 7+
+ - Opera 9-
