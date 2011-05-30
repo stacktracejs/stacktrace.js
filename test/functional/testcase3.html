@@ -1,0 +1,16 @@
+<html>
+<head><title>window.onerror test</title></head>
+<body> 
+<div id="output"></div> 
+</body>
+<script type="text/javascript" src="stacktrace.js"></script>
+<script type="text/javascript">function printTrace(trace){var output=document.getElementById("output");if(!output){output=document.createElement("div");output.id="output";document.body.appendChild(output);}
+if(!expected){expected="";}
+trace.push("--------------Expected:-------------------")
+trace.push(expected);output.innerHTML=(trace.join('<br/>'));}
+function foo(){bar(2);}
+function bar(n){if(n<2){abc();}
+bar(n-1);}
+window.onerror=function(msg,file,line){printTrace(printStackTrace());return true;}
+var expected=["bar(1)","bar(2)","foo()"].join("<br/>");foo();</script>
+</html>
