@@ -109,12 +109,12 @@ printStackTrace.implementation.prototype = {
      */
     instrumentFunction: function(context, functionName, callback) {
         context = context || window;
-        context['_old' + functionName] = context[functionName];
-        context[functionName] = function() {
-            callback.call(this, printStackTrace());
-            return context['_old' + functionName].apply(this, arguments);
+        var original = context[functionName];
+        context[functionName] = function instrumented() {
+            callback.call(this, printStackTrace().slice(4));
+            return context[functionName]._instrumented.apply(this, arguments);
         };
-        context[functionName]._instrumented = true;
+        context[functionName]._instrumented = original;
     },
 
     /**
@@ -128,8 +128,8 @@ printStackTrace.implementation.prototype = {
     deinstrumentFunction: function(context, functionName) {
         if (context[functionName].constructor === Function &&
                 context[functionName]._instrumented &&
-                context['_old' + functionName].constructor === Function) {
-            context[functionName] = context['_old' + functionName];
+                context[functionName]._instrumented.constructor === Function) {
+            context[functionName] = context[functionName]._instrumented;
         }
     },
 
@@ -140,7 +140,11 @@ printStackTrace.implementation.prototype = {
      * @return Array<String> of function calls, files and line numbers
      */
     chrome: function(e) {
-        return e.stack.replace(/^[^\(]+?[\n$]/gm, '').replace(/^\s+at\s+/gm, '').replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').split('\n');
+        //return e.stack.replace(/^[^\(]+?[\n$]/gm, '').replace(/^\s+at\s+/gm, '').replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').split('\n');
+        return e.stack.replace(/^\S[^\(]+?[\n$]/gm, '').
+          replace(/^\s+at\s+/gm, '').
+          replace(/^([^\(]+?)([\n$])/gm, '{anonymous}()@$1$2').
+          replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}()@$1').split('\n');
     },
 
     /**

@@ -164,6 +164,30 @@
 	    }
 	});
 
+	test("chrome stack", function() {
+		var p = printStackTrace.implementation.prototype, e = {stack: "TypeError: Object #<Object> has no method 'undef'\n" +
+			"    at Object.createException (stacktrace.js:81:18)\n" +
+			"    at Object.run (stacktrace.js:66:25)\n" +
+			"    at printStackTrace (stacktrace.js:57:62)\n" +
+			"    at instrumented (stacktrace.js:114:33)\n" +
+			"    at bar (testcase4.html:36:9)\n" +
+			"    at testcase4.html:41:9\n" +
+			"    at testcase4.html:48:7"};
+
+		expect(8);
+		var message = p.chrome(e);
+		//equals(message.join("\n"), '', 'debug');
+		equals(message.length, 7, '7 stack entries');
+
+		equals(message[0].indexOf('Object.createException') >= 0, true, 'Object.createException: ' + message[0]);
+		equals(message[1].indexOf('Object.run') >= 0, true, 'Object.run: ' + message[1]);
+		equals(message[2].indexOf('printStackTrace') >= 0, true, 'printStackTrace: ' + message[2]);
+		equals(message[3].indexOf('instrumented') >= 0, true, 'instrumented: ' + message[3]);
+		equals(message[4].indexOf('bar') >= 0, true, 'bar: ' + message[4]);
+		equals(message[5].indexOf('{anonymous}') >= 0, true, '{anonymous}: ' + message[5]);
+		equals(message[6].indexOf('{anonymous}') >= 0, true, '{anonymous}: ' + message[6]);
+	});
+
 	test("chrome", function() {
 	    var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createGenericError());
 	    var e = [];
