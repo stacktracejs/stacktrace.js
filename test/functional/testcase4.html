@@ -1,0 +1,15 @@
+<html>
+<head><title>function instrumentation test</title></head>
+<body> 
+<div id="output"></div> 
+</body>
+<script type="text/javascript" src="stacktrace.js"></script>
+<script type="text/javascript">function printTrace(trace){var output=document.getElementById("output");if(!output){output=document.createElement("div");output.id="output";document.body.appendChild(output);}
+if(!expected){expected="";}
+trace.push("--------------Expected:-------------------")
+trace.push(expected);output.innerHTML=(trace.join('<br/>'));}
+var p=new printStackTrace.implementation();p.instrumentFunction(this,'bar',logStackTrace);function logStackTrace(stack){printTrace(stack);}
+var foo=function(){var a=1;bar();}
+function bar(){var baz=2;}
+var expected=["baz()","bar()","foo()"].join("<br/>");foo();p.deinstrumentFunction(this,'bar');</script>
+</html>
