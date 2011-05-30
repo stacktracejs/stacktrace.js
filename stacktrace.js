@@ -2,7 +2,7 @@
 //                  Luke Smith http://lucassmith.name/ (2008)
 //                  Loic Dachary <loic@dachary.org> (2008)
 //                  Johan Euphrosine <proppy@aminche.com> (2008)
-//                  Øyvind Sean Kinsey http://kinsey.no/blog (2010)
+//                  Oyvind Sean Kinsey http://kinsey.no/blog (2010)
 //                  Victor Homyakov <victor-homyakov@users.sourceforge.net> (2010)
 //
 // Information and discussions
