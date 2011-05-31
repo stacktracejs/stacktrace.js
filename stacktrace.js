@@ -333,20 +333,30 @@ printStackTrace.implementation.prototype = {
     },
 
     findFunctionName: function(source, lineNo) {
-        // TODO use stringifyArguments
-        var reFunctionArgNames = /function ([^(]*)\(([^)]*)\)/;
-        var reGuessFunction = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(function|eval|new Function)/;
+        // TODO use captured args
+        // function {name}({args}) m[1]=name m[2]=args
+        var reFunctionDeclaration = /function\s+([^(]*?)\s*\(([^)]*)\)/;
+        // {name} = function ({args}) TODO args capture
+        var reFunctionExpression = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*function(?:[^(]*)/;
+        // {name} = eval()
+        var reFunctionEvaluation = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(?:eval|new Function)/;
         // Walk backwards in the source lines until we find
         // the line which matches one of the patterns above
-        var line = "", maxLines = 10, m;
+        var code = "", line, maxLines = 10, m;
         for (var i = 0; i < maxLines; ++i) {
-            line = source[lineNo - i] + line;
-            if (line !== undefined) {
-                m = reGuessFunction.exec(line);
+            line = source[lineNo - i];
+            if (line) {
+                code = line + code;
+                m = reFunctionExpression.exec(code);
                 if (m && m[1]) {
                     return m[1];
                 }
-                m = reFunctionArgNames.exec(line);
+                m = reFunctionDeclaration.exec(code);
+                if (m && m[1]) {
+                    //return m[1] + "(" + (m[2] || "") + ")";
+                    return m[1];
+                }
+                m = reFunctionEvaluation.exec(code);
                 if (m && m[1]) {
                     return m[1];
                 }

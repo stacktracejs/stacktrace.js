@@ -440,11 +440,21 @@
   });
 
   test("findFunctionName", function() {
-    expect(5);
+    expect(12);
     equals(pst.findFunctionName(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
-    equals(pst.findFunctionName(['function a() {', 'var b = 2;', '};'], 2), 'a');
+    equals(pst.findFunctionName(['"a": function(){', '};'], 1), 'a');
+
+    equals(pst.findFunctionName(['function a() {', 'var b = 2;', '}'], 2), 'a');
+    equals(pst.findFunctionName(['function a(b,c) {', 'var b = 2;', '}'], 2), 'a');
+    equals(pst.findFunctionName(['function  a () {', '}'], 2), 'a');
+    equals(pst.findFunctionName(['function\ta\t()\t{', '}'], 2), 'a');
+    equals(pst.findFunctionName(['  function', '    a', '    ()', '    {', '    }'], 3), 'a');
+
+    equals(pst.findFunctionName(['var data = new Function("return true;");', ''], 1), 'data');
+    equals(pst.findFunctionName(['var data = new Function("s,r",', '"return s + r;");'], 1), 'data');
+
     equals(pst.findFunctionName(['var a = 1;', 'var b = 2;', 'var c = 3;'], 2), '(?)');
   });
 
