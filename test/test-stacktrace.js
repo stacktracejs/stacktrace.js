@@ -216,6 +216,7 @@
   });
 
   test("chrome stack", function() {
+    // TODO currently failing
     var e = {
       stack: "TypeError: Object #<Object> has no method 'undef'\n" +
       "    at Object.createException (stacktrace.js:81:18)\n" +
@@ -401,6 +402,7 @@
   module("util");
 
   test("recursion other", function() {
+    // TODO currently failing, e.g. in Midori 0.3 (AppleWebKit/531.2+ Midori/0.3)
     var mode = pst.mode(UnitTest.fn.createGenericError());
     expect(mode == 'other' ? 2 : 0);
     if (mode == 'other') {
@@ -577,6 +579,7 @@
   });
 
   test("guessAnonymousFunctions opera10", function() {
+    // TODO currently failing in Opera 10.60
     var results = [];
     var p = new printStackTrace.implementation();
     p._mode = 'opera10';
