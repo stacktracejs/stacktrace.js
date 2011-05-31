@@ -311,9 +311,9 @@ printStackTrace.implementation.prototype = {
             var reStack = /\{anonymous\}\(.*\)@(\w+:\/\/([\-\w\.]+)+(:\d+)?[^:]+):(\d+):?(\d+)?/;
             var frame = stack[i], m = reStack.exec(frame);
             if (m) {
-                var file = m[1], lineno = m[4]; //m[7] is character position in Chrome
+                var file = m[1], lineno = m[4], charno = m[7] || 0; //m[7] is character position in Chrome
                 if (file && this.isSameDomain(file) && lineno) {
-                    var functionName = this.guessFunctionName(file, lineno);
+                    var functionName = this.guessFunctionName(file, lineno, charno);
                     stack[i] = frame.replace('{anonymous}', functionName);
                 }
             }
@@ -321,33 +321,32 @@ printStackTrace.implementation.prototype = {
         return stack;
     },
 
-    guessFunctionName: function(url, lineNo) {
+    guessFunctionName: function(url, lineNo, charNo) {
         var ret;
         try {
-            ret = this.guessFunctionNameFromLines(lineNo, this.getSource(url));
+            ret = this.guessFunctionNameFromLines(this.getSource(url), lineNo);
         } catch (e) {
             ret = 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
         return ret;
     },
 
-    guessFunctionNameFromLines: function(lineNo, source) {
+    guessFunctionNameFromLines: function(source, lineNo) {
         var reFunctionArgNames = /function ([^(]*)\(([^)]*)\)/;
         var reGuessFunction = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(function|eval|new Function)/;
-        // Walk backwards from the first line in the function until we find the line which
-        // matches the pattern above, which is the function definition
-        var line = "", maxLines = 10;
+        // Walk backwards in the source lines until we find
+        // the line which matches one of the patterns above
+        var line = "", maxLines = 10, m;
         for (var i = 0; i < maxLines; ++i) {
             line = source[lineNo - i] + line;
             if (line !== undefined) {
-                var m = reGuessFunction.exec(line);
+                m = reGuessFunction.exec(line);
                 if (m && m[1]) {
                     return m[1];
-                } else {
-                    m = reFunctionArgNames.exec(line);
-                    if (m && m[1]) {
-                        return m[1];
-                    }
+                }
+                m = reFunctionArgNames.exec(line);
+                if (m && m[1]) {
+                    return m[1];
                 }
             }
         }

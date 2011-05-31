@@ -129,12 +129,13 @@
 
 	test("function instrumentation", function() {
 	    expect(4);
+	    var p = printStackTrace.implementation.prototype;
 	    this.toInstrument = function() { equals(1, 1, 'called instrumented function'); };
 	    this.callback = function(stacktrace) { ok(typeof stacktrace !== 'undefined', 'called callback'); };
-	    printStackTrace.implementation.prototype.instrumentFunction(this, 'toInstrument', this.callback);
+	    p.instrumentFunction(this, 'toInstrument', this.callback);
 	    ok(this.toInstrument._instrumented, 'function instrumented');
 	    this.toInstrument();
-	    printStackTrace.implementation.prototype.deinstrumentFunction(this, 'toInstrument');
+	    p.deinstrumentFunction(this, 'toInstrument');
 	    ok(!this.toInstrument._instrumented, 'function deinstrumented');
 	    this.toInstrument = this.callback = null;
 	});
@@ -189,31 +190,42 @@
 	});
 
 	test("chrome", function() {
-	    var mode = printStackTrace.implementation.prototype.mode(UnitTest.fn.createGenericError());
-	    var e = [];
-	    e.push({ stack: 'ignored\n at f0 (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'});
-	    if(mode == 'chrome') {
-	        function f0() {
-	            try {this.undef();} catch (exception) {
-	                e.push(exception);
-	            }
+	    var p = printStackTrace.implementation.prototype, e = [], ex;
+
+	    var stack = "TypeError: Object [object DOMWindow] has no method 'undef'\n" +
+	          "    at f0 (test/test-stacktrace.js:198:20)\n" +
+	          "    at f1 (test/test-stacktrace.js:203:10)\n" +
+	          "    at test/test-stacktrace.js:206:10\n" +
+	          "    at Object.<anonymous> (test/test-stacktrace.js:208:6)\n" +
+	          "    at Object.run (test/qunit.js:89:18)\n" +
+	          "    at test/qunit.js:214:10\n" +
+	          "    at process (test/qunit.js:783:23)\n" +
+	          "    at test/qunit.js:383:5";
+	    e.push({ stack: stack}); // test saved Chrome stacktrace
+
+	    function f0() {
+	        try {this.undef();} catch (exception) {
+	            ex = exception;
 	        }
-	        function f1(arg1, arg2) {
-	            f0();
-	        }
-	        var f2 = function() {
-	            f1(1, "abc");
-	        };
-	        f2();
 	    }
-	    expect(4 * e.length);
-	    for(var i = 0; i < e.length; i++) {
-	        var message = printStackTrace.implementation.prototype.chrome(e[i]);
-	        //equals(message.join("\n"), '', 'debug');
+	    function f1(arg1, arg2) {
+	        f0();
+	    }
+	    var f2 = function() {
+	        f1(1, "abc");
+	    };
+	    f2();
+	    if (p.mode(ex) == 'chrome') {e.push(ex);} // test native Chrome stacktrace
+
+	    expect(3 * e.length);
+	    for (var i = 0; i < e.length; i++) {
+	        var message = p.chrome(e[i]);
+	        //equals(e[i].stack, '', 'original stack trace');
+	        //equals(message.join("\n"), '', 'processed stack trace');
 	        equals(message[0].indexOf('f0') >= 0, true, 'f0 is top of stack');
 	        equals(message[1].indexOf('f1') >= 0, true, 'f1 is second called function');
 	        equals(message[2].indexOf('anonymous') >= 0, true, 'f2 anonymous function called');
-	        equals(message[3].indexOf('unknown source'), -1, 'unknown source discarded');
+	        //equals(message[3].indexOf('unknown source'), -1, 'unknown source discarded');
 	    }
 	});
 
@@ -337,11 +349,12 @@
 
 	test("stringify", function() {
 	    expect(5);
-	    equals(printStackTrace.implementation.prototype.stringifyArguments(["a", 1, {}, function() {}, undefined]), '"a",1,#object,#function,undefined');
-	    equals(printStackTrace.implementation.prototype.stringifyArguments([0, 1, 2, 3]), '0,1,2,3');
-	    equals(printStackTrace.implementation.prototype.stringifyArguments([['a', null]]), '["a",null]');
-	    equals(printStackTrace.implementation.prototype.stringifyArguments([[2, 4, 6, 8, 10, 12, 14]]), '[2...14]');
-	    equals(printStackTrace.implementation.prototype.stringifyArguments([]), '');
+	    var p = printStackTrace.implementation.prototype;
+	    equals(p.stringifyArguments(["a", 1, {}, function() {}, undefined]), '"a",1,#object,#function,undefined');
+	    equals(p.stringifyArguments([0, 1, 2, 3]), '0,1,2,3');
+	    equals(p.stringifyArguments([['a', null]]), '["a",null]');
+	    equals(p.stringifyArguments([[2, 4, 6, 8, 10, 12, 14]]), '[2...14]');
+	    equals(p.stringifyArguments([]), '');
 	});
 
 	test("isSameDomain", function() {
@@ -350,34 +363,35 @@
 	});
 
 	test("guessFunctionNameFromLines", function() {
-	    expect(3);
-	    equals(printStackTrace.implementation.prototype.guessFunctionNameFromLines(2, ['var a = function() {', 'var b = 2;', '};']), 'a');
-	    equals(printStackTrace.implementation.prototype.guessFunctionNameFromLines(2, ['function a() {', 'var b = 2;', '};']), 'a');
-	    equals(printStackTrace.implementation.prototype.guessFunctionNameFromLines(2, ['var a = 1;', 'var b = 2;', 'var c = 3;']), '(?)');
+	    expect(5);
+	    var p = printStackTrace.implementation.prototype;
+	    equals(p.guessFunctionNameFromLines(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
+	    equals(p.guessFunctionNameFromLines(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
+	    equals(p.guessFunctionNameFromLines(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
+	    equals(p.guessFunctionNameFromLines(['function a() {', 'var b = 2;', '};'], 2), 'a');
+	    equals(p.guessFunctionNameFromLines(['var a = 1;', 'var b = 2;', 'var c = 3;'], 2), '(?)');
 	});
 
 	test("getSource cache miss", function() {
 	    expect(3);
-	    var p = new printStackTrace.implementation();
-	    var file = 'file:///test';
+	    var p = new printStackTrace.implementation(), file = 'file:///test', lines;
 	    p.ajax = function(fileArg, callback) {
 	        equals(fileArg, file, 'cache miss');
 	        return 'line0\nline1\n';
 	    };
-	    var lines = p.getSource(file);
+	    lines = p.getSource(file);
 	    equals(lines[0], 'line0');
 	    equals(lines[1], 'line1');
 	});
 
 	test("getSource cache hit", function() {
 	    expect(2);
-	    var p = new printStackTrace.implementation();
-	    var file = 'file:///test';
+	    var p = new printStackTrace.implementation(), file = 'file:///test', lines;
 	    p.ajax = function(fileArg, callback) {
 	        ok(false, 'not called');
 	    };
 	    p.sourceCache[file] = ['line0', 'line1'];
-	    var lines = p.getSource(file);
+	    lines = p.getSource(file);
 	    equals(lines[0], 'line0');
 	    equals(lines[1], 'line1');
 	});
