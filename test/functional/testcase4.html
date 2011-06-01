@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>function instrumentation test</title>
+    <script type="text/javascript" src="../../stacktrace.js"></script>
+  </head>
+  <body>
+    <div id="output"></div>
+    <script type="text/javascript">
+      function toList(array) {
+        return "<ol><li>" + (array.join("</li><li>")) + "</li></ol>";
+      }
+
+      var expected = [];
+
+      function printTrace(trace) {
+        var output = document.getElementById("output");
+        if (!output) {
+          output = document.createElement("div");
+          output.id = "output";
+          document.body.appendChild(output);
+        }
+
+        var content = [];
+        content.push(toList(trace));
+        content.push("--------------Expected:-------------------");
+        content.push(toList(expected || []));
+        output.innerHTML = (content.join("<br/>"));
+      }
+
+      function baz() {
+        var c = 3;
+      }
+
+      function bar() {
+        var b = 2;
+        baz();
+      }
+
+      var foo = function() {
+        var a = 1;
+        bar();
+      };
+
+      var p = new window.printStackTrace.implementation();
+      p.instrumentFunction(this, 'baz', printTrace);
+
+      expected = ["bar()", "foo()"];
+      foo();
+
+      p.deinstrumentFunction(this, 'bar');
+    </script>
+  </body>
+</html>
