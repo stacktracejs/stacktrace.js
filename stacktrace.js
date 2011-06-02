@@ -55,7 +55,7 @@ function printStackTrace(options) {
     options = options || {guess: true};
     var ex = options.e || null, guess = !!options.guess;
     var p = new printStackTrace.implementation(), result = p.run(ex);
-    return (guess) ? p.guessFunctions(result) : result;
+    return (guess) ? p.guessAnonymousFunctions(result) : result;
 }
 
 printStackTrace.implementation = function() {
@@ -91,7 +91,7 @@ printStackTrace.implementation.prototype = {
     mode: function(e) {
         if (e['arguments'] && e.stack) {
             return (this._mode = 'chrome');
-        } else if (typeof window !== 'undefined' && window.opera) {
+        } else if (e.message && typeof window !== 'undefined' && window.opera) {
             return (this._mode = e.stacktrace ? 'opera10' : 'opera');
         } else if (e.stack) {
             return (this._mode = 'firefox');
@@ -213,6 +213,7 @@ printStackTrace.implementation.prototype = {
      * @return {Array} of Strings with stringified arguments
      */
     stringifyArguments: function(args) {
+        var slice = Array.prototype.slice;
         for (var i = 0; i < args.length; ++i) {
             var arg = args[i];
             if (arg === undefined) {
@@ -224,7 +225,7 @@ printStackTrace.implementation.prototype = {
                     if (arg.length < 3) {
                         args[i] = '[' + this.stringifyArguments(arg) + ']';
                     } else {
-                        args[i] = '[' + this.stringifyArguments(Array.prototype.slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(Array.prototype.slice.call(arg, -1)) + ']';
+                        args[i] = '[' + this.stringifyArguments(slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(slice.call(arg, -1)) + ']';
                     }
                 } else if (arg.constructor === Object) {
                     args[i] = '#object';
@@ -306,14 +307,14 @@ printStackTrace.implementation.prototype = {
         return this.sourceCache[url];
     },
 
-    guessFunctions: function(stack) {
+    guessAnonymousFunctions: function(stack) {
         for (var i = 0; i < stack.length; ++i) {
             var reStack = /\{anonymous\}\(.*\)@(\w+:\/\/([\-\w\.]+)+(:\d+)?[^:]+):(\d+):?(\d+)?/;
             var frame = stack[i], m = reStack.exec(frame);
             if (m) {
-                var file = m[1], lineno = m[4]; //m[7] is character position in Chrome
+                var file = m[1], lineno = m[4], charno = m[7] || 0; //m[7] is character position in Chrome
                 if (file && this.isSameDomain(file) && lineno) {
-                    var functionName = this.guessFunctionName(file, lineno);
+                    var functionName = this.guessAnonymousFunction(file, lineno, charno);
                     stack[i] = frame.replace('{anonymous}', functionName);
                 }
             }
@@ -321,33 +322,43 @@ printStackTrace.implementation.prototype = {
         return stack;
     },
 
-    guessFunctionName: function(url, lineNo) {
+    guessAnonymousFunction: function(url, lineNo, charNo) {
         var ret;
         try {
-            ret = this.guessFunctionNameFromLines(lineNo, this.getSource(url));
+            ret = this.findFunctionName(this.getSource(url), lineNo);
         } catch (e) {
             ret = 'getSource failed with url: ' + url + ', exception: ' + e.toString();
         }
         return ret;
     },
 
-    guessFunctionNameFromLines: function(lineNo, source) {
-        var reFunctionArgNames = /function ([^(]*)\(([^)]*)\)/;
-        var reGuessFunction = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(function|eval|new Function)/;
-        // Walk backwards from the first line in the function until we find the line which
-        // matches the pattern above, which is the function definition
-        var line = "", maxLines = 10;
+    findFunctionName: function(source, lineNo) {
+        // TODO use captured args
+        // function {name}({args}) m[1]=name m[2]=args
+        var reFunctionDeclaration = /function\s+([^(]*?)\s*\(([^)]*)\)/;
+        // {name} = function ({args}) TODO args capture
+        var reFunctionExpression = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*function(?:[^(]*)/;
+        // {name} = eval()
+        var reFunctionEvaluation = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(?:eval|new Function)/;
+        // Walk backwards in the source lines until we find
+        // the line which matches one of the patterns above
+        var code = "", line, maxLines = 10, m;
         for (var i = 0; i < maxLines; ++i) {
-            line = source[lineNo - i] + line;
-            if (line !== undefined) {
-                var m = reGuessFunction.exec(line);
+            line = source[lineNo - i];
+            if (line) {
+                code = line + code;
+                m = reFunctionExpression.exec(code);
                 if (m && m[1]) {
                     return m[1];
-                } else {
-                    m = reFunctionArgNames.exec(line);
-                    if (m && m[1]) {
-                        return m[1];
-                    }
+                }
+                m = reFunctionDeclaration.exec(code);
+                if (m && m[1]) {
+                    //return m[1] + "(" + (m[2] || "") + ")";
+                    return m[1];
+                }
+                m = reFunctionEvaluation.exec(code);
+                if (m && m[1]) {
+                    return m[1];
                 }
             }
         }
