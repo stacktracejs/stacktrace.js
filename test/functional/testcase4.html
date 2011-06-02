@@ -1,53 +1,34 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>function instrumentation test</title>
-    <script type="text/javascript" src="../../stacktrace.js"></script>
-  </head>
-  <body>
-    <div id="output"></div>
-    <script type="text/javascript">
-      function toList(array) {
-        return "<ol><li>" + (array.join("</li><li>")) + "</li></ol>";
-      }
+	<head>
+		<title>function instrumentation test</title>
+		<script type="text/javascript" src="../../stacktrace.js"></script>
+		<script type="text/javascript" src="testCommon.js"></script>
+	</head>
+	<body>
+		<div id="output"></div>
+		<script type="text/javascript">
+			function baz() {
+				var c = 3;
+			}
 
-      var expected = [];
+			function bar() {
+				var b = 2;
+				baz();
+			}
 
-      function printTrace(trace) {
-        var output = document.getElementById("output");
-        if (!output) {
-          output = document.createElement("div");
-          output.id = "output";
-          document.body.appendChild(output);
-        }
+			var foo = function() {
+				var a = 1;
+				bar();
+			};
 
-        var content = [];
-        content.push(toList(trace));
-        content.push("--------------Expected:-------------------");
-        content.push(toList(expected || []));
-        output.innerHTML = (content.join("<br/>"));
-      }
+			var p = new window.printStackTrace.implementation();
+			p.instrumentFunction(this, 'baz', printTrace);
 
-      function baz() {
-        var c = 3;
-      }
+			expected = ["bar()", "foo()"];
+			foo();
 
-      function bar() {
-        var b = 2;
-        baz();
-      }
-
-      var foo = function() {
-        var a = 1;
-        bar();
-      };
-
-      var p = new window.printStackTrace.implementation();
-      p.instrumentFunction(this, 'baz', printTrace);
-
-      expected = ["bar()", "foo()"];
-      foo();
-
-      p.deinstrumentFunction(this, 'bar');
-    </script>
-  </body>
+			p.deinstrumentFunction(this, 'bar');
+		</script>
+	</body>
 </html>
