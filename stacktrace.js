@@ -333,6 +333,8 @@ printStackTrace.implementation.prototype = {
     },
 
     findFunctionName: function(source, lineNo) {
+        // FIXME findFunctionName fails for compressed source
+        // (more than one function on the same line)
         // TODO use captured args
         // function {name}({args}) m[1]=name m[2]=args
         var reFunctionDeclaration = /function\s+([^(]*?)\s*\(([^)]*)\)/;

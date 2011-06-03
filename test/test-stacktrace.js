@@ -440,10 +440,12 @@
   });
 
   test("findFunctionName", function() {
-    expect(12);
+    // TODO currently failing
+    expect(13);
     equals(pst.findFunctionName(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
+    equals(pst.findFunctionName(['a:function(){},b:function(){', '};'], 1), 'b');
     equals(pst.findFunctionName(['"a": function(){', '};'], 1), 'a');
 
     equals(pst.findFunctionName(['function a() {', 'var b = 2;', '}'], 2), 'a');
