@@ -440,10 +440,12 @@
   });
 
   test("findFunctionName", function() {
-    expect(12);
+    // TODO currently failing
+    expect(13);
     equals(pst.findFunctionName(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
+    equals(pst.findFunctionName(['a:function(){},b:function(){', '};'], 1), 'b');
     equals(pst.findFunctionName(['"a": function(){', '};'], 1), 'a');
 
     equals(pst.findFunctionName(['function a() {', 'var b = 2;', '}'], 2), 'a');
@@ -511,8 +513,8 @@
     var results = [];
     var p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
-    p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['(?)()@' + file + ':74', 'run()@' + file + ':72', 'f2()@' + file + ':1']);
+    p.sourceCache[file] = ['var f2 = function () {', 'var b = 2;', '};', 'function run() {', 'return true;', '}'];
+    results.push(['{anonymous}()@' + file + ':74', '{anonymous}()@' + file + ':5', '{anonymous}()@' + file + ':2']);
 
     (function f2() {
       try {
@@ -526,8 +528,9 @@
 
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
+      //equals(results[i], '', 'stack trace');
       var functions = p.guessAnonymousFunctions(results[i]);
-      //equals(functions.join("\n"), '', 'debug');
+      //equals(functions.join("\n"), '', 'stack trace after guessing');
       equals(functions[2].substring(0, 4), 'f2()', 'guessed f2 as 3rd result: ' + functions[2]);
       //equals(functions[2].indexOf('f2'), 0, 'guessed f2 as 3rd result');
     }
