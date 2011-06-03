@@ -337,13 +337,15 @@ printStackTrace.implementation.prototype = {
         // function {name}({args}) m[1]=name m[2]=args
         var reFunctionDeclaration = /function\s+([^(]*?)\s*\(([^)]*)\)/;
         // {name} = function ({args}) TODO args capture
-        var reFunctionExpression = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*function(?:[^(]*)/;
+        // /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*function(?:[^(]*)/
+        var reFunctionExpression = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*function\b/;
         // {name} = eval()
-        var reFunctionEvaluation = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(?:eval|new Function)/;
+        var reFunctionEvaluation = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(?:eval|new Function)\b/;
         // Walk backwards in the source lines until we find
         // the line which matches one of the patterns above
         var code = "", line, maxLines = 10, m;
         for (var i = 0; i < maxLines; ++i) {
+            // FIXME lineNo is 1-based, source[] is 0-based
             line = source[lineNo - i];
             if (line) {
                 code = line + code;
