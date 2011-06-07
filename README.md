@@ -1,7 +1,7 @@
-# What is Javascript Stacktrace? #
+# What is stacktrace.js? #
 A Javascript tool that allows you to debug your Javascript by giving you a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify)
 
-# How do I use Javascript Stacktrace? #
+# How do I use stacktrace.js? #
 Just include stacktrace.js file on your page, and call it like so:
     
     <script type="text/javascript" src="path/to/stacktrace.js" />
@@ -57,7 +57,7 @@ You can now have any (public or privileged) function give you a stacktrace when 
     
     p.deinstrumentFunction(this, 'baz'); //Remove function instrumentation
 
-# What browsers does Javascript Stacktrace support? #
+# What browsers does stacktrace.js support? #
 It is currently tested and working on:
 
  - Firefox (and Iceweasel) 0.9+  
