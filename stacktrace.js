@@ -101,11 +101,12 @@ printStackTrace.implementation.prototype = {
      * @return Array<String> of function calls, files and line numbers
      */
     chrome: function(e) {
-        //return e.stack.replace(/^[^\(]+?[\n$]/gm, '').replace(/^\s+at\s+/gm, '').replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@').split('\n');
-        return e.stack.replace(/^\S[^\(]+?[\n$]/gm, '').
+        var stack = (e.stack + '\n').replace(/^\S[^\(]+?[\n$]/gm, '').
           replace(/^\s+at\s+/gm, '').
           replace(/^([^\(]+?)([\n$])/gm, '{anonymous}()@$1$2').
           replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}()@$1').split('\n');
+        stack.pop();
+        return stack;
     },
 
     /**

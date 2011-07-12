@@ -216,7 +216,6 @@
   });
 
   test("chrome stack", function() {
-    // TODO currently failing
     var e = {
       stack: "TypeError: Object #<Object> has no method 'undef'\n" +
       "    at Object.createException (stacktrace.js:81:18)\n" +
@@ -230,7 +229,7 @@
 
     expect(8);
     var message = pst.chrome(e);
-    //equals(message.join("\n"), '', 'debug');
+    // equals(message.join("\n"), '', 'debug');
     equals(message.length, 7, '7 stack entries');
 
     equals(message[0].indexOf('Object.createException') >= 0, true, 'Object.createException: ' + message[0]);
