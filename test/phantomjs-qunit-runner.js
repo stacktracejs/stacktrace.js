@@ -1,155 +1,83 @@
-/*
- * QUnit Qt+WebKit powered headless test runner using Phantomjs
- * 
- * Phantomjs installation: http://code.google.com/p/phantomjs/wiki/BuildInstructions
- * 
- * Run with:
- *  phantomjs test.js [url-of-your-qunit-testsuite]
- *  
- * E.g.
- *  phantomjs test.js http://localhost/qunit/test
+/**
+ * Wait until the test condition is true or a timeout occurs. Useful for waiting
+ * on a server response or for a ui change (fadeIn, etc.) to occur.
+ *
+ * @param testFx javascript condition that evaluates to a boolean,
+ * it can be passed in as a string (e.g.: "1 == 1" or "$('#bar').is(':visible')" or
+ * as a callback function.
+ * @param onReady what to do when testFx condition is fulfilled,
+ * it can be passed in as a string (e.g.: "1 == 1" or "$('#bar').is(':visible')" or
+ * as a callback function.
+ * @param timeOutMillis the max amount of time to wait. If not specified, 3 sec is used.
  */
- 
-function consoleLogging(done) {
-    var module;
-    QUnit.moduleStart = function(context) {
-        module = context.name;
-    }
-    var current_test_assertions = [];
-    QUnit.testDone = function(result) {
-        var name = module + ": " + result.name;
-        if (result.failed) {
-            console.log("\u001B[31m✖ " + name);
-            for (var i = 0; i < current_test_assertions.length; i++) {
-                console.log("    " + current_test_assertions[i]);
-            }
-            console.log("\u001B[39m");
-        }
-        current_test_assertions = [];
-    };
- 
-    QUnit.log = function(details) {
-        if (details.result) {
-            return;
-        }
-        var response = details.message || "";
-        if (details.expected) {
-            if (response) {
-                response += ", ";
-            }
-            response = "expected: " + details.expected + ", but was: " + details.actual;
-        }
-        current_test_assertions.push("Failed assertion: " + response);
-    };
- 
-    QUnit.done = function(result) {
-        console.log("Took " + result.runtime + "ms to run " + result.total + " tests. \u001B[32m✔ " + result.passed + "\u001B[39m \u001B[31m✖ " + result.failed + "\u001B[39m ");
-        done(result.failed > 0 ? 1 : 0);
-    };
+function waitFor(testFx, onReady, timeOutMillis) {
+	var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3001, //< Default Max Timout is 3s
+		start = new Date().getTime(),
+		condition = false,
+		interval = setInterval(function() {
+			if ((new Date().getTime() - start < maxtimeOutMillis) && !condition) {
+				// If not time-out yet and condition not yet fulfilled
+				condition = (typeof(testFx) === "string" ? eval(testFx) : testFx()); //< defensive code
+			} else {
+				if(!condition) {
+					// If condition still not fulfilled (timeout but condition is 'false')
+					console.log("'waitFor()' timeout");
+					phantom.exit(1);
+				} else {
+					// Condition fulfilled (timeout and/or condition is 'true')
+					console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+					typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
+					clearInterval(interval); //< Stop this interval
+				}
+			}
+		}, 100);
+};
+
+if (phantom.args.length < 1) {
+	console.log('Usage: phantomjs-test-runner.js [-j|--junit] <some URL>');
+	phantom.exit();
+} else {
+	var args = phantom.args.slice(),
+		url = args.pop();
+	window.console.debug = function() {};
+	phantom.outputFormat = 'console';
+	if (args.length) {
+		var arg = args.pop().toLowerCase();
+		switch (arg) {
+		case "-j":
+		case "--junit":
+			phantom.outputFormat = 'junit';
+			break;
+		default:
+		}
+	}
 }
 
-function junitLogging(done) {
-    var module, moduleStart, testStart, testCases = [],
-        current_test_assertions = [];
-    console.log('<?xml version="1.0" encoding="UTF-8"?>');
-    console.log('<testsuites name="testsuites">');
-    QUnit.begin = function() {
-        // That does not work when invoked in PhantomJS
-    }
- 
-    QUnit.moduleStart = function(context) {
-        moduleStart = new Date();
-        module = context.name;
-        testCases = [];
-    }
- 
-    QUnit.moduleDone = function(context) {
-        // context = { name, failed, passed, total }
-        var xml = '\t<testsuite name="' + context.name + '" errors="0" failures="' + context.failed + '" tests="' + context.total + '" time="' + (new Date() - moduleStart) / 1000 + '"';
-        if (testCases.length) {
-            xml += '>\n';
-            for (var i = 0, l = testCases.length; i < l; i++) {
-                xml += testCases[i];
-            }
-            xml += '\t</testsuite>';
-        } else {
-            xml += '/>\n';
-        }
-        console.log(xml);
-    }
- 
-    QUnit.testStart = function() {
-        testStart = new Date();
-    }
- 
-    QUnit.testDone = function(result) {
-        // result = { name, failed, passed, total }
-        var xml = '\t\t<testcase classname="' + module + '" name="' + result.name + '" time="' + (new Date() - testStart) / 1000 + '"';
-        if (result.failed) {
-            xml += '>\n';
-            for (var i = 0; i < current_test_assertions.length; i++) {
-                xml += "\t\t\t" + current_test_assertions[i];
-            }
-            xml += '\t\t</testcase>\n';
-        } else {
-            xml += '/>\n';
-        }
-        current_test_assertions = [];
-        testCases.push(xml);
-    };
- 
-    QUnit.log = function(details) {
-        //details = { result , actual, expected, message }
-        if (details.result) {
-            return;
-        }
-        var message = details.message || "";
-        if (details.expected) {
-            if (message) {
-                message += ", ";
-            }
-            message = "expected: " + details.expected + ", but was: " + details.actual;
-        }
-        var xml = '<failure type="failed" message="' + message + '"/>\n'
- 
-        current_test_assertions.push(xml);
-    };
- 
-    QUnit.done = function(result) {
-        console.log('</testsuites>');
-        done(result.failed > 0 ? 1 : 0);
-    };
-}
- 
-if (phantom.state.length === 0) {
-    if (phantom.args.length < 1) {
-        console.log('Usage: phantomjs-test-runner.js [-j|--junit] <some URL>');
-        phantom.exit();
-    } else {
-        window.console.debug = function() {};
-        phantom.state = "console";
-        var args = phantom.args.slice();
-        var url = args.pop();
-        if (args.length) {
-            var arg = args.pop().toLowerCase();
-            switch (arg) {
-            case "-j":
-            case "--junit":
-                phantom.state = "junit";
-                break;
-            default:
- 
-            }
-        }
-        phantom.open(url);
-    }
-} else {
-    if (phantom.loadStatus === 'success') {
-        this[phantom.state + "Logging"](function(returnCode) {
-            phantom.exit(returnCode);
-        });
-    } else {
-        console.log(phantom.loadStatus + ' to load the address: ' + phantom.args[phantom.args.length - 1]);
-        phantom.exit(1);
-    }
-}
+var page = new WebPage();
+page.onConsoleMessage = function(msg) {
+	console.log(msg);
+};
+page.open(url, function(status) {
+	if (status !== "success") {
+		console.log('Unable to access network');
+		phantom.exit();
+	} else {
+		waitFor(function() {
+			return page.evaluate(function() {
+				var el = document.getElementById('qunit-testresult');
+				if (el && el.innerText.match('completed')) {
+					return true;
+				}
+				return false;
+			});
+		}, function() {
+			var failedNum = page.evaluate(function() {
+				try {
+					return el.getElementsByClassName('failed')[0].innerHTML;
+				} catch (e) { }
+				return 10000;
+			});
+			phantom.exit((parseInt(failedNum, 10) > 0) ? 1 : 0);
+		});
+	}
+});
