@@ -18,16 +18,8 @@ task init(dependsOn: 'clean') << {
 }
 
 task jshint(dependsOn: 'init') << {
-	description = 'runs jshint on all non-test and lib JS files'
-	def jsPattern = ~/stacktrace\.js/
-	def jsFiles = [];
-	new File(".").eachFileRecurse {
-		if (it.canonicalPath =~ jsPattern) {
-	    	jsFiles << it.canonicalPath
-		}
-	}
-
-	def command = "jshint ${jsFiles.join(' ')} --config ${jshintConfig} --jslint-reporter"
+	description = 'runs jshint on stacktrace JS file'
+	def command = "jshint ${new File('stacktrace.js').canonicalPath} --config ${jshintConfig} --jslint-reporter"
 	println command
 	new File(jshintOutput).write(command.execute().text)
 }
