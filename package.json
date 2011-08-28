@@ -1,0 +1,10 @@
+{
+	'name': 'stacktrace',
+	'description': 'Framework-agnostic, micro-library for getting stack traces in all environments',
+	'author': 'Eric Wendelin <emwendelin@gmail.com>'
+	'version': '0.4.1',
+	'private': false,
+	'devDependencies': {
+		'jshint': '0.2.x'
+	}
+}
