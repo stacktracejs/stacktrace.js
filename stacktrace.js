@@ -271,7 +271,7 @@ printStackTrace.implementation.prototype = {
 
     guessAnonymousFunctions: function(stack) {
         for (var i = 0; i < stack.length; ++i) {
-            var reStack = /\{anonymous\}\(.*\)@(\w+:\/\/([\-\w\.]+)+(:\d+)?[^:]+):(\d+):?(\d+)?/;
+            var reStack = /\{anonymous\}\(.*\)@(\w+:\/\/([\-\w\.\/]+)+(:\d+)?[^:]+):(\d+):?(\d+)?/;
             var frame = stack[i], m = reStack.exec(frame);
             if (m) {
                 var file = m[1], lineno = m[4], charno = m[7] || 0; //m[7] is character position in Chrome

@@ -506,7 +506,7 @@
     for (var i = 0; i < results.length; ++i) {
       //equals(results[i], '', 'stack trace');
       var functions = p.guessAnonymousFunctions(results[i]);
-      //equals(functions.join("\n"), '', 'stack trace after guessing');
+      // equals(functions.join("\n"), '', 'stack trace after guessing');
       equals(functions[2].substring(0, 4), 'f2()', 'guessed f2 as 3rd result: ' + functions[2]);
       //equals(functions[2].indexOf('f2'), 0, 'guessed f2 as 3rd result');
     }
