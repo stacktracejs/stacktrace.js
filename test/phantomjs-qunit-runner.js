@@ -25,7 +25,7 @@ function waitFor(testFx, onReady, timeOutMillis) {
 					phantom.exit(1);
 				} else {
 					// Condition fulfilled (timeout and/or condition is 'true')
-					console.log("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
+					console.debug("'waitFor()' finished in " + (new Date().getTime() - start) + "ms.");
 					typeof(onReady) === "string" ? eval(onReady) : onReady(); //< Do what it's supposed to do once the condition is fulfilled
 					clearInterval(interval); //< Stop this interval
 				}
