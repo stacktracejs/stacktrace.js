@@ -72,6 +72,7 @@ page.open(url, function(status) {
 			});
 		}, function() {
 			var failedNum = page.evaluate(function() {
+				var el = document.getElementById('qunit-testresult');
 				try {
 					return el.getElementsByClassName('failed')[0].innerHTML;
 				} catch (e) { }

@@ -1,0 +1,74 @@
+defaultTasks 'all'
+
+def srcDir = '..'
+def outputDir = 'target'
+def jshintConfig = 'build/jshint.json'
+def jshintOutput = outputDir + '/jshint.xml'
+def testDir = 'test'
+
+task clean << {
+	description = 'Cleans old artifacts'
+	ant.delete(dir: outputDir)
+	ant.delete(file: jshintOutput)
+}
+
+task init(dependsOn: 'clean') << {
+	description = 'Creates artifact output directories'
+	(new File(outputDir)).mkdirs()
+}
+
+task jshint(dependsOn: 'init') << {
+	description = 'runs jshint on all non-test and lib JS files'
+	def jsPattern = ~/.*stacktrace\.js/
+	def jsFiles = [];
+	new File(".").eachFileRecurse {
+		if (it.canonicalPath =~ jsPattern) {
+	    	jsFiles << it.canonicalPath
+		}
+	}
+
+	def command = "jshint ${jsFiles.join(' ')} --config ${jshintConfig} --jslint-reporter"
+	println command
+	new File(jshintOutput).write(command.execute().text)
+}
+
+task test(dependsOn: 'init') << {
+	def specs = []
+	new File(testDir).eachFile {
+		if (it.name.endsWith('.html')) {
+			specs << it
+		}
+	}
+	
+	def startTime = new Date().time
+	def numFailures = 0
+	def testsFailed = false
+	specs.each { File spec ->
+		println "Running ${spec.name}..."
+		
+		def outputFile = "${outputDir}/TEST-${spec.name.replace('-', '').replace('.html', '.xml')}"
+		ant.exec(outputproperty: 'cmdOut', errorproperty: 'cmdErr',
+				resultproperty: 'exitCode', failonerror: 'false', executable: '/usr/bin/env') {
+			arg(value: 'DISPLAY=:1')
+			arg(value: '/usr/local/bin/phantomjs')
+			arg(value: '../test/phantomjs-qunit-runner.js')
+			arg(value: "${spec.canonicalPath}")
+		}
+		// Check exit code
+		if (ant.project.properties.exitCode != '0') {
+			testsFailed = true
+			numFailures++
+			println '\tFAILED'
+		} else {
+			println '\tPASSED'
+		}
+
+		new File(outputFile).write(ant.project.properties.cmdOut)
+	}
+	
+	println "QUnit tests completed in ${new Date().time - startTime}ms"
+	println "QUnit Tests ${testsFailed ? 'FAILED' : 'PASSED'} - view reports in ${outputDir}"
+	ant.fail(if: testsFailed, message: 'JS Tests Failed')
+}
+
+task all(dependsOn: ['clean', 'jshint', 'test']) << {}
