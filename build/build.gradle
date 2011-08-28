@@ -2,7 +2,7 @@ defaultTasks 'all'
 
 def srcDir = '..'
 def outputDir = 'target'
-def jshintConfig = 'build/jshint.json'
+def jshintConfig = 'jshint.json'
 def jshintOutput = outputDir + '/jshint.xml'
 def testDir = 'test'
 
@@ -19,7 +19,7 @@ task init(dependsOn: 'clean') << {
 
 task jshint(dependsOn: 'init') << {
 	description = 'runs jshint on all non-test and lib JS files'
-	def jsPattern = ~/.*stacktrace\.js/
+	def jsPattern = ~/stacktrace\.js/
 	def jsFiles = [];
 	new File(".").eachFileRecurse {
 		if (it.canonicalPath =~ jsPattern) {
