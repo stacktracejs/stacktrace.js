@@ -39,7 +39,7 @@ task minify << {
 				classpath: configurations.js.asPath)
 
 		jscomp(compilationLevel: 'simple', warning: 'quiet', debug: 'false', output: minifiedFilePath) {
-			sources(dir: '/Users/eric/src/javascript-stacktrace/') {
+			sources(dir: srcDir) {
 				file(name: 'stacktrace.js'){}
 			}
 		}
