@@ -5,6 +5,20 @@ def outputDir = 'target'
 def jshintConfig = 'jshint.json'
 def jshintOutput = outputDir + '/jshint.xml'
 def testDir = 'test'
+def minifiedFilePath = "../${outputDir}/stacktrace-min.js"
+
+repositories {
+	mavenRepo urls: 'http://repository.springsource.com/maven/bundles/release'
+	mavenCentral()
+}
+
+configurations {
+	js
+}
+
+dependencies {
+	js 'com.google.javascript:closure-compiler:r+'
+}
 
 task clean << {
 	description = 'Cleans old artifacts'
@@ -17,6 +31,27 @@ task init(dependsOn: 'clean') << {
 	(new File(outputDir)).mkdirs()
 }
 
+task minify << {
+	description = 'minify JS file' 
+	project.ant {
+		ant.taskdef(name: 'jscomp', 
+				classname: 'com.google.javascript.jscomp.ant.CompileTask',
+				classpath: configurations.js.asPath)
+
+		jscomp(compilationLevel: 'simple', warning: 'quiet', debug: 'false', output: minifiedFilePath) {
+			sources(dir: '/Users/eric/src/javascript-stacktrace/') {
+				file(name: 'stacktrace.js'){}
+			}
+		}
+	}
+}
+
+task zip << {
+	description = 'GZip file for distribution'
+	ant.gzip(src: minifiedFilePath, destfile: "${minifiedFilePath}.gz")
+	ant.move(file: "${minifiedFilePath}.gz", tofile: minifiedFilePath)
+}
+
 task jshint(dependsOn: 'init') << {
 	description = 'runs jshint on stacktrace JS file'
 	def command = "jshint ${new File('stacktrace.js').canonicalPath} --config ${jshintConfig} --jslint-reporter"
@@ -25,6 +60,8 @@ task jshint(dependsOn: 'init') << {
 }
 
 task test(dependsOn: 'init') << {
+	description = 'run QUnit tests and create JUnit test reports'
+	
 	def specs = []
 	new File(testDir).eachFile {
 		if (it.name.endsWith('.html')) {
@@ -63,4 +100,4 @@ task test(dependsOn: 'init') << {
 	ant.fail(if: testsFailed, message: 'JS Tests Failed')
 }
 
-task all(dependsOn: ['clean', 'jshint', 'test']) << {}
+task all(dependsOn: ['clean', 'minify', 'zip', 'jshint', 'test']) << {}
