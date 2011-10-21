@@ -196,6 +196,8 @@ printStackTrace.implementation.prototype = {
                     result[i] = '#function';
                 } else if (arg.constructor === String) {
                     result[i] = '"' + arg + '"';
+                } else if (arg.constructor === Number) {
+                    result[i] = arg;
                 }
             }
         }
