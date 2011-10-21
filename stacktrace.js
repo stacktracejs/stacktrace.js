@@ -175,30 +175,31 @@ printStackTrace.implementation.prototype = {
      * @return {Array} of Strings with stringified arguments
      */
     stringifyArguments: function(args) {
+        var result = [];
         var slice = Array.prototype.slice;
         for (var i = 0; i < args.length; ++i) {
             var arg = args[i];
             if (arg === undefined) {
-                args[i] = 'undefined';
+                result[i] = 'undefined';
             } else if (arg === null) {
-                args[i] = 'null';
+                result[i] = 'null';
             } else if (arg.constructor) {
                 if (arg.constructor === Array) {
                     if (arg.length < 3) {
-                        args[i] = '[' + this.stringifyArguments(arg) + ']';
+                        result[i] = '[' + this.stringifyArguments(arg) + ']';
                     } else {
-                        args[i] = '[' + this.stringifyArguments(slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(slice.call(arg, -1)) + ']';
+                        result[i] = '[' + this.stringifyArguments(slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(slice.call(arg, -1)) + ']';
                     }
                 } else if (arg.constructor === Object) {
-                    args[i] = '#object';
+                    result[i] = '#object';
                 } else if (arg.constructor === Function) {
-                    args[i] = '#function';
+                    result[i] = '#function';
                 } else if (arg.constructor === String) {
-                    args[i] = '"' + arg + '"';
+                    result[i] = '"' + arg + '"';
                 }
             }
         }
-        return args.join(',');
+        return result.join(',');
     },
 
     sourceCache: {},
