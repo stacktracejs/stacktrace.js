@@ -274,10 +274,13 @@ printStackTrace.implementation.prototype = {
 
     guessAnonymousFunctions: function(stack) {
         for (var i = 0; i < stack.length; ++i) {
-            var reStack = /\{anonymous\}\(.*\)@(\w+:\/\/([\-\w\.\/]+)+(:\d+)?[^:]+):(\d+):?(\d+)?/;
-            var frame = stack[i], m = reStack.exec(frame);
-            if (m) {
-                var file = m[1], lineno = m[4], charno = m[7] || 0; //m[7] is character position in Chrome
+            var reStack = /\{anonymous\}\(.*\)@(.*)/,
+                reRef = /^(.*?)(?::(\d+))(?::(\d+))?$/,
+                frame = stack[i], ref = reStack.exec(frame);
+
+            if (ref) {
+                var m = reRef.exec(ref[1]), file = m[1],
+                    lineno = m[2], charno = m[3] || 0; //m[7] is character position in Chrome
                 if (file && this.isSameDomain(file) && lineno) {
                     var functionName = this.guessAnonymousFunction(file, lineno, charno);
                     stack[i] = frame.replace('{anonymous}', functionName);
