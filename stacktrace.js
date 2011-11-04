@@ -207,16 +207,20 @@ printStackTrace.implementation.prototype = {
     sourceCache: {},
 
     /**
-     * @return the text from a given URL.
+     * @return the text from a given URL
      */
     ajax: function(url) {
         var req = this.createXMLHTTPObject();
-        if (!req) {
-            return;
+        if (req) {
+            try {
+                // FIXME why Firefox 3.6-7.0 raises error for file:///
+                req.open('GET', url, false);
+                req.send('');
+                return req.responseText;
+            } catch (e) {
+            }
         }
-        req.open('GET', url, false);
-        req.send('');
-        return req.responseText;
+        return '';
     },
 
     /**
