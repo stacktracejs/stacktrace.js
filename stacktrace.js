@@ -23,13 +23,15 @@ printStackTrace.implementation = function() {
 };
 
 printStackTrace.implementation.prototype = {
-    run: function(ex) {
+    /**
+     * @param {Error} ex The error to create a stacktrace from (optional)
+     * @param {String} mode Forced mode (optional, mostly for unit tests)
+     */
+    run: function(ex, mode) {
         ex = ex || this.createException();
-        // Do not use the stored mode: different exceptions in Chrome
-        // may or may not have arguments or stack
-        var mode = this.mode(ex);
-        // Use either the stored mode, or resolve it
-        //var mode = this._mode || this.mode(ex);
+        // examine exception properties w/o debugger
+        //for (var prop in ex) {alert("Ex['" + prop + "']=" + ex[prop]);}
+        mode = mode || this.mode(ex);
         if (mode === 'other') {
             return this.other(arguments.callee);
         } else {
@@ -47,17 +49,20 @@ printStackTrace.implementation.prototype = {
     },
 
     /**
-     * @return {String} mode of operation for the environment in question.
+     * Mode could differ for different exception, e.g.
+     * exceptions in Chrome may or may not have arguments or stack.
+     *
+     * @return {String} mode of operation for the exception
      */
     mode: function(e) {
         if (e['arguments'] && e.stack) {
-            return (this._mode = 'chrome');
+            return 'chrome';
         } else if (e.message && typeof window !== 'undefined' && window.opera) {
-            return (this._mode = e.stacktrace ? 'opera10' : 'opera');
+            return e.stacktrace ? 'opera10' : 'opera';
         } else if (e.stack) {
-            return (this._mode = 'firefox');
+            return 'firefox';
         }
-        return (this._mode = 'other');
+        return 'other';
     },
 
     /**
@@ -126,34 +131,34 @@ printStackTrace.implementation.prototype = {
      * @return Array<String> of function calls, files and line numbers
      */
     opera10: function(e) {
-        var stack = e.stacktrace;
-        var lines = stack.split('\n'), ANON = '{anonymous}', lineRE = /.*line (\d+), column (\d+) in ((<anonymous function\:?\s*(\S+))|([^\(]+)\([^\)]*\))(?: in )?(.*)\s*$/i, i, j, len;
+        var ANON = '{anonymous}', lineRE = /.*line (\d+), column (\d+) in ((<anonymous function\:?\s*(\S+))|([^\(]+)\([^\)]*\))(?: in )?(.*)\s*$/i, i, j, len;
+        var lines = e.stacktrace.split('\n'), result = [];
+
         for (i = 2, j = 0, len = lines.length; i < len - 2; i++) {
             if (lineRE.test(lines[i])) {
                 var location = RegExp.$6 + ':' + RegExp.$1 + ':' + RegExp.$2;
                 var fnName = RegExp.$3;
                 fnName = fnName.replace(/<anonymous function\:?\s?(\S+)?>/g, ANON);
-                lines[j++] = fnName + '@' + location;
+                result.push(fnName + '@' + location);
             }
         }
 
-        lines.splice(j, lines.length - j);
-        return lines;
+        return result;
     },
 
     // Opera 7.x-9.x only!
     opera: function(e) {
-        var lines = e.message.split('\n'), ANON = '{anonymous}', lineRE = /Line\s+(\d+).*script\s+(http\S+)(?:.*in\s+function\s+(\S+))?/i, i, j, len;
+        var ANON = '{anonymous}', lineRE = /Line\s+(\d+).*script\s+(http\S+)(?:.*in\s+function\s+(\S+))?/i;
+        var lines = e.message.split('\n'), result = [];
 
-        for (i = 4, j = 0, len = lines.length; i < len; i += 2) {
+        for (var i = 4, len = lines.length; i < len; i += 2) {
             //TODO: RegExp.exec() would probably be cleaner here
             if (lineRE.test(lines[i])) {
-                lines[j++] = (RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) + ' -- ' + lines[i + 1].replace(/^\s+/, '');
+                result.push((RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) + ' -- ' + lines[i + 1].replace(/^\s+/, ''));
             }
         }
 
-        lines.splice(j, lines.length - j);
-        return lines;
+        return result;
     },
 
     // Safari, IE, and others

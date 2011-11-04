@@ -1,4 +1,4 @@
-/*global module, test, equals, expect, ok, printStackTrace*/
+/*global module, test, equals, expect, ok, printStackTrace, CapturedExceptions */
 //
 //     Copyright (C) 2008 Loic Dachary <loic@dachary.org>
 //     Copyright (C) 2008 Johan Euphrosine <proppy@aminche.com>
@@ -30,6 +30,18 @@
         return UnitTest.prototype.genericError;
       }
       return new Error();
+    },
+    prepareFakeOperaEnvironment: function() {
+      if (typeof window !== 'undefined' && !window.opera) {
+        window.opera = "fake";
+        window.fakeOpera = true;
+      }
+    },
+    clearFakeOperaEnvironment: function() {
+      if (typeof window !== 'undefined' && window.fakeOpera) {
+        delete window.opera;
+        delete window.fakeOpera;
+      }
     },
     /**
      * An Error Chrome without arguments will emulate a Firefox
@@ -91,10 +103,19 @@
     p.chrome = function() {
       equals(1, 1, 'called run for "chrome"');
     };
-    p.run({
-      'arguments': true,
-      stack: 'ignored\n at f0 (file.js:132:3)\n at file.js:135:3\n at f1 (file.js:132:13)\n at file.js:135:23\n at Object.<anonymous> (file.js:137:9)\n at file.js:137:32 at process (file.js:594:22)'
-    });
+    /*
+     p.run({
+     'arguments': true,
+     stack: 'ignored\n'+
+     ' at f0 (file.js:132:3)\n'+
+     ' at file.js:135:3\n'+
+     ' at f1 (file.js:132:13)\n'+
+     ' at file.js:135:23\n'+
+     ' at Object.<anonymous> (file.js:137:9)\n'+
+     ' at file.js:137:32 at process (file.js:594:22)'
+     });
+     */
+    p.run(CapturedExceptions.chrome_15);
   });
 
   test("run firefox", function() {
@@ -120,17 +141,11 @@
     p.opera = function() {
       equals(1, 1, 'called run for "opera"');
     };
-    if (typeof window !== 'undefined' && !window.opera) {
-      window.opera = "fake";
-      window.fakeOpera = true;
-    }
+    UnitTest.fn.prepareFakeOperaEnvironment();
     p.run({
       message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n     f1(1, "abc")\nignored\nignored'
     });
-    if (window.fakeOpera) {
-      delete window.opera;
-      delete window.fakeOpera;
-    }
+    UnitTest.fn.clearFakeOperaEnvironment();
   });
 
   test("run opera10", function() {
@@ -142,19 +157,13 @@
     p.opera10 = function() {
       equals(1, 1, 'called run for "opera10"');
     };
-    if (typeof window !== 'undefined' && !window.opera) {
-      window.opera = "fake";
-      window.fakeOpera = true;
-    }
+    UnitTest.fn.prepareFakeOperaEnvironment();
     p.run({
       message: 'ignored',
       stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
       stacktrace: 'ignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 594, column 2 in process():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 1, column 55 in discarded():\n    this.undef();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();'
     });
-    if (window.fakeOpera) {
-      delete window.opera;
-      delete window.fakeOpera;
-    }
+    UnitTest.fn.clearFakeOperaEnvironment();
   });
 
   test("run other", function() {
@@ -420,7 +429,7 @@
     equals(pst.findFunctionName(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
-	// FIXME: currently failing becuase we don't have a way to distinguish which fn is being sought
+    // FIXME: currently failing becuase we don't have a way to distinguish which fn is being sought
     // equals(pst.findFunctionName(['a:function(){},b:function(){', '};'], 1), 'b');
     equals(pst.findFunctionName(['"a": function(){', '};'], 1), 'a');
 
