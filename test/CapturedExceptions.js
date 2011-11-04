@@ -3,19 +3,19 @@ var CapturedExceptions = {};
 CapturedExceptions.opera_854 = {
   message: "Statement on line 44: Type mismatch (usually a non-object value used where an object is required)\n" +
   "Backtrace:\n" +
-  "  Line 44 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "  Line 44 of linked script file://localhost/G:/js/stacktrace.js\n" +
   "    this.undef();\n" +
-  "  Line 31 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "  Line 31 of linked script file://localhost/G:/js/stacktrace.js\n" +
   "    ex = ex || this.createException();\n" +
-  "  Line 18 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "  Line 18 of linked script file://localhost/G:/js/stacktrace.js\n" +
   "    var p = new printStackTrace.implementation(), result = p.run(ex);\n" +
-  "  Line 4 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 4 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    printTrace(printStackTrace());\n" +
-  "  Line 7 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 7 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    bar(n - 1);\n" +
-  "  Line 11 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 11 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    bar(2);\n" +
-  "  Line 15 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 15 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    foo();\n" +
   "",
   'opera#sourceloc': 44
@@ -24,19 +24,19 @@ CapturedExceptions.opera_854 = {
 CapturedExceptions.opera_902 = {
   message: "Statement on line 44: Type mismatch (usually a non-object value used where an object is required)\n" +
   "Backtrace:\n" +
-  "  Line 44 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "  Line 44 of linked script file://localhost/G:/js/stacktrace.js\n" +
   "    this.undef();\n" +
-  "  Line 31 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "  Line 31 of linked script file://localhost/G:/js/stacktrace.js\n" +
   "    ex = ex || this.createException();\n" +
-  "  Line 18 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "  Line 18 of linked script file://localhost/G:/js/stacktrace.js\n" +
   "    var p = new printStackTrace.implementation(), result = p.run(ex);\n" +
-  "  Line 4 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 4 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    printTrace(printStackTrace());\n" +
-  "  Line 7 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 7 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    bar(n - 1);\n" +
-  "  Line 11 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 11 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    bar(2);\n" +
-  "  Line 15 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "  Line 15 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
   "    foo();\n" +
   "",
   'opera#sourceloc': 44
