@@ -82,13 +82,13 @@
 
   test("mode", function() {
     expect(1);
-    equals("chrome firefox other opera opera10".indexOf(pst.mode(UnitTest.fn.createGenericError())) >= 0, true);
+    equals("chrome firefox other opera9 opera10a opera10b opera11".indexOf(pst.mode(UnitTest.fn.createGenericError())) >= 0, true);
   });
 
   test("run mode", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.other = p.firefox = p.chrome = p.opera = p.opera10 = function() {
+    p.other = p.firefox = p.chrome = p.opera9 = p.opera10a = p.opera10b = p.opera11 = function() {
       equals(1, 1, 'called mode() successfully');
     };
     p.run();
@@ -97,7 +97,7 @@
   test("run chrome", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.other = p.opera = p.opera10 = p.firefox = function() {
+    p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = function() {
       equals(1, 0, 'must not call run for any mode other than "chrome"');
     };
     p.chrome = function() {
@@ -121,7 +121,7 @@
   test("run firefox", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.other = p.opera = p.opera10 = p.chrome = function() {
+    p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.chrome = function() {
       equals(1, 0, 'must not call run for any mode other than "firefox"');
     };
     p.firefox = function() {
@@ -132,37 +132,101 @@
     });
   });
 
-  test("run opera", function() {
-    expect(1);
+  test("run opera9", function() {
+    expect(4);
     var p = new printStackTrace.implementation();
-    p.opera10 = p.other = p.firefox = p.chrome = function() {
-      equals(1, 0, 'must not call run for any mode other than "opera"');
+    p.opera10a = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = function() {
+      equals(1, 0, 'must not call run for any mode other than "opera9"');
     };
-    p.opera = function() {
-      equals(1, 1, 'called run for "opera"');
+    p.opera9 = function() {
+      equals(1, 1, 'called run for "opera9"');
     };
     UnitTest.fn.prepareFakeOperaEnvironment();
     p.run({
-      message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n     f1(1, "abc")\nignored\nignored'
+      message: 'ignored\n' +
+      'ignored\n' +
+      'ignored\n' +
+      'ignored\n' +
+      'Line 40 of linked script http://site.com: in function f1\n' +
+      '      discarded()\n' +
+      'Line 44 of linked script http://site.com\n' +
+      '     f1(1, "abc")\n' +
+      'ignored\n' +
+      'ignored'
     });
+    p.run(CapturedExceptions.opera_854);
+    p.run(CapturedExceptions.opera_902);
+    p.run(CapturedExceptions.opera_927);
     UnitTest.fn.clearFakeOperaEnvironment();
   });
 
-  test("run opera10", function() {
+  test("run opera10a", function() {
+    expect(2);
+    var p = new printStackTrace.implementation();
+    p.opera9 = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = function() {
+      equals(1, 0, 'must not call run for any mode other than "opera10a"');
+    };
+    p.opera10a = function() {
+      equals(1, 1, 'called run for "opera10a"');
+    };
+    UnitTest.fn.prepareFakeOperaEnvironment();
+    p.run(CapturedExceptions.opera_964);
+    p.run(CapturedExceptions.opera_1010);
+    UnitTest.fn.clearFakeOperaEnvironment();
+  });
+
+  test("run opera10b", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.opera = p.other = p.firefox = p.chrome = function() {
+    p.opera9 = p.opera10a = p.opera11 = p.other = p.firefox = p.chrome = function() {
+      equals(1, 0, 'must not call run for any mode other than "opera10b"');
+    };
+    p.opera10b = function() {
+      equals(1, 1, 'called run for "opera10b"');
+    };
+    UnitTest.fn.prepareFakeOperaEnvironment();
+    p.run(CapturedExceptions.opera_1063);
+    UnitTest.fn.clearFakeOperaEnvironment();
+  });
+
+  test("run opera11", function() {
+    expect(3);
+    var p = new printStackTrace.implementation();
+    p.opera9 = p.opera10a = p.opera10b = p.other = p.firefox = p.chrome = function() {
       equals(1, 0, 'must not be called');
     };
-    p.opera10 = function() {
-      equals(1, 1, 'called run for "opera10"');
+    p.opera11 = function() {
+      equals(1, 1, 'called run for "opera11"');
     };
     UnitTest.fn.prepareFakeOperaEnvironment();
     p.run({
       message: 'ignored',
-      stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
-      stacktrace: 'ignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 594, column 2 in process():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 1, column 55 in discarded():\n    this.undef();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();'
+      stack: 'ignored\n' +
+      'f1([arguments not available])@http://site.com/main.js:2\n' +
+      '<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n' +
+      '@',
+      stacktrace: 'ignored\n' +
+      'Error thrown at line 129, column 5 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 129, column 5 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 124, column 4 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 594, column 2 in process():\n' +
+      'ignored\n' +
+      'Error thrown at line 124, column 4 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 1, column 55 in discarded():\n' +
+      '    this.undef();\n' +
+      'called from line 1, column 333 in f1(arg1, arg2):\n' +
+      '   discarded();\n' +
+      'called from line 1, column 470 in <anonymous function>():\n' +
+      '   f1(1, "abc");\n' +
+      'called from line 1, column 278 in program code:\n' +
+      '   f2();'
     });
+    p.run(CapturedExceptions.opera_1111);
+    p.run(CapturedExceptions.opera_1151);
     UnitTest.fn.clearFakeOperaEnvironment();
   });
 
@@ -170,7 +234,7 @@
     expect(1);
     var p = new printStackTrace.implementation();
     //p._mode = 'other';
-    p.opera = p.opera10 = p.firefox = p.chrome = function() {
+    p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = function() {
       equals(1, 0, 'must not be called');
     };
     p.other = function() {
@@ -294,14 +358,125 @@
     }
   });
 
-  test("opera10", function() {
+  test("opera9", function() {
+    var mode = pst.mode(UnitTest.fn.createGenericError()), e = [];
+    e.push({
+      message: 'ignored\n' +
+      'ignored\n' +
+      'ignored\n' +
+      'ignored\n' +
+      'Line 40 of linked script http://site.com: in function f1\n' +
+      '      discarded()\n' +
+      'Line 44 of linked script http://site.com\n' +
+      '     f1(1, "abc")\n' +
+      'ignored\n' +
+      'ignored'
+    });
+    if (mode == 'opera9') {
+      function discarded() {
+        try {
+          this.undef();
+        } catch (exception) {
+          e.push(exception);
+        }
+      }
+      function f1(arg1, arg2) {
+        discarded();
+      }
+      var f2 = function() {
+        f1(1, "abc");
+      };
+      f2();
+    }
+    expect(4 * e.length);
+    for (var i = 0; i < e.length; i++) {
+      var message = pst.opera9(e[i]);
+      var message_string = message.join("\n");
+      equals(message.join("\n").indexOf('ignored'), -1, 'ignored');
+      //equals(message.join("\n"), 'debug', 'debug');
+      //equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
+      equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
+      equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous');
+      equals(message[1].indexOf('f1(1, "abc")') >= 0, true, 'f2 statement');
+    }
+  });
+
+  test("opera9", function() {
+    var e = [CapturedExceptions.opera_854, CapturedExceptions.opera_902, CapturedExceptions.opera_927];
+    expect(9); // 3 * e.length
+    for (var i = 0; i < e.length; i++) {
+      var message = pst.opera9(e[i]);
+      //equals(message.join("\n"), 'debug', 'debug');
+      equals(message.length, 7, 'number of stack entries');
+      equals(message[0].indexOf('this.undef()') >= 0, true, 'this.undef() is at the top of stack');
+      equals(message[message.length - 1].indexOf('foo()') >= 0, true, 'foo() is at the bottom of stack');
+    }
+  });
+
+  test("opera10a", function() {
+    var e = [CapturedExceptions.opera_964, CapturedExceptions.opera_1010];
+    expect(6); // 3 * e.length
+    for (var i = 0; i < e.length; i++) {
+      var message = pst.opera10a(e[i]);
+      //equals(message.join("\n"), 'debug', 'debug');
+      equals(message.length, 7, 'number of stack entries');
+      equals(message[0].indexOf('this.undef()') >= 0, true, 'this.undef() is at the top of stack');
+      equals(message[message.length - 1].indexOf('foo()') >= 0, true, 'foo() is at the bottom of stack');
+    }
+  });
+
+  test("opera10b", function() {
+    var e = [CapturedExceptions.opera_1063];
+    expect(3); // 3 * e.length
+    for (var i = 0; i < e.length; i++) {
+      var message = pst.opera10b(e[i]);
+      //equals(message.join("\n"), 'debug', 'debug');
+      equals(message.length, 7, 'number of stack entries');
+      equals(message[0].indexOf('createException') >= 0, true, 'createException() is at the top of stack');
+      equals(message[message.length - 2].indexOf('foo') >= 0, true, 'foo() is 2nd from the bottom of stack');
+    }
+  });
+
+  test("opera11", function() {
+    var e = [CapturedExceptions.opera_1111, CapturedExceptions.opera_1151];
+    expect(6); // 3 * e.length
+    for (var i = 0; i < e.length; i++) {
+      var message = pst.opera11(e[i]);
+      //equals(message.join("\n"), 'debug', 'debug');
+      equals(message.length, 7, 'number of stack entries');
+      equals(message[0].indexOf('createException') >= 0, true, 'createException() is at the top of stack');
+      equals(message[message.length - 2].indexOf('foo') >= 0, true, 'foo() is 2nd from the bottom of stack');
+    }
+  });
+
+  test("opera11", function() {
     var mode = pst.mode(UnitTest.fn.createGenericError());
     var e = [];
-    e.push({
-      stack: 'ignored\nf1([arguments not available])@http://site.com/main.js:2\n<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n@',
-      stacktrace: 'ignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 129, column 5 in <anonymous function>():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 594, column 2 in process():\nignored\nError thrown at line 124, column 4 in <anonymous function>():\nignored\nError thrown at line 1, column 55 in discarded():\n    this.undef();\ncalled from line 1, column 333 in f1(arg1, arg2):\n   discarded();\ncalled from line 1, column 470 in <anonymous function>():\n   f1(1, "abc");\ncalled from line 1, column 278 in program code:\n   f2();'
-    });
-    if (mode == 'opera10') {
+    /*e.push({
+      stack: 'ignored\n' +
+      'f1([arguments not available])@http://site.com/main.js:2\n' +
+      '<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n' +
+      '@',
+      stacktrace: 'Error thrown at line 129, column 5 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 129, column 5 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 124, column 4 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 594, column 2 in process():\n' +
+      'ignored\n' +
+      'Error thrown at line 124, column 4 in <anonymous function>():\n' +
+      'ignored\n' +
+      'Error thrown at line 1, column 55 in discarded():\n' +
+      '    this.undef();\n' +
+      'called from line 1, column 333 in f1(arg1, arg2):\n' +
+      '   discarded();\n' +
+      'called from line 1, column 470 in <anonymous function>():\n' +
+      '   f1(1, "abc");\n' +
+      'called from line 1, column 278 in program code:\n' +
+      '   f2();'
+    });*/
+    if (mode == 'opera11') {
       function discarded() {
         try {
           this.undef();
@@ -320,45 +495,12 @@
     }
     expect(3 * e.length);
     for (var i = 0; i < e.length; i++) {
-      var stack = pst.opera10(e[i]), stack_string = stack.join('\n');
-      //equals(stack_string, '', 'debug');
+      var stack = pst.opera11(e[i]), stack_string = stack.join('\n');
+      equals(stack_string, '', 'debug');
       equals(stack_string.indexOf('ignored'), -1, 'ignored');
       equals(stack[5].indexOf('f1(') >= 0, true, 'f1 function name: ' + stack[5]);
       equals(stack[6].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous: ' + stack[6]);
       //FIXME: Clean up stack[2], opera has some internal stack weirdness
-    }
-  });
-
-  test("opera", function() {
-    var mode = pst.mode(UnitTest.fn.createGenericError()), e = [];
-    e.push({
-      message: 'ignored\nignored\nignored\nignored\nLine 40 of linked script http://site.com: in function f1\n      discarded()\nLine 44 of linked script http://site.com\n     f1(1, "abc")\nignored\nignored'
-    });
-    if (mode == 'opera') {
-      function discarded() {
-        try {
-          this.undef();
-        } catch (exception) {
-          e.push(exception);
-        }
-      }
-      function f1(arg1, arg2) {
-        discarded();
-      }
-      var f2 = function() {
-        f1(1, "abc");
-      };
-      f2();
-    }
-    expect(5 * e.length);
-    for (var i = 0; i < e.length; i++) {
-      var message = pst.opera(e[i]);
-      var message_string = message.join("\n");
-      equals(message_string.indexOf('ignored'), -1, 'ignored');
-      equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
-      equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
-      equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous');
-      equals(message[1].indexOf('f1(1, "abc")') >= 0, true, 'f2 statement');
     }
   });
 

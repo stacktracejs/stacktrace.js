@@ -58,7 +58,21 @@ printStackTrace.implementation.prototype = {
         if (e['arguments'] && e.stack) {
             return 'chrome';
         } else if (e.message && typeof window !== 'undefined' && window.opera) {
-            return e.stacktrace ? 'opera10' : 'opera';
+            // e.message.indexOf("Backtrace:") > -1 -> opera
+            // !e.stacktrace -> opera
+            if (!e.stacktrace) {
+                return 'opera9'; // use e.message
+            }
+            // e.stacktrace && !e.stack -> opera10a
+            if (!e.stack) {
+                return 'opera10a'; // use e.stacktrace
+            }
+            // e.stacktrace && e.stack -> opera10b
+            if (e.stacktrace.indexOf("called from line") < 0) {
+                return 'opera10b'; // use e.stacktrace, format differs from 'opera10a'
+            }
+            // e.stacktrace && e.stack -> opera11
+            return 'opera11'; // use e.stacktrace, format differs from 'opera10a', 'opera10b'
         } else if (e.stack) {
             return 'firefox';
         }
@@ -124,37 +138,78 @@ printStackTrace.implementation.prototype = {
         return e.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(').split('\n');
     },
 
-    /**
-     * Given an Error object, return a formatted Array based on Opera 10's stacktrace string.
-     *
-     * @param e - Error object to inspect
-     * @return Array<String> of function calls, files and line numbers
-     */
-    opera10: function(e) {
-        var ANON = '{anonymous}', lineRE = /.*line (\d+), column (\d+) in ((<anonymous function\:?\s*(\S+))|([^\(]+)\([^\)]*\))(?: in )?(.*)\s*$/i, i, j, len;
+    opera11: function(e) {
+        // "Error thrown at line 42, column 12 in <anonymous function: createException>() in file://localhost/G:/js/stacktrace.js:\n"
+        // "called from line 7, column 4 in bar(n) in file://localhost/G:/js/test/functional/testcase1.html:\n"
+        // "called from line 15, column 3 in file://localhost/G:/js/test/functional/testcase1.html:\n"
+        var ANON = '{anonymous}', lineRE = /^.*line (\d+), column (\d+)(?: in (.+))? in (\S+):$/;
         var lines = e.stacktrace.split('\n'), result = [];
 
-        for (i = 2, j = 0, len = lines.length; i < len - 2; i++) {
-            if (lineRE.test(lines[i])) {
-                var location = RegExp.$6 + ':' + RegExp.$1 + ':' + RegExp.$2;
-                var fnName = RegExp.$3;
-                fnName = fnName.replace(/<anonymous function\:?\s?(\S+)?>/g, ANON);
-                result.push(fnName + '@' + location);
+        for (var i = 0, len = lines.length; i < len; i += 2) {
+            var match = lineRE.exec(lines[i]);
+            if (match) {
+                var location = match[4] + ':' + match[1] + ':' + match[2];
+                var fnName = match[3] || "global code";
+                fnName = fnName.replace(/<anonymous function: (\S+)>/g, "$1");
+                result.push(fnName + '@' + location + ' -- ' + lines[i + 1].replace(/^\s+/, ''));
             }
         }
 
         return result;
     },
 
-    // Opera 7.x-9.x only!
-    opera: function(e) {
-        var ANON = '{anonymous}', lineRE = /Line\s+(\d+).*script\s+(http\S+)(?:.*in\s+function\s+(\S+))?/i;
+    opera10b: function(e) {
+        // "<anonymous function: run>([arguments not available])@file://localhost/G:/js/stacktrace.js:27\n" +
+        // "printStackTrace([arguments not available])@file://localhost/G:/js/stacktrace.js:18\n" +
+        // "@file://localhost/G:/js/test/functional/testcase1.html:15"
+        var ANON = '{anonymous}', lineRE = /^(.*)@(.+):(\d+)$/;
+        var lines = e.stacktrace.split('\n'), result = [];
+
+        for (var i = 0, len = lines.length; i < len; i++) {
+            var match = lineRE.exec(lines[i]);
+            if (match) {
+                var fnName = match[1]? (match[1] + '()') : "global code";
+                result.push(fnName + '@' + match[2] + ':' + match[3]);
+            }
+        }
+
+        return result;
+    },
+
+    /**
+     * Given an Error object, return a formatted Array based on Opera 10's stacktrace string.
+     *
+     * @param e - Error object to inspect
+     * @return Array<String> of function calls, files and line numbers
+     */
+    opera10a: function(e) {
+        // "  Line 27 of linked script file://localhost/G:/js/stacktrace.js\n"
+        // "  Line 11 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html: In function foo\n"
+        var ANON = '{anonymous}', lineRE = /Line (\d+).*script (?:in )?(\S+)(?:: In function (\S+))?$/i;
+        var lines = e.stacktrace.split('\n'), result = [];
+
+        for (var i = 0, len = lines.length; i < len; i += 2) {
+            var match = lineRE.exec(lines[i]);
+            if (match) {
+                var fnName = match[3] || ANON;
+                result.push(fnName + '()@' + match[2] + ':' + match[1] + ' -- ' + lines[i + 1].replace(/^\s+/, ''));
+            }
+        }
+
+        return result;
+    },
+
+    // Opera 7.x-9.2x only!
+    opera9: function(e) {
+        // "  Line 43 of linked script file://localhost/G:/js/stacktrace.js\n"
+        // "  Line 7 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n"
+        var ANON = '{anonymous}', lineRE = /Line (\d+).*script (?:in )?(\S+)/i;
         var lines = e.message.split('\n'), result = [];
 
-        for (var i = 4, len = lines.length; i < len; i += 2) {
-            //TODO: RegExp.exec() would probably be cleaner here
-            if (lineRE.test(lines[i])) {
-                result.push((RegExp.$3 ? RegExp.$3 + '()@' + RegExp.$2 + RegExp.$1 : ANON + '()@' + RegExp.$2 + ':' + RegExp.$1) + ' -- ' + lines[i + 1].replace(/^\s+/, ''));
+        for (var i = 2, len = lines.length; i < len; i += 2) {
+            var match = lineRE.exec(lines[i]);
+            if (match) {
+                result.push(ANON + '()@' + match[2] + ':' + match[1] + ' -- ' + lines[i + 1].replace(/^\s+/, ''));
             }
         }
 
