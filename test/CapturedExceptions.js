@@ -1,5 +1,68 @@
 var CapturedExceptions = {};
 
+CapturedExceptions.opera_854 = {
+  message: "Statement on line 44: Type mismatch (usually a non-object value used where an object is required)\n" +
+  "Backtrace:\n" +
+  "  Line 44 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "    this.undef();\n" +
+  "  Line 31 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "    ex = ex || this.createException();\n" +
+  "  Line 18 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "    var p = new printStackTrace.implementation(), result = p.run(ex);\n" +
+  "  Line 4 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    printTrace(printStackTrace());\n" +
+  "  Line 7 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    bar(n - 1);\n" +
+  "  Line 11 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    bar(2);\n" +
+  "  Line 15 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    foo();\n" +
+  "",
+  'opera#sourceloc': 44
+};
+
+CapturedExceptions.opera_902 = {
+  message: "Statement on line 44: Type mismatch (usually a non-object value used where an object is required)\n" +
+  "Backtrace:\n" +
+  "  Line 44 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "    this.undef();\n" +
+  "  Line 31 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "    ex = ex || this.createException();\n" +
+  "  Line 18 of linked script file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/stacktrace.js\n" +
+  "    var p = new printStackTrace.implementation(), result = p.run(ex);\n" +
+  "  Line 4 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    printTrace(printStackTrace());\n" +
+  "  Line 7 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    bar(n - 1);\n" +
+  "  Line 11 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    bar(2);\n" +
+  "  Line 15 of inline#1 script in file://localhost/G:/aptana/DevTools/stacktrace/javascript-stacktrace/test/functional/testcase1.html\n" +
+  "    foo();\n" +
+  "",
+  'opera#sourceloc': 44
+};
+
+CapturedExceptions.opera_927 = {
+  message: "Statement on line 43: Type mismatch (usually a non-object value used where an object is required)\n" +
+  "Backtrace:\n" +
+  "  Line 43 of linked script file://localhost/G:/js/stacktrace.js\n" +
+  "    this.undef();\n" +
+  "  Line 31 of linked script file://localhost/G:/js/stacktrace.js\n" +
+  "    ex = ex || this.createException();\n" +
+  "  Line 18 of linked script file://localhost/G:/js/stacktrace.js\n" +
+  "    var p = new printStackTrace.implementation(), result = p.run(ex);\n" +
+  "  Line 4 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
+  "    printTrace(printStackTrace());\n" +
+  "  Line 7 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
+  "    bar(n - 1);\n" +
+  "  Line 11 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
+  "    bar(2);\n" +
+  "  Line 15 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n" +
+  "    foo();\n" +
+  "",
+  'opera#sourceloc': 43
+};
+
 CapturedExceptions.opera_964 = {
   message: "Statement on line 42: Type mismatch (usually non-object value supplied where object required)\n" +
   "Backtrace:\n" +
@@ -120,4 +183,17 @@ CapturedExceptions.opera_1151 = {
   "    bar(2);\n" +
   "called from line 15, column 3 in file://localhost/G:/js/test/functional/testcase1.html:\n" +
   "    foo();"
+};
+
+CapturedExceptions.chrome_15 = {
+  'arguments': ["undef", printStackTrace.implementation],
+  message: "Object #<Object> has no method 'undef'",
+  stack: "TypeError: Object #<Object> has no method 'undef'\n" +
+  "    at Object.createException (http://127.0.0.1:8000/js/stacktrace.js:42:18)\n" +
+  "    at Object.run (http://127.0.0.1:8000/js/stacktrace.js:31:25)\n" +
+  "    at printStackTrace (http://127.0.0.1:8000/js/stacktrace.js:18:62)\n" +
+  "    at bar (http://127.0.0.1:8000/js/test/functional/testcase1.html:13:17)\n" +
+  "    at bar (http://127.0.0.1:8000/js/test/functional/testcase1.html:16:5)\n" +
+  "    at foo (http://127.0.0.1:8000/js/test/functional/testcase1.html:20:5)\n" +
+  "    at http://127.0.0.1:8000/js/test/functional/testcase1.html:24:4"
 };
