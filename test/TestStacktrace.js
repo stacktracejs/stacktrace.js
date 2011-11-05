@@ -688,7 +688,7 @@
     for (var i = 0; i < results.length; ++i) {
       //equals((results[i]), '', 'debug');
       var functions = p.guessAnonymousFunctions(results[i]);
-      equals(functions.join("\n"), '', 'debug');
+      //equals(functions.join("\n"), '', 'debug');
       equals(functions[2].indexOf('f2()'), 0, 'guessed f2 in ' + functions[2]);
     }
   });
