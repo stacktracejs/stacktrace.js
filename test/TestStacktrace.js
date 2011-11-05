@@ -419,8 +419,10 @@
     for (var i = 0; i < e.length; i++) {
       var message = pst.opera10a(e[i]);
       //equals(message.join("\n"), 'debug', 'debug');
-      equals(message.length, 7, 'number of stack entries');
-      equals(message[0].indexOf('this.undef()') >= 0, true, 'this.undef() is at the top of stack');
+      // NOTE: the important thing here is that the user sees calls to bar and foo in the correct order
+      // We cannot test the size of the stack because it's inconsistent
+      equals(message[message.length - 3].indexOf('bar(') >= 0, true, 'bar is 3nd from the bottom of stack');
+      equals(message[message.length - 2].indexOf('bar(2)') >= 0, true, 'bar is 2nd from the bottom of stack');
       equals(message[message.length - 1].indexOf('foo()') >= 0, true, 'foo() is at the bottom of stack');
     }
   });
@@ -686,7 +688,7 @@
     for (var i = 0; i < results.length; ++i) {
       //equals((results[i]), '', 'debug');
       var functions = p.guessAnonymousFunctions(results[i]);
-      //equals(functions.join("\n"), '', 'debug');
+      equals(functions.join("\n"), '', 'debug');
       equals(functions[2].indexOf('f2()'), 0, 'guessed f2 in ' + functions[2]);
     }
   });
