@@ -197,3 +197,46 @@ CapturedExceptions.chrome_15 = {
   "    at foo (http://127.0.0.1:8000/js/test/functional/testcase1.html:20:5)\n" +
   "    at http://127.0.0.1:8000/js/test/functional/testcase1.html:24:4"
 };
+
+CapturedExceptions.firefox_36 = {
+  fileName: "http://127.0.0.1:8000/js/stacktrace.js",
+  lineNumber: 44,
+  message: "this.undef is not a function",
+  name: "TypeError",
+  stack: "()@http://127.0.0.1:8000/js/stacktrace.js:44\n" +
+  "(null)@http://127.0.0.1:8000/js/stacktrace.js:31\n" +
+  "printStackTrace()@http://127.0.0.1:8000/js/stacktrace.js:18\n" +
+  "bar(1)@http://127.0.0.1:8000/js/test/functional/testcase1.html:13\n" +
+  "bar(2)@http://127.0.0.1:8000/js/test/functional/testcase1.html:16\n" +
+  "foo()@http://127.0.0.1:8000/js/test/functional/testcase1.html:20\n" +
+  "@http://127.0.0.1:8000/js/test/functional/testcase1.html:24\n" +
+  ""
+};
+
+CapturedExceptions.firefox_36_file = {
+  fileName: "file:///home/user/js/stacktrace.js",
+  lineNumber: 44,
+  message: "this.undef is not a function",
+  name: "TypeError",
+  stack: "()@file:///home/user/js/stacktrace.js:44\n" +
+  "(null)@file:///home/user/js/stacktrace.js:31\n" +
+  "printStackTrace()@file:///home/user/js/stacktrace.js:18\n" +
+  "bar(1)@file:///home/user/js/test/functional/testcase1.html:13\n" +
+  "bar(2)@file:///home/user/js/test/functional/testcase1.html:16\n" +
+  "foo()@file:///home/user/js/test/functional/testcase1.html:20\n" +
+  "@file:///home/user/js/test/functional/testcase1.html:24\n" +
+  ""
+};
+
+CapturedExceptions.firefox_7 = {
+  fileName: "file:///G:/js/stacktrace.js",
+  lineNumber: 44,
+  stack: "()@file:///G:/js/stacktrace.js:44\n" +
+  "(null)@file:///G:/js/stacktrace.js:31\n" +
+  "printStackTrace()@file:///G:/js/stacktrace.js:18\n" +
+  "bar(1)@file:///G:/js/test/functional/testcase1.html:13\n" +
+  "bar(2)@file:///G:/js/test/functional/testcase1.html:16\n" +
+  "foo()@file:///G:/js/test/functional/testcase1.html:20\n" +
+  "@file:///G:/js/test/functional/testcase1.html:24\n" +
+  ""
+};
