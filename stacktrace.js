@@ -57,7 +57,7 @@ printStackTrace.implementation.prototype = {
     mode: function(e) {
         if (e['arguments'] && e.stack) {
             return 'chrome';
-        } else if (e.message && typeof window !== 'undefined' && window.opera) {
+        } else if (typeof e.message === 'string' && typeof window !== 'undefined' && window.opera) {
             // e.message.indexOf("Backtrace:") > -1 -> opera
             // !e.stacktrace -> opera
             if (!e.stacktrace) {
@@ -139,6 +139,7 @@ printStackTrace.implementation.prototype = {
     },
 
     opera11: function(e) {
+        // "Error thrown at line 42, column 12 in <anonymous function>() in file://localhost/G:/js/stacktrace.js:\n"
         // "Error thrown at line 42, column 12 in <anonymous function: createException>() in file://localhost/G:/js/stacktrace.js:\n"
         // "called from line 7, column 4 in bar(n) in file://localhost/G:/js/test/functional/testcase1.html:\n"
         // "called from line 15, column 3 in file://localhost/G:/js/test/functional/testcase1.html:\n"
@@ -150,7 +151,7 @@ printStackTrace.implementation.prototype = {
             if (match) {
                 var location = match[4] + ':' + match[1] + ':' + match[2];
                 var fnName = match[3] || "global code";
-                fnName = fnName.replace(/<anonymous function: (\S+)>/g, "$1");
+                fnName = fnName.replace(/<anonymous function: (\S+)>/, "$1").replace(/<anonymous function>/, ANON);
                 result.push(fnName + '@' + location + ' -- ' + lines[i + 1].replace(/^\s+/, ''));
             }
         }

@@ -29,6 +29,7 @@
       if (UnitTest.prototype.genericError != null) {
         return UnitTest.prototype.genericError;
       }
+      //return new Error("Generic error");
       return new Error();
     },
     prepareFakeOperaEnvironment: function() {
@@ -496,7 +497,7 @@
     expect(3 * e.length);
     for (var i = 0; i < e.length; i++) {
       var stack = pst.opera11(e[i]), stack_string = stack.join('\n');
-      equals(stack_string, '', 'debug');
+      equals(stack_string, 'debug', 'debug');
       equals(stack_string.indexOf('ignored'), -1, 'ignored');
       equals(stack[5].indexOf('f1(') >= 0, true, 'f1 function name: ' + stack[5]);
       equals(stack[6].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous: ' + stack[6]);
