@@ -278,9 +278,10 @@ printStackTrace.implementation.prototype = {
         var req = this.createXMLHTTPObject();
         if (req) {
             try {
-                // FIXME why Firefox 3.6-7.0 raises error for file:///
                 req.open('GET', url, false);
-                req.send('');
+                //req.setRequestHeader('Content-Type', 'text/plain');
+                //req.send('');
+                req.send(null);
                 return req.responseText;
             } catch (e) {
             }
