@@ -343,7 +343,7 @@ printStackTrace.implementation.prototype = {
     guessAnonymousFunctions: function(stack) {
         for (var i = 0; i < stack.length; ++i) {
             var reStack = /\{anonymous\}\(.*\)@(.*)/,
-                reRef = /^(.*?)(?::(\d+))(?::(\d+))?$/,
+                reRef = /^(.*?)(?::(\d+))(?::(\d+))?(?: -- .+)?$/,
                 frame = stack[i], ref = reStack.exec(frame);
 
             if (ref) {
