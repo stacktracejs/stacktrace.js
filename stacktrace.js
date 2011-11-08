@@ -335,6 +335,7 @@ printStackTrace.implementation.prototype = {
      * @return <Array> Array of source code lines
      */
     getSource: function(url) {
+        // TODO reuse source from script tags?
         if (!(url in this.sourceCache)) {
             this.sourceCache[url] = this.ajax(url).split('\n');
         }
@@ -349,7 +350,7 @@ printStackTrace.implementation.prototype = {
 
             if (ref) {
                 var m = reRef.exec(ref[1]), file = m[1],
-                    lineno = m[2], charno = m[3] || 0; //m[7] is character position in Chrome
+                    lineno = m[2], charno = m[3] || 0;
                 if (file && this.isSameDomain(file) && lineno) {
                     var functionName = this.guessAnonymousFunction(file, lineno, charno);
                     stack[i] = frame.replace('{anonymous}', functionName);

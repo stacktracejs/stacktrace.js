@@ -234,7 +234,6 @@
   test("run other", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    //p._mode = 'other';
     p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = function() {
       equals(1, 0, 'must not be called');
     };
@@ -361,18 +360,6 @@
 
   test("opera9", function() {
     var mode = pst.mode(UnitTest.fn.createGenericError()), e = [];
-    e.push({
-      message: 'ignored\n' +
-      'ignored\n' +
-      'ignored\n' +
-      'ignored\n' +
-      'Line 40 of linked script http://site.com: in function f1\n' +
-      '      discarded()\n' +
-      'Line 44 of linked script http://site.com\n' +
-      '     f1(1, "abc")\n' +
-      'ignored\n' +
-      'ignored'
-    });
     if (mode == 'opera9') {
       function discarded() {
         try {
@@ -389,16 +376,15 @@
       };
       f2();
     }
-    expect(4 * e.length);
+    expect(3 * e.length);
     for (var i = 0; i < e.length; i++) {
       var message = pst.opera9(e[i]);
       var message_string = message.join("\n");
-      equals(message.join("\n").indexOf('ignored'), -1, 'ignored');
       //equals(message.join("\n"), 'debug', 'debug');
       //equals(message[0].indexOf('f1()') >= 0, true, 'f1 function name');
-      equals(message[0].indexOf('discarded()') >= 0, true, 'f1 statement');
-      equals(message[1].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous');
-      equals(message[1].indexOf('f1(1, "abc")') >= 0, true, 'f2 statement');
+      equals(message[1].indexOf('discarded()') >= 0, true, 'discarded() statement in f1: ' + message[1]);
+      equals(message[2].indexOf('{anonymous}()@') >= 0, true, 'f2 is anonymous: ' + message[2]);
+      equals(message[2].indexOf('f1(1, "abc")') >= 0, true, 'f1() statement in f2: ' + message[2]);
     }
   });
 
@@ -457,35 +443,32 @@
     var e = [];
 
     /*e.push({
-      message: "'this.undef' is not a function",
-
-      stack: "discarded([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:461\n" +
-      "f1([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:468\n" +
-      "<anonymous function>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:471\n" +
-      "<anonymous function>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:473\n" +
-      "<anonymous function: run>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:102\n" +
-      "<anonymous function: queue>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:232\n" +
-      "process([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:864\n" +
-      "<anonymous function: start>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:408",
-
-      stacktrace: "Error thrown at line 461, column 10 in discarded() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
-      " this.undef();\n" +
-      "called from line 468, column 8 in f1(arg1, arg2) in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
-      " discarded();\n" +
-      "called from line 471, column 8 in <anonymous function>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
-      " f1(1, \"abc\");\n" +
-      "called from line 473, column 6 in <anonymous function>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
-      " f2();\n" +
-      "called from line 102, column 12 in <anonymous function: run>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
-      " this.callback.call(this.testEnvironment);\n" +
-      "called via Function.prototype.call() from line 232, column 16 in <anonymous function: queue>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
-      " test.run();\n" +
-      "called from line 864, column 12 in process() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
-      " config.queue.shift()();\n" +
-      "called from line 408, column 16 in <anonymous function: start>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
-      " process();"
-    });*/
-
+     message: "'this.undef' is not a function",
+     stack: "discarded([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:461\n" +
+     "f1([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:468\n" +
+     "<anonymous function>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:471\n" +
+     "<anonymous function>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:473\n" +
+     "<anonymous function: run>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:102\n" +
+     "<anonymous function: queue>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:232\n" +
+     "process([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:864\n" +
+     "<anonymous function: start>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:408",
+     stacktrace: "Error thrown at line 461, column 10 in discarded() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+     " this.undef();\n" +
+     "called from line 468, column 8 in f1(arg1, arg2) in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+     " discarded();\n" +
+     "called from line 471, column 8 in <anonymous function>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+     " f1(1, \"abc\");\n" +
+     "called from line 473, column 6 in <anonymous function>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+     " f2();\n" +
+     "called from line 102, column 12 in <anonymous function: run>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+     " this.callback.call(this.testEnvironment);\n" +
+     "called via Function.prototype.call() from line 232, column 16 in <anonymous function: queue>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+     " test.run();\n" +
+     "called from line 864, column 12 in process() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+     " config.queue.shift()();\n" +
+     "called from line 408, column 16 in <anonymous function: start>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+     " process();"
+     });*/
     if (mode == 'opera11') {
       function discarded() {
         try {
@@ -675,7 +658,6 @@
   test("guessAnonymousFunctions chrome", function() {
     var results = [];
     var p = new printStackTrace.implementation();
-    p._mode = 'chrome';
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['createException() (' + file + ':1:1)', 'run() (' + file + ':1:1)', 'f2() (' + file + ':1:1)']);
@@ -700,20 +682,18 @@
     }
   });
 
-  test("guessAnonymousFunctions opera", function() {
-    var results = [];
-    var p = new printStackTrace.implementation();
-    p._mode = 'opera';
+  test("guessAnonymousFunctions opera9", function() {
+    var results = [], p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
-    p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
-    results.push(['f2()@' + file + ':2 -- code']);
+    p.sourceCache[file] = ['var f2 = function() {', 'bar();', '};'];
+    results.push(['{anonymous}()@' + file + ':2 -- bar();']);
 
     var f2 = function() {
       try {
         this.undef();
       } catch (e) {
-        if (p.mode(e) == 'opera') {
-          results.push(p.run());
+        if (p.mode(e) == 'opera9') {
+          results.push(p.run(e));
         }
       }
     };
@@ -721,17 +701,16 @@
 
     expect(results.length * 1);
     for (var i = 0; i < results.length; ++i) {
+      //equals((results[i]), '', 'debug');
       var functions = p.guessAnonymousFunctions(results[i]);
-      // equals(functions, '', 'debug');
-      equals(functions[0].indexOf('f2'), 0, 'f2');
+      //equals(functions, '', 'debug');
+      equals(functions[0].indexOf('f2()'), 0, 'guessed f2 in ' + functions[0]);
     }
   });
 
   test("guessAnonymousFunctions opera10", function() {
     // TODO currently failing in Opera 10.60
-    var results = [];
-    var p = new printStackTrace.implementation();
-    p._mode = 'opera10';
+    var results = [], p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(["{anonymous}()@" + file + ":1:1", "{anonymous}()@" + file + ":1:1"]);
@@ -754,6 +733,33 @@
       var functions = p.guessAnonymousFunctions(results[i]);
       //equals(functions.join("\n"), '', 'debug');
       equals(functions[1].indexOf('f2()'), 0, 'guessed f2 in ' + functions[1]);
+    }
+  });
+
+  test("guessAnonymousFunctions opera11", function() {
+    var results = [], p = new printStackTrace.implementation();
+    var file = 'http://' + window.location.hostname + '/file.js';
+    p.sourceCache[file] = ['var f2 = function() {', 'bar();', '};'];
+    results.push(["{anonymous}()@" + file + ":2:1 -- bar();"]);
+
+    var f2 = function() {
+      try {
+        this.undef();
+      } catch (e) {
+        if (p.mode(e) == 'opera11') {
+          //alert("e.stacktrace: " + e.stacktrace);
+          results.push(p.run(e));
+        }
+      }
+    };
+    f2();
+
+    expect(results.length * 1);
+    for (var i = 0; i < results.length; ++i) {
+      //equals((results[i]), '', 'debug');
+      var functions = p.guessAnonymousFunctions(results[i]);
+      //equals(functions.join("\n"), '', 'debug');
+      equals(functions[0].indexOf('f2()'), 0, 'guessed f2 in ' + functions[0]);
     }
   });
 
