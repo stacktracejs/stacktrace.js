@@ -63,6 +63,10 @@ printStackTrace.implementation.prototype = {
             if (!e.stacktrace) {
                 return 'opera9'; // use e.message
             }
+            // 'opera#sourceloc' in e -> opera9, opera10a
+            if (e.message.indexOf('\n') > -1 && e.message.split('\n').length > e.stacktrace.split('\n').length) {
+                return 'opera9'; // use e.message
+            }
             // e.stacktrace && !e.stack -> opera10a
             if (!e.stack) {
                 return 'opera10a'; // use e.stacktrace

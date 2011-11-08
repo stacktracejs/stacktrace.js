@@ -134,7 +134,7 @@
   });
 
   test("run opera9", function() {
-    expect(4);
+    expect(5);
     var p = new printStackTrace.implementation();
     p.opera10a = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = function() {
       equals(1, 0, 'must not call run for any mode other than "opera9"');
@@ -158,11 +158,12 @@
     p.run(CapturedExceptions.opera_854);
     p.run(CapturedExceptions.opera_902);
     p.run(CapturedExceptions.opera_927);
+    p.run(CapturedExceptions.opera_964);
     UnitTest.fn.clearFakeOperaEnvironment();
   });
 
   test("run opera10a", function() {
-    expect(2);
+    expect(1);
     var p = new printStackTrace.implementation();
     p.opera9 = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = function() {
       equals(1, 0, 'must not call run for any mode other than "opera10a"');
@@ -171,7 +172,6 @@
       equals(1, 1, 'called run for "opera10a"');
     };
     UnitTest.fn.prepareFakeOperaEnvironment();
-    p.run(CapturedExceptions.opera_964);
     p.run(CapturedExceptions.opera_1010);
     UnitTest.fn.clearFakeOperaEnvironment();
   });
@@ -403,8 +403,8 @@
   });
 
   test("opera9", function() {
-    var e = [CapturedExceptions.opera_854, CapturedExceptions.opera_902, CapturedExceptions.opera_927];
-    expect(9); // 3 * e.length
+    var e = [CapturedExceptions.opera_854, CapturedExceptions.opera_902, CapturedExceptions.opera_927, CapturedExceptions.opera_964];
+    expect(12); // 3 * e.length
     for (var i = 0; i < e.length; i++) {
       var message = pst.opera9(e[i]);
       //equals(message.join("\n"), 'debug', 'debug');
@@ -415,14 +415,14 @@
   });
 
   test("opera10a", function() {
-    var e = [CapturedExceptions.opera_964, CapturedExceptions.opera_1010];
-    expect(6); // 3 * e.length
+    var e = [CapturedExceptions.opera_1010];
+    expect(5); // 5 * e.length
     for (var i = 0; i < e.length; i++) {
       var message = pst.opera10a(e[i]);
       //equals(message.join("\n"), 'debug', 'debug');
-      // NOTE: the important thing here is that the user sees calls to bar and foo in the correct order
-      // We cannot test the size of the stack because it's inconsistent
-      equals(message[message.length - 3].indexOf('bar(') >= 0, true, 'bar is 3nd from the bottom of stack');
+      equals(message.length, 7, 'number of stack entries');
+      equals(message[0].indexOf('this.undef()') >= 0, true, 'this.undef() is at the top of stack');
+      equals(message[message.length - 3].indexOf('bar(') >= 0, true, 'bar is 3rd from the bottom of stack');
       equals(message[message.length - 2].indexOf('bar(2)') >= 0, true, 'bar is 2nd from the bottom of stack');
       equals(message[message.length - 1].indexOf('foo()') >= 0, true, 'foo() is at the bottom of stack');
     }
@@ -455,30 +455,37 @@
   test("opera11", function() {
     var mode = pst.mode(UnitTest.fn.createGenericError());
     var e = [];
+
     /*e.push({
-      stack: 'ignored\n' +
-      'f1([arguments not available])@http://site.com/main.js:2\n' +
-      '<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n' +
-      '@',
-      stacktrace: 'Error thrown at line 129, column 5 in <anonymous function>():\n' +
-      'ignored\n' +
-      'Error thrown at line 129, column 5 in <anonymous function>():\n' +
-      'ignored\n' +
-      'Error thrown at line 124, column 4 in <anonymous function>():\n' +
-      'ignored\n' +
-      'Error thrown at line 594, column 2 in process():\n' +
-      'ignored\n' +
-      'Error thrown at line 124, column 4 in <anonymous function>():\n' +
-      'ignored\n' +
-      'Error thrown at line 1, column 55 in discarded():\n' +
-      '    this.undef();\n' +
-      'called from line 1, column 333 in f1(arg1, arg2):\n' +
-      '   discarded();\n' +
-      'called from line 1, column 470 in <anonymous function>():\n' +
-      '   f1(1, "abc");\n' +
-      'called from line 1, column 278 in program code:\n' +
-      '   f2();'
+      message: "'this.undef' is not a function",
+
+      stack: "discarded([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:461\n" +
+      "f1([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:468\n" +
+      "<anonymous function>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:471\n" +
+      "<anonymous function>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:473\n" +
+      "<anonymous function: run>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:102\n" +
+      "<anonymous function: queue>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:232\n" +
+      "process([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:864\n" +
+      "<anonymous function: start>([arguments not available])@http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:408",
+
+      stacktrace: "Error thrown at line 461, column 10 in discarded() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+      " this.undef();\n" +
+      "called from line 468, column 8 in f1(arg1, arg2) in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+      " discarded();\n" +
+      "called from line 471, column 8 in <anonymous function>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+      " f1(1, \"abc\");\n" +
+      "called from line 473, column 6 in <anonymous function>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/TestStacktrace.js:\n" +
+      " f2();\n" +
+      "called from line 102, column 12 in <anonymous function: run>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+      " this.callback.call(this.testEnvironment);\n" +
+      "called via Function.prototype.call() from line 232, column 16 in <anonymous function: queue>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+      " test.run();\n" +
+      "called from line 864, column 12 in process() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+      " config.queue.shift()();\n" +
+      "called from line 408, column 16 in <anonymous function: start>() in http://127.0.0.1:8000/DevTools/stacktrace/javascript-stacktrace/test/qunit.js:\n" +
+      " process();"
     });*/
+
     if (mode == 'opera11') {
       function discarded() {
         try {
@@ -499,11 +506,10 @@
     expect(3 * e.length);
     for (var i = 0; i < e.length; i++) {
       var stack = pst.opera11(e[i]), stack_string = stack.join('\n');
-      equals(stack_string, 'debug', 'debug');
+      //equals(stack_string, 'debug', 'debug');
       equals(stack_string.indexOf('ignored'), -1, 'ignored');
-      equals(stack[5].indexOf('f1(') >= 0, true, 'f1 function name: ' + stack[5]);
-      equals(stack[6].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous: ' + stack[6]);
-      //FIXME: Clean up stack[2], opera has some internal stack weirdness
+      equals(stack[1].indexOf('f1(') >= 0, true, 'f1 function name: ' + stack[1]);
+      equals(stack[2].indexOf('{anonymous}()') >= 0, true, 'f2 is anonymous: ' + stack[2]);
     }
   });
 
