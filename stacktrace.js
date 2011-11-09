@@ -279,8 +279,6 @@ printStackTrace.implementation.prototype = {
         if (req) {
             try {
                 req.open('GET', url, false);
-                //req.setRequestHeader('Content-Type', 'text/plain');
-                //req.send('');
                 req.send(null);
                 return req.responseText;
             } catch (e) {
