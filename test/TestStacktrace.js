@@ -709,7 +709,7 @@
   });
 
   test("guessAnonymousFunctions opera10", function() {
-    // TODO currently failing in Opera 10.60
+    // FIXME: currently failing in Opera 10.60
     var results = [], p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
