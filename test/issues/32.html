@@ -4,12 +4,10 @@
     <title>Issue #32</title>
     <script src="../../stacktrace.js"></script>
     <script>
-      /*window.onload = function() {
-       alert("window.onload");
-       }*/
       window.onbeforeunload = function(e) {
         e = e || window.event;
         // FF: currentTarget originalTarget target
+        // IE: currentTarget srcElement target
         // Chrome: currentTarget srcElement target
 
         // capture stack trace
