@@ -383,10 +383,12 @@ printStackTrace.implementation.prototype = {
         var reFunctionEvaluation = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(?:eval|new Function)\b/;
         // Walk backwards in the source lines until we find
         // the line which matches one of the patterns above
-        var code = "", line, maxLines = 10, m;
+        var code = "", line, maxLines = 20, m;
         for (var i = 0; i < maxLines; ++i) {
-            // FIXME lineNo is 1-based, source[] is 0-based
-            line = source[lineNo - i];
+            // lineNo is 1-based, source[] is 0-based
+            line = source[lineNo - i - 1];
+            // line.replace(/(.*)\/\//, '$1')
+            // FIXME skip/clean comments? Commented code may lead to false positive
             if (line) {
                 code = line + code;
                 m = reFunctionExpression.exec(code);

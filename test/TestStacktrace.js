@@ -563,7 +563,7 @@
     equals(pst.findFunctionName(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
-    // FIXME: currently failing becuase we don't have a way to distinguish which fn is being sought
+    // FIXME: currently failing because we don't have a way to distinguish which fn is being sought
     // equals(pst.findFunctionName(['a:function(){},b:function(){', '};'], 1), 'b');
     equals(pst.findFunctionName(['"a": function(){', '};'], 1), 'a');
 
@@ -577,6 +577,8 @@
     equals(pst.findFunctionName(['var data = new Function("s,r",', '"return s + r;");'], 1), 'data');
 
     equals(pst.findFunctionName(['var a = 1;', 'var b = 2;', 'var c = 3;'], 2), '(?)');
+
+    equals(pst.findFunctionName(['function a() {', '  // function commented()', '  error here', '}'], 3), 'a');
   });
 
   test("getSource cache miss", function() {
