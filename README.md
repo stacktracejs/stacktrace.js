@@ -32,7 +32,7 @@ You can also pass in your own Error to get a stacktrace *not in IE or Safari, th
 		printStackTrace({e: lastError});
     </script>
 
-Some people recommend just assigning it to `window.onerror`. Make sure that you have script debugging turned off for IE. *Only in IE, FF and Chrome*
+Some people recommend just assigning it to `window.onerror`. Make sure that you have script debugging turned off for IE. *Only in IE*
 
     window.onerror = function(msg, file, line) {
 	    alert(printStackTrace().join('\n\n'));
@@ -63,7 +63,7 @@ It is currently tested and working on:
  - Firefox (and Iceweasel) 0.9+  
  - Google Chrome 1+  
  - Safari 3.0+  
- - Opera 10+
+ - Opera 7+
  - IE 5.5+  
  - Konqueror 3.5+  
  - Flock 1.0+  
@@ -71,7 +71,3 @@ It is currently tested and working on:
  - K-Meleon 1.5.3+  
  - Epiphany 2.28.0+  
  - Iceape 1.1+
-
-Working (readable, valid stack trace) but not perfectly tested on:  
-
- - Opera 9-

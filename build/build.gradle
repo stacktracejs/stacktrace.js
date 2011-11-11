@@ -80,7 +80,7 @@ task test(dependsOn: 'init') << {
 				resultproperty: 'exitCode', failonerror: 'false', executable: '/usr/bin/env') {
 			arg(value: 'DISPLAY=:1')
 			arg(value: '/usr/local/bin/phantomjs')
-			arg(value: '../test/phantomjs-qunit-runner.js')
+			arg(value: '../test/lib/phantomjs-qunit-runner.js')
 			arg(value: "${spec.canonicalPath}")
 		}
 		// Check exit code
