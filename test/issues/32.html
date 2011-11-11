@@ -5,23 +5,23 @@
     <script src="../../stacktrace.js"></script>
     <script>
       /*window.onload = function() {
-        alert("window.onload");
-      }*/
-
+       alert("window.onload");
+       }*/
       window.onbeforeunload = function(e) {
         e = e || window.event;
-        // currentTarget originalTarget target
+        // FF: currentTarget originalTarget target
+        // Chrome: currentTarget srcElement target
 
-        //alert("window.onbeforeunload");
         // capture stack trace
         // NOTE:
         //   FF captures full stack,
         //   IE captures stack but doesn't include 'onbeforeunload' function in stack,
-        //   CHROME doesn't show stack
-        var trace = printStackTrace();
-        alert('window.onbeforeunload stacktrace:\n\n' + trace.join('\n\n'));
+        //   CHROME doesn't show alert
+        var trace = printStackTrace().join('\n\n');
+        document.getElementById("stacktrace").value = trace;
+        alert('window.onbeforeunload stacktrace:\n\n' + trace);
 
-        var msg = 'Do you want to continue window unload?';
+        var msg = 'Stacktrace:\n\n' + trace;
         // For IE and Firefox prior to version 4
         if (e) {
           e.returnValue = msg;
@@ -50,5 +50,6 @@
       <li>Invoke the document.open method.</li>
       <li>Click the Back, Forward, Refresh, or Home button.</li>
     </ul>
+    <textarea id="stacktrace" style="width:100%; height:10em;">stacktrace</textarea>
   </body>
 </html>
