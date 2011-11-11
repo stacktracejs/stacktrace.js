@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Issue #32</title>
+    <script src="../../stacktrace.js"></script>
+    <script>
+      /*window.onload = function() {
+        alert("window.onload");
+      }*/
+
+      window.onbeforeunload = function(e) {
+        e = e || window.event;
+        // currentTarget originalTarget target
+
+        //alert("window.onbeforeunload");
+        // capture stack trace
+        // NOTE:
+        //   FF captures full stack,
+        //   IE captures stack but doesn't include 'onbeforeunload' function in stack,
+        //   CHROME doesn't show stack
+        var trace = printStackTrace();
+        alert('window.onbeforeunload stacktrace:\n\n' + trace.join('\n\n'));
+
+        var msg = 'Do you want to continue window unload?';
+        // For IE and Firefox prior to version 4
+        if (e) {
+          e.returnValue = msg;
+        }
+        // For Safari
+        return msg;
+      };
+    </script>
+  </head>
+  <body>
+    To invoke onbeforeunload event:
+    <ul>
+      <li>Close the current window.</li>
+      <li>Navigate to another location by entering a new address or selecting a Favorite.</li>
+      <li>Click an anchor that refers to another document.</li>
+      <li>Invoke the anchor.click method.</li>
+      <li>Invoke the document.write method.</li>
+      <li>Invoke the document.close method.</li>
+      <li>Invoke the window.close method.</li>
+      <li>Invoke the window.navigate or NavigateAndFind method.</li>
+      <li>Invoke the location.replace method.</li>
+      <li>Invoke the location.reload method.</li>
+      <li>Specify a new value for the location.href property.</li>
+      <li>Submit a form to the address specified in the action attribute via the input type=submit control, or invoke the form.submit method.</li>
+      <li>Invoke the window.open method, providing the possible value _self for the window name.</li>
+      <li>Invoke the document.open method.</li>
+      <li>Click the Back, Forward, Refresh, or Home button.</li>
+    </ul>
+  </body>
+</html>
