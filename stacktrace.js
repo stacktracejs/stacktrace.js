@@ -380,12 +380,15 @@ printStackTrace.implementation.prototype = {
         var reFunctionEvaluation = /['"]?([0-9A-Za-z_]+)['"]?\s*[:=]\s*(?:eval|new Function)\b/;
         // Walk backwards in the source lines until we find
         // the line which matches one of the patterns above
-        var code = "", line, maxLines = 20, m;
+        var code = "", line, maxLines = Math.min(lineNo, 20), m, commentPos;
         for (var i = 0; i < maxLines; ++i) {
             // lineNo is 1-based, source[] is 0-based
             line = source[lineNo - i - 1];
-            // line.replace(/(.*)\/\//, '$1')
-            // FIXME skip/clean comments? Commented code may lead to false positive
+            commentPos = line.indexOf('//');
+            if (commentPos >= 0) {
+                line = line.substr(0, commentPos);
+            }
+            // TODO check other types of comments? Commented code may lead to false positive
             if (line) {
                 code = line + code;
                 m = reFunctionExpression.exec(code);

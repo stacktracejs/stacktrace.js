@@ -559,7 +559,7 @@
   });
 
   test("findFunctionName", function() {
-    expect(12);
+    expect(13);
     equals(pst.findFunctionName(['var a = function aa() {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function () {', 'var b = 2;', '};'], 2), 'a');
     equals(pst.findFunctionName(['var a = function() {', 'var b = 2;', '};'], 2), 'a');
@@ -567,6 +567,7 @@
     // equals(pst.findFunctionName(['a:function(){},b:function(){', '};'], 1), 'b');
     equals(pst.findFunctionName(['"a": function(){', '};'], 1), 'a');
 
+    // different formatting
     equals(pst.findFunctionName(['function a() {', 'var b = 2;', '}'], 2), 'a');
     equals(pst.findFunctionName(['function a(b,c) {', 'var b = 2;', '}'], 2), 'a');
     equals(pst.findFunctionName(['function  a () {', '}'], 2), 'a');
@@ -576,8 +577,10 @@
     equals(pst.findFunctionName(['var data = new Function("return true;");', ''], 1), 'data');
     equals(pst.findFunctionName(['var data = new Function("s,r",', '"return s + r;");'], 1), 'data');
 
+    // not found
     equals(pst.findFunctionName(['var a = 1;', 'var b = 2;', 'var c = 3;'], 2), '(?)');
 
+    // false positive in comment
     equals(pst.findFunctionName(['function a() {', '  // function commented()', '  error here', '}'], 3), 'a');
   });
 
