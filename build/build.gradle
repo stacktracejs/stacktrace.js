@@ -1,62 +1,70 @@
-defaultTasks 'all'
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'com.eriwen:gradle-js-plugin:0.2'
+	}
+}
 
-def srcDir = '..'
-def outputDir = 'target'
-def jshintConfig = 'jshint.json'
-def jshintOutput = outputDir + '/jshint.xml'
+apply plugin: 'js'
+
+defaultTasks 'all'
+buildDir = "../target"
+
+def srcFile = "../stacktrace.js"
+def destFile = "${buildDir}/stacktrace-min.js"
 def testDir = 'test'
-def minifiedFilePath = "../${outputDir}/stacktrace-min.js"
 
 repositories {
 	mavenRepo urls: 'http://repository.springsource.com/maven/bundles/release'
 	mavenCentral()
 }
 
-configurations {
-	js
+task clean(description: 'Cleans old artifacts') << {
+	ant.delete(dir: buildDir)
 }
 
-dependencies {
-	js 'com.google.javascript:closure-compiler:r+'
-}
-
-task clean << {
-	description = 'Cleans old artifacts'
-	ant.delete(dir: outputDir)
-	ant.delete(file: jshintOutput)
-}
-
-task init(dependsOn: 'clean') << {
-	description = 'Creates artifact output directories'
-	(new File(outputDir)).mkdirs()
-}
-
-task minify << {
-	description = 'minify JS file' 
-	project.ant {
-		ant.taskdef(name: 'jscomp', 
-				classname: 'com.google.javascript.jscomp.ant.CompileTask',
-				classpath: configurations.js.asPath)
-
-		jscomp(compilationLevel: 'simple', warning: 'quiet', debug: 'false', output: minifiedFilePath) {
-			sources(dir: srcDir) {
-				file(name: 'stacktrace.js'){}
-			}
-		}
+task init(type: Directory, dependsOn: 'clean', description: 'Creates artifact output directories') {
+	outputs.dir(buildDir)
+	file(buildDir).mkdirs()
+	doLast {
+		file(buildDir).mkdirs()
 	}
 }
 
-task zip << {
-	description = 'GZip file for distribution'
-	ant.gzip(src: minifiedFilePath, destfile: "${minifiedFilePath}.gz")
-	ant.move(file: "${minifiedFilePath}.gz", tofile: minifiedFilePath)
+task wrapper(type: Wrapper) {
+	gradleVersion = '1.0-milestone-5'
 }
 
-task jshint(dependsOn: 'init') << {
-	description = 'runs jshint on stacktrace JS file'
-	def command = "jshint ${new File('stacktrace.js').canonicalPath} --config ${jshintConfig} --jslint-reporter"
-	println command
-	new File(jshintOutput).write(command.execute().text)
+task jshintz(type: Exec, dependsOn: 'init', description: 'runs jshint on all non-test and lib JS files') {
+	inputs.file file(srcFile)
+	outputs.file file("${buildDir}/jshint.xml")
+	
+	commandLine = ["jshint", srcFile, "--config", 'jshint.json', "--jslint-reporter"]
+	standardOutput = new BufferedOutputStream(new FileOutputStream("${buildDir}/jshint.xml"))
+}
+
+task jsduck(type: Exec, dependsOn: 'init', description: 'Generates jsduck documentation') {
+    inputs.file file(srcFile)
+    outputs.file file("${buildDir}/docs")
+
+    commandLine = ['jsduck', srcFile, '--output', "${buildDir}/docs"]
+    ignoreExitValue = true
+}
+
+minifyJs {
+	dependsOn << 'init'
+    input = file(srcFile)
+    output = file(destFile)
+    warningLevel = 'QUIET'
+}
+
+gzipJs {
+	dependsOn << 'minifyJs'
+    input = file(destFile)
+    output = input
 }
 
 task test(dependsOn: 'init') << {
@@ -73,31 +81,45 @@ task test(dependsOn: 'init') << {
 	def numFailures = 0
 	def testsFailed = false
 	specs.each { File spec ->
-		println "Running ${spec.name}..."
+		print "Running ${spec.name}..."
 		
-		def outputFile = "${outputDir}/TEST-${spec.name.replace('-', '').replace('.html', '.xml')}"
+		def outputFile = "${buildDir}/TEST-${spec.name.replace('-', '').replace('.html', '.xml')}"
 		ant.exec(outputproperty: 'cmdOut', errorproperty: 'cmdErr',
 				resultproperty: 'exitCode', failonerror: 'false', executable: '/usr/bin/env') {
 			arg(value: 'DISPLAY=:1')
 			arg(value: '/usr/local/bin/phantomjs')
-			arg(value: '../test/lib/phantomjs-qunit-runner.js')
+			arg(value: "../test/lib/phantomjs-qunit-runner.js")
 			arg(value: "${spec.canonicalPath}")
 		}
 		// Check exit code
 		if (ant.project.properties.exitCode != '0') {
 			testsFailed = true
 			numFailures++
-			println '\tFAILED'
+			println 'FAILED'
 		} else {
-			println '\tPASSED'
+			println 'PASSED'
 		}
 
 		new File(outputFile).write(ant.project.properties.cmdOut)
 	}
 	
 	println "QUnit tests completed in ${new Date().time - startTime}ms"
-	println "QUnit Tests ${testsFailed ? 'FAILED' : 'PASSED'} - view reports in ${outputDir}"
+	println "QUnit Tests ${testsFailed ? 'FAILED' : 'PASSED'} - view reports in ${buildDir}"
 	ant.fail(if: testsFailed, message: 'JS Tests Failed')
 }
 
-task all(dependsOn: ['clean', 'minify', 'zip', 'jshint', 'test']) << {}
+task jstd(type: Exec, dependsOn: 'init', description: 'runs JS tests through JsTestDriver') {
+    // Default to MacOS and check for other environments
+    def firefoxPath = '/Applications/Firefox.app/Contents/MacOS/firefox'
+    if ("uname".execute().text.trim() != 'Darwin') {
+        firefoxPath = "which firefox".execute().text
+    }
+
+    commandLine = ['/usr/bin/env', 'DISPLAY=:1', 'java', '-jar', "../test/lib/JsTestDriver-1.3.3d.jar", '--config', "../test/jsTestDriver.conf", '--port', '4224', '--browser', firefoxPath, '--tests', 'all', '--testOutput', buildDir]
+}
+
+task jsCoverage(type: Exec, dependsOn: 'jstd', description: 'JS code coverage with cobertura') {
+	commandLine = ['python', "${projectDir}/test/lib/lcov-to-cobertura-xml.py", '-b', "../", '-e', 'test.lib', '-o', "${buildDir}/coverage.xml", "${buildDir}/jsTestDriver.conf-coverage.dat"]
+}
+
+task all(dependsOn: ['clean', 'jshintz', 'test', 'jsduck', 'minifyJs', 'gzipJs']) << {}
