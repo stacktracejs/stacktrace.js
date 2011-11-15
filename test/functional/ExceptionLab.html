@@ -11,8 +11,6 @@
     </style>
     <script src="ExceptionLab.js"></script>
     <script>
-      document.getElementById("userAgent").innerHTML = navigator.userAgent;
-
       function dumpException(ex) {
         ex = ex || new Error("Default error");
         var text = "{\n  " + getExceptionProps(ex).join(",\n  ") + "\n}";
