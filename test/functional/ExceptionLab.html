@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Exception Lab</title>
+    <style>
+      #info {
+        height: 25em;
+        width: 100%;
+      }
+    </style>
+    <script src="ExceptionLab.js"></script>
+    <script>
+      document.getElementById("userAgent").innerHTML = navigator.userAgent;
+
+      function dumpException(ex) {
+        ex = ex || new Error("Default error");
+        var text = "{\n  " + getExceptionProps(ex).join(",\n  ") + "\n}";
+        document.getElementById("info").innerHTML = text;
+      }
+
+      function dumpException1() {
+        dumpException();
+      }
+
+      function dumpException2() {
+        try {
+          undef();
+        } catch (ex) {
+          dumpException(ex);
+        }
+      }
+
+      function dumpException3() {
+        dumpException((function(x) {
+          try {
+            x.undef();
+          } catch (ex) {
+            return ex;
+          }
+        })(null));
+      }
+
+      function createException4() {
+        return createException();
+      }
+
+      function dumpException4() {
+        dumpException(createException4());
+      }
+    </script>
+  </head>
+  <body>
+    <span id="userAgent">userAgent</span>
+    <script>
+      document.getElementById("userAgent").innerHTML = navigator.userAgent;
+    </script>
+    <textarea id="info">Info</textarea>
+    <br/>
+    <button onclick="dumpException1();">Exception 1</button>
+    <button onclick="dumpException2();">Exception 2</button>
+    <button onclick="dumpException3();">Exception 3</button>
+    <button onclick="dumpException4();">Exception 4</button>
+  </body>
+</html>
