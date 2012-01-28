@@ -22,13 +22,14 @@ repositories {
 	mavenCentral()
 }
 
-task clean(description: 'Cleans old artifacts') << {
-	ant.delete(dir: buildDir)
+task clean(description: 'Cleans old artifacts') {
+	doLast {
+		ant.delete(dir: buildDir)
+	}
 }
 
 task init(type: Directory, dependsOn: 'clean', description: 'Creates artifact output directories') {
 	outputs.dir(buildDir)
-	file(buildDir).mkdirs()
 	doLast {
 		file(buildDir).mkdirs()
 	}
@@ -38,12 +39,11 @@ task wrapper(type: Wrapper) {
 	gradleVersion = '1.0-milestone-5'
 }
 
-task jshintz(type: Exec, dependsOn: 'init', description: 'runs jshint on all non-test and lib JS files') {
-	inputs.file file(srcFile)
-	outputs.file file("${buildDir}/jshint.xml")
-	
-	commandLine = ["jshint", srcFile, "--config", 'jshint.json', "--jslint-reporter"]
-	standardOutput = new BufferedOutputStream(new FileOutputStream("${buildDir}/jshint.xml"))
+task jshintz(dependsOn: 'init', description: 'runs jshint on all non-test and lib JS files') {
+	doLast {
+		def command = "jshint ${new File('stacktrace.js').canonicalPath} --config jshint.json --jslint-reporter"
+		new File("${buildDir}/jshint.xml").write(command.execute().text)
+	}
 }
 
 task jsduck(type: Exec, dependsOn: 'init', description: 'Generates jsduck documentation') {
