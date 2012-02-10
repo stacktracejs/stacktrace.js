@@ -32,12 +32,6 @@ You can also pass in your own Error to get a stacktrace *not in IE or Safari, th
 		printStackTrace({e: lastError});
     </script>
 
-Some people recommend just assigning it to `window.onerror`. Make sure that you have script debugging turned off for IE. *Only in IE*
-
-    window.onerror = function(msg, file, line) {
-	    alert(printStackTrace().join('\n\n'));
-    }
-
 # Function Instrumentation #
 You can now have any (public or privileged) function give you a stacktrace when it is called:
 
