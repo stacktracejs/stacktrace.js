@@ -46,6 +46,15 @@
       function dumpException4() {
         dumpException(createException4());
       }
+
+      function dumpException5() {
+        try {
+          //eval("x.undef()");
+          eval("getExceptionProps()");
+        } catch (ex) {
+          dumpException(ex);
+        }
+      }
     </script>
   </head>
   <body>
@@ -59,5 +68,6 @@
     <button onclick="dumpException2();">Exception 2</button>
     <button onclick="dumpException3();">Exception 3</button>
     <button onclick="dumpException4();">Exception 4</button>
+    <button onclick="dumpException5();">Exception 5</button>
   </body>
 </html>
