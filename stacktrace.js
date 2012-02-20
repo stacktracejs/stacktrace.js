@@ -223,7 +223,7 @@ printStackTrace.implementation.prototype = {
     // Safari, IE, and others
     other: function(curr) {
         var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], fn, args, maxStackSize = 10;
-        while (curr && stack.length < maxStackSize) {
+        while (curr && curr['arguments'] && stack.length < maxStackSize) {
             fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
             args = Array.prototype.slice.call(curr['arguments'] || []);
             stack[stack.length] = fn + '(' + this.stringifyArguments(args) + ')';
