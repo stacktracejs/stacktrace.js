@@ -347,7 +347,7 @@ printStackTrace.implementation.prototype = {
 
             if (ref) {
                 var m = reRef.exec(ref[1]);
-                if (m){
+                if (m) { // If falsey, we did not get any file/line information
                     var file = m[1], lineno = m[2], charno = m[3] || 0;
                     if (file && this.isSameDomain(file) && lineno) {
                         var functionName = this.guessAnonymousFunction(file, lineno, charno);

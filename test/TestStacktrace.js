@@ -682,9 +682,19 @@
     for (var i = 0; i < results.length; ++i) {
       //equals((results[i]), '', 'debug');
       var functions = p.guessAnonymousFunctions(results[i]);
-      //equals(functions.join("\n"), '', 'debug');
+      //equals(functions.join("\n"), '', 'debug contents of stack');
       equals(functions[2].indexOf('f2()'), 0, 'guessed f2 in ' + functions[2]);
     }
+  });
+  
+  // Test for issue #34
+  test("guessAnonymousFunctions chrome with eval", function() {
+      var unit = new printStackTrace.implementation(),
+        expected = '{anonymous}()@eval at buildTmplFn (http://domain.com/file.js:17:10)',
+        actual = unit.guessAnonymousFunctions([expected]);
+      expect(1);
+      // Nothing should change since no anonymous function in stack
+      equals(expected, actual);
   });
 
   test("guessAnonymousFunctions opera9", function() {
