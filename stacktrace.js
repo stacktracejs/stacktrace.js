@@ -346,11 +346,13 @@ printStackTrace.implementation.prototype = {
                 frame = stack[i], ref = reStack.exec(frame);
 
             if (ref) {
-                var m = reRef.exec(ref[1]), file = m[1],
-                    lineno = m[2], charno = m[3] || 0;
-                if (file && this.isSameDomain(file) && lineno) {
-                    var functionName = this.guessAnonymousFunction(file, lineno, charno);
-                    stack[i] = frame.replace('{anonymous}', functionName);
+                var m = reRef.exec(ref[1]);
+                if (m){
+                    var file = m[1], lineno = m[2], charno = m[3] || 0;
+                    if (file && this.isSameDomain(file) && lineno) {
+                        var functionName = this.guessAnonymousFunction(file, lineno, charno);
+                        stack[i] = frame.replace('{anonymous}', functionName);
+                    }
                 }
             }
         }
