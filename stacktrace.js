@@ -124,7 +124,7 @@ printStackTrace.implementation.prototype = {
      */
     chrome: function(e) {
         var stack = (e.stack + '\n').replace(/^\S[^\(]+?[\n$]/gm, '').
-          replace(/^\s+at\s+/gm, '').
+          replace(/^\s+(at eval )?at\s+/gm, '').
           replace(/^([^\(]+?)([\n$])/gm, '{anonymous}()@$1$2').
           replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}()@$1').split('\n');
         stack.pop();
