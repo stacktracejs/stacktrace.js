@@ -166,7 +166,7 @@ printStackTrace.implementation.prototype = {
         // "<anonymous function: run>([arguments not available])@file://localhost/G:/js/stacktrace.js:27\n" +
         // "printStackTrace([arguments not available])@file://localhost/G:/js/stacktrace.js:18\n" +
         // "@file://localhost/G:/js/test/functional/testcase1.html:15"
-        var ANON = '{anonymous}', lineRE = /^(.*)@(.+):(\d+)$/;
+        var lineRE = /^(.*)@(.+):(\d+)$/;
         var lines = e.stacktrace.split('\n'), result = [];
 
         for (var i = 0, len = lines.length; i < len; i++) {
