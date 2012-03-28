@@ -278,7 +278,10 @@ printStackTrace.implementation.prototype = {
         if (req) {
             try {
                 req.open('GET', url, false);
+                //req.overrideMimeType('text/plain');
+                //req.overrideMimeType('text/javascript');
                 req.send(null);
+                //return req.status == 200 ? req.responseText : '';
                 return req.responseText;
             } catch (e) {
             }
