@@ -15,7 +15,7 @@ Just include stacktrace.js file on your page, and call it like so:
         ... more code of yours ...
     </script>
 
-Bookmarklet available on the [project home page](http://stacktracejs.org). 
+Bookmarklet available on the [project home page](http://stacktracejs.com). 
 
 You can also pass in your own Error to get a stacktrace *not in IE or Safari, though :(*
 
