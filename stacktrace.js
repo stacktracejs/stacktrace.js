@@ -325,6 +325,8 @@ printStackTrace.implementation.prototype = {
      * @return False if we need a cross-domain request
      */
     isSameDomain: function(url) {
+        if (typeof(location) === "undefined")
+            return false;
         return url.indexOf(location.hostname) !== -1;
     },
 
