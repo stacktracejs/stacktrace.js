@@ -4,7 +4,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'com.eriwen:gradle-js-plugin:0.2'
+		classpath 'com.eriwen:gradle-js-plugin:0.3'
 	}
 }
 
@@ -36,7 +36,7 @@ task init(type: Directory, dependsOn: 'clean', description: 'Creates artifact ou
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0-milestone-5'
+	gradleVersion = '1.0-milestone-9'
 }
 
 task jshintz(dependsOn: 'init', description: 'runs jshint on all non-test and lib JS files') {
