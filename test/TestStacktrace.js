@@ -43,19 +43,6 @@
         delete window.opera;
         delete window.fakeOpera;
       }
-    },
-    /**
-     * An Error Chrome without arguments will emulate a Firefox
-     */
-    createErrorWithNoChromeArguments: function() {
-      var err, options = {};
-      try {
-        var oEvent = document.createEvent("KeyEvents");
-        oEvent.initKeyEvent(eventName, true, true, window, options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, options.keyCode, options.charCode);
-      } catch (e) {
-        err = e;
-      }
-      return err;
     }
   };
 
@@ -258,30 +245,34 @@
     ok(!this.toInstrument._instrumented, 'function deinstrumented');
     this.toInstrument = this.callback = null;
   });
-
+  
   test("firefox", function() {
-    var mode = pst.mode(UnitTest.fn.createErrorWithNoChromeArguments());
-    var e = [];
+    var e = [], ex;
+    var stack = 'f1(1,"abc")@file.js:40\n' +
+      '()@file.js:41\n' + 
+      '@:0  \n' + 
+      'f44()@file.js:494';
     e.push({
-      stack: 'f1(1,"abc")@file.js:40\n()@file.js:41\n@:0  \nf44()@file.js:494'
-    });
-    if (mode == 'firefox') {
-      function f1(arg1, arg2) {
-        try {
-          this.undef();
-        } catch (exception) {
-          e.push(exception);
-        }
+      stack: stack
+    }); // test saved Firefox stacktrace
+    function f1(arg1, arg2) {
+      try {
+        this.undef();
+      } catch (exception) {
+        ex = exception;
       }
-      var f2 = function() {
-        f1(1, "abc");
-      };
-      f2();
+    }
+    var f2 = function() {
+      f1(1, "abc");
+    };
+    f2();
+    if (pst.mode(ex) == 'firefox') {
+      e.push(ex);
     }
     expect(3 * e.length);
     for (var i = 0; i < e.length; i++) {
       var stack = pst.firefox(e[i]);
-      //equals(stack.join("\n"), '', 'debug');
+      // equals(stack.join("\n"), '', 'debug');
       equals(stack[0].indexOf('f1(1,"abc")') >= 0, true, 'f1');
       equals(stack[1].indexOf('{anonymous}()@') >= 0, true, 'f2 anonymous');
       equals(stack[2].indexOf('@:0'), -1, '@:0 discarded');
@@ -317,10 +308,10 @@
   test("chrome", function() {
     var e = [], ex;
 
-    var stack = "TypeError: Object [object DOMWindow] has no method 'undef'\n" +
+    var stack = "TypeError: Object [object Window] has no method 'undef'\n" +
     "    at f0 (test/test-stacktrace.js:198:20)\n" +
     "    at f1 (test/test-stacktrace.js:203:10)\n" +
-    "    at test/test-stacktrace.js:206:10\n" +
+    "    at f2 (test/test-stacktrace.js:206:10)\n" +
     "    at Object.<anonymous> (test/test-stacktrace.js:208:6)\n" +
     "    at Object.run (test/qunit.js:89:18)\n" +
     "    at test/qunit.js:214:10\n" +
@@ -346,15 +337,15 @@
     if (pst.mode(ex) == 'chrome') {
       e.push(ex);
     } // test native Chrome stacktrace
-    expect(3 * e.length);
+    expect(4 * e.length);
     for (var i = 0; i < e.length; i++) {
       var message = pst.chrome(e[i]);
-      //equals(e[i].stack, '', 'original stack trace');
-      //equals(message.join("\n"), '', 'processed stack trace');
+      // equals(e[i].stack, '', 'original stack trace');
+      // equals(message.join("\n"), '', 'processed stack trace');
       equals(message[0].indexOf('f0') >= 0, true, 'f0 is top of stack');
       equals(message[1].indexOf('f1') >= 0, true, 'f1 is second called function');
-      equals(message[2].indexOf('anonymous') >= 0, true, 'f2 anonymous function called');
-      //equals(message[3].indexOf('unknown source'), -1, 'unknown source discarded');
+      equals(message[2].indexOf('f2') >= 0, true, 'f2 anonymous function guessed automatically');
+      equals(message[3].indexOf('anonymous') >= 0, true, 'f2 anonymous function called');
     }
   });
 
@@ -682,8 +673,8 @@
     for (var i = 0; i < results.length; ++i) {
       //equals((results[i]), '', 'debug');
       var functions = p.guessAnonymousFunctions(results[i]);
-      //equals(functions.join("\n"), '', 'debug contents of stack');
-      equals(functions[2].indexOf('f2()'), 0, 'guessed f2 in ' + functions[2]);
+      // equals(functions.join("\n"), '', 'debug contents of stack');
+      equals(functions[2].indexOf('f2'), 0, 'guessed f2 in ' + functions[2]);
     }
   });
   
