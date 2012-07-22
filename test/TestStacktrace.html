@@ -24,42 +24,7 @@
 	<link rel='stylesheet' href='lib/qunit.css' type='text/css' />
 	<script type='text/javascript' src='lib/qunit.js'></script>
 	<script type='text/javascript' src='lib/qunit-junit-outputter.js'></script>
-	<script>
-	var _bTestResults = {};
-
-	// Add URL option in QUnit to toggle publishing results to BrowserScope.org
-	QUnit.config.urlConfig.push("publish");
-	QUnit.config.testTimeout = 1000; // Timeout for async tests
-
-	// Build-up the test results beacon for BrowserScope.org
-	QUnit.testDone = function(test) {
-		// make sure all assertions passed successfully
-		if (!test.failed && test.total === test.passed) {
-			_bTestResults[test.name] = 1;
-		} else {
-			_bTestResults[test.name] = 0;
-		}
-	}
-
-	// If the user agreed to publish results to BrowserScope.org, go for it!
-	QUnit.done = function() {
-		if (QUnit.config.publish) {
-			var testKey = 'agt1YS1wcm9maWxlcnINCxIEVGVzdBjr68MRDA';
-			var newScript = document.createElement('script');
-			var firstScript = document.getElementsByTagName('script')[0];
-
-			newScript.src = 'http://www.browserscope.org/user/beacon/' + testKey + "?callback=showResults";
-			firstScript.parentNode.insertBefore(newScript, firstScript);
-		}
-	}
-
-	// Load the results widget from browserscope.org
-	function showResults() {
-		var script = document.createElement('script');
-		script.src = "http://www.browserscope.org/user/tests/table/agt1YS1wcm9maWxlcnINCxIEVGVzdBjr68MRDA?o=js";
-		document.body.appendChild(script);
-	}
-	</script>
+	<script type='text/javascript' src='lib/qunit-browserscope.js'></script>
 	<script type='text/javascript' src='../stacktrace.js'></script>
 	<script type='text/javascript' src='CapturedExceptions.js'></script>
 	<script type='text/javascript' src='TestStacktrace.js'></script>
