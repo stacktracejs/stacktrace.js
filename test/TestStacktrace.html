@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <!--
-     Copyright (C) 2008 Johan Euphrosine <proppy@aminche.com>
-     Copyright (C) 2008 Loic Dachary <loic@dachary.org>
-     Copyright (C) 2011 Eric Wendelin <emwendelin@gmail.com>
+	 Copyright (C) 2008 Johan Euphrosine <proppy@aminche.com>
+	 Copyright (C) 2008 Loic Dachary <loic@dachary.org>
+	 Copyright (C) 2011 Eric Wendelin <emwendelin@gmail.com>
 
-     This program is free software: you can redistribute it and/or modify
-     it under the terms of the GNU General Public License as published by
-     the Free Software Foundation, either version 3 of the License, or
-     (at your option) any later version.
+	 This program is free software: you can redistribute it and/or modify
+	 it under the terms of the GNU General Public License as published by
+	 the Free Software Foundation, either version 3 of the License, or
+	 (at your option) any later version.
 
-     This program is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     GNU General Public License for more details.
+	 This program is distributed in the hope that it will be useful,
+	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+	 GNU General Public License for more details.
 
-     You should have received a copy of the GNU General Public License
-     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 You should have received a copy of the GNU General Public License
+	 along with this program.	If not, see <http://www.gnu.org/licenses/>.
 -->
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en' dir='ltr' id='html'>
 <head>
@@ -27,6 +27,42 @@
 	<script type='text/javascript' src='../stacktrace.js'></script>
 	<script type='text/javascript' src='CapturedExceptions.js'></script>
 	<script type='text/javascript' src='TestStacktrace.js'></script>
+	<script>
+	var _bTestResults = {};
+
+	// Add URL option in QUnit to toggle publishing results to BrowserScope.org
+	QUnit.config.urlConfig.push("publish");
+	QUnit.config.testTimeout = 1000; // Timeout for async tests
+
+	// Build-up the test results beacon for BrowserScope.org
+	QUnit.testDone = function(test) {
+		// make sure all assertions passed successfully
+		if (!test.failed && test.total === test.passed) {
+			_bTestResults[test.name] = 1;
+		} else {
+			_bTestResults[test.name] = 0;
+		}
+	}
+
+	// If the user agreed to publish results to BrowserScope.org, go for it!
+	QUnit.done = function() {
+		if (QUnit.config.publish) {
+			var testKey = 'agt1YS1wcm9maWxlcnINCxIEVGVzdBjr68MRDA';
+			var newScript = document.createElement('script');
+			var firstScript = document.getElementsByTagName('script')[0];
+
+			newScript.src = 'http://www.browserscope.org/user/beacon/' + testKey + "?callback=showResults";
+			firstScript.parentNode.insertBefore(newScript, firstScript);
+		}
+	}
+
+	// Load the results widget from browserscope.org
+	function showResults() {
+		var script = document.createElement('script');
+		script.src = "http://www.browserscope.org/user/tests/table/agt1YS1wcm9maWxlcnINCxIEVGVzdBjr68MRDA?o=js";
+		document.body.appendChild(script);
+	}
+	</script>
 </head>
 <body>
 	<h1 id='qunit-header'>stacktrace.js Test Suite</h1>
