@@ -56,6 +56,8 @@ printStackTrace.implementation.prototype = {
     mode: function(e) {
         if (e['arguments'] && e.stack) {
             return 'chrome';
+        } else if (e.stack && e.sourceURL) {
+            return 'safari';
         } else if (typeof e.message === 'string' && typeof window !== 'undefined' && window.opera) {
             // e.message.indexOf("Backtrace:") > -1 -> opera
             // !e.stacktrace -> opera
@@ -132,20 +134,26 @@ printStackTrace.implementation.prototype = {
     },
 
     /**
+     * Given an Error object, return a formatted Array based on Safari's stack string.
+     *
+     * @param e - Error object to inspect
+     * @return Array<String> of function calls, files and line numbers
+     */
+    safari: function(e) {
+        return e.stack.replace(/\[native code\]\n/m, '').replace(/^@/gm, '{anonymous}()@').split('\n');
+    },
+
+    /**
      * Given an Error object, return a formatted Array based on Firefox's stack string.
      *
      * @param e - Error object to inspect
      * @return Array<String> of function calls, files and line numbers
      */
     firefox: function(e) {
-        return e.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(').split('\n');
+        return e.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^[\(@]/gm, '{anonymous}()@').split('\n');
     },
 
     opera11: function(e) {
-        // "Error thrown at line 42, column 12 in <anonymous function>() in file://localhost/G:/js/stacktrace.js:\n"
-        // "Error thrown at line 42, column 12 in <anonymous function: createException>() in file://localhost/G:/js/stacktrace.js:\n"
-        // "called from line 7, column 4 in bar(n) in file://localhost/G:/js/test/functional/testcase1.html:\n"
-        // "called from line 15, column 3 in file://localhost/G:/js/test/functional/testcase1.html:\n"
         var ANON = '{anonymous}', lineRE = /^.*line (\d+), column (\d+)(?: in (.+))? in (\S+):$/;
         var lines = e.stacktrace.split('\n'), result = [];
 
@@ -220,7 +228,7 @@ printStackTrace.implementation.prototype = {
         return result;
     },
 
-    // Safari, IE, and others
+    // Safari 5-, IE 9-, and others
     other: function(curr) {
         var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], fn, args, maxStackSize = 10;
         while (curr && curr['arguments'] && stack.length < maxStackSize) {
@@ -235,7 +243,7 @@ printStackTrace.implementation.prototype = {
     /**
      * Given arguments array as a String, subsituting type names for non-string types.
      *
-     * @param {Arguments} object
+     * @param {Arguments} args
      * @return {Array} of Strings with stringified arguments
      */
     stringifyArguments: function(args) {

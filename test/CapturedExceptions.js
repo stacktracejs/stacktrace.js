@@ -240,3 +240,23 @@ CapturedExceptions.firefox_7 = {
   "@file:///G:/js/test/functional/testcase1.html:24\n" +
   ""
 };
+
+CapturedExceptions.firefox_14 = {
+    message: "x is null",
+    stack: "@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:48\n" +
+        "dumpException3@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:52\n" +
+        "onclick@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:1\n" +
+        "",
+    fileName: "file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html",
+    lineNumber: 48
+};
+
+CapturedExceptions.safari_6 = {
+    message: "'null' is not an object (evaluating 'x.undef')",
+    stack: "@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:48\n" +
+        "dumpException3@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:52\n" +
+        "onclick@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:82\n" +
+        "[native code]",
+    line: 48,
+    sourceURL: "file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html"
+};

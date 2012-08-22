@@ -70,13 +70,13 @@
 
   test("mode", function() {
     expect(1);
-    equals("chrome firefox other opera9 opera10a opera10b opera11".indexOf(pst.mode(UnitTest.fn.createGenericError())) >= 0, true);
+    equals("chrome safari firefox other opera9 opera10a opera10b opera11".indexOf(pst.mode(UnitTest.fn.createGenericError())) >= 0, true);
   });
 
   test("run mode", function() {
     expect(1);
     var p = new printStackTrace.implementation();
-    p.other = p.firefox = p.chrome = p.opera9 = p.opera10a = p.opera10b = p.opera11 = function() {
+    p.other = p.firefox = p.chrome = p.safari = p.opera9 = p.opera10a = p.opera10b = p.opera11 = function() {
       equals(1, 1, 'called mode() successfully');
     };
     p.run();
@@ -245,15 +245,15 @@
     ok(!this.toInstrument._instrumented, 'function deinstrumented');
     this.toInstrument = this.callback = null;
   });
-  
+
   test("firefox", function() {
     var e = [], ex;
-    var stack = 'f1(1,"abc")@file.js:40\n' +
-      '()@file.js:41\n' + 
-      '@:0  \n' + 
-      'f44()@file.js:494';
+    var fakeStack = 'f1@file.js:40\n' +
+      '@file.js:41\n' +
+      '@:0  \n' +
+      'f44@file.js:494';
     e.push({
-      stack: stack
+      stack: fakeStack
     }); // test saved Firefox stacktrace
     function f1(arg1, arg2) {
       try {
@@ -272,9 +272,9 @@
     expect(3 * e.length);
     for (var i = 0; i < e.length; i++) {
       var stack = pst.firefox(e[i]);
-      // equals(stack.join("\n"), '', 'debug');
-      equals(stack[0].indexOf('f1(1,"abc")') >= 0, true, 'f1');
-      equals(stack[1].indexOf('{anonymous}()@') >= 0, true, 'f2 anonymous');
+      //equals(stack.join("\n"), '', 'debug');
+      equals(stack[0].indexOf('f1') === 0, true, 'f1');
+      equals(stack[1].indexOf('{anonymous}()') === 0, true, 'f2 anonymous');
       equals(stack[2].indexOf('@:0'), -1, '@:0 discarded');
     }
   });
@@ -615,13 +615,17 @@
   });
 
   test("guessAnonymousFunction exception", function() {
+    // FIXME: this test seems to affect guessAnonymousFunction opera11
     expect(1);
     var p = new printStackTrace.implementation();
+    var oldGetSource = p.getSource;
     p.getSource = function() {
       throw 'permission denied';
     };
     var file = 'file:///test';
     equals(p.guessAnonymousFunction(file, 2), 'getSource failed with url: file:///test, exception: permission denied');
+    // Reset mocked function
+    p.getSource = oldGetSource;
   });
 
   test("guessAnonymousFunctions firefox", function() {
@@ -641,12 +645,12 @@
       }
     })();
 
-    expect(results.length * 1);
+    expect(results.length);
     for (var i = 0; i < results.length; ++i) {
       //equals(results[i], '', 'stack trace');
       var functions = p.guessAnonymousFunctions(results[i]);
-      // equals(functions.join("\n"), '', 'stack trace after guessing');
-      equals(functions[2].substring(0, 4), 'f2()', 'guessed f2 as 3rd result: ' + functions[2]);
+      //equals(functions.join("\n"), '', 'stack trace after guessing');
+      equals(functions[2].substring(0, 2), 'f2', 'guessed f2 as 3rd result: ' + functions[2]);
       //equals(functions[2].indexOf('f2'), 0, 'guessed f2 as 3rd result');
     }
   });
@@ -677,19 +681,20 @@
       equals(functions[2].indexOf('f2'), 0, 'guessed f2 in ' + functions[2]);
     }
   });
-  
+
   // Test for issue #34
   test("guessAnonymousFunctions chrome with eval", function() {
-      var unit = new printStackTrace.implementation(),
-        expected = '{anonymous}()@eval at buildTmplFn (http://domain.com/file.js:17:10)',
-        actual = unit.guessAnonymousFunctions([expected]);
+      var unit = new printStackTrace.implementation();
+      var expected = '{anonymous}()@eval at buildTmplFn (http://domain.com/file.js:17:10)';
+      var actual = unit.guessAnonymousFunctions([expected]);
       expect(1);
       // Nothing should change since no anonymous function in stack
       equals(expected, actual);
   });
 
   test("guessAnonymousFunctions opera9", function() {
-    var results = [], p = new printStackTrace.implementation();
+    var results = [];
+    var p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'bar();', '};'];
     results.push(['{anonymous}()@' + file + ':2 -- bar();']);
@@ -716,7 +721,8 @@
 
   test("guessAnonymousFunctions opera10", function() {
     // FIXME: currently failing in Opera 10.60
-    var results = [], p = new printStackTrace.implementation();
+    var results = [];
+    var p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(["{anonymous}()@" + file + ":1:1", "{anonymous}()@" + file + ":1:1"]);
@@ -743,7 +749,8 @@
   });
 
   test("guessAnonymousFunctions opera11", function() {
-    var results = [], p = new printStackTrace.implementation();
+    var results = [];
+    var p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'bar();', '};'];
     results.push(["{anonymous}()@" + file + ":2:1 -- bar();"]);
@@ -753,8 +760,7 @@
         this.undef();
       } catch (e) {
         if (p.mode(e) == 'opera11') {
-          //alert("e.stacktrace: " + e.stacktrace);
-          results.push(p.run(e));
+          results.push(p.run());
         }
       }
     };
@@ -771,24 +777,22 @@
 
   test("guessAnonymousFunctions other", function() {
     var results = [];
-    var p = new printStackTrace.implementation(), mode = p.mode(UnitTest.fn.createGenericError());
-    p._mode = 'other';
+    var p = new printStackTrace.implementation();
     var file = 'http://' + window.location.hostname + '/file.js';
     p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
     results.push(['{anonymous}()']);
 
-    if (mode == 'other') {
-      var f2 = function() {
-        try {
-          this.undef();
-        } catch (e) {
+    (function f2() {
+      try {
+        this.undef();
+      } catch (e) {
+        if (p.mode(e) == 'other') {
           results.push(p.run());
         }
-      };
-      f2();
-    }
+      }
+    })();
 
-    expect(1 * results.length);
+    expect(results.length);
     for (var i = 0; i < results.length; ++i) {
       //equals((results[i]), '', 'debug');
       equals(p.guessAnonymousFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number in "other" mode');
