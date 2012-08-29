@@ -260,3 +260,13 @@ CapturedExceptions.safari_6 = {
     line: 48,
     sourceURL: "file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html"
 };
+
+CapturedExceptions.ie_10 = {
+    message: "Unable to get property 'undef' of undefined or null reference",
+    stack: "TypeError: Unable to get property 'undef' of undefined or null reference\n" +
+        "   at Anonymous function (http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:48:13)\n" +
+        "   at dumpException3 (http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:46:9)\n" +
+        "   at onclick (http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:82:1)",
+    description: "Unable to get property 'undef' of undefined or null reference",
+    number: -2146823281
+};

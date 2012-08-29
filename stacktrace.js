@@ -58,6 +58,8 @@ printStackTrace.implementation.prototype = {
             return 'chrome';
         } else if (e.stack && e.sourceURL) {
             return 'safari';
+        } else if (e.stack && e.number) {
+            return 'ie';
         } else if (typeof e.message === 'string' && typeof window !== 'undefined' && window.opera) {
             // e.message.indexOf("Backtrace:") > -1 -> opera
             // !e.stacktrace -> opera
@@ -140,7 +142,23 @@ printStackTrace.implementation.prototype = {
      * @return Array<String> of function calls, files and line numbers
      */
     safari: function(e) {
-        return e.stack.replace(/\[native code\]\n/m, '').replace(/^@/gm, '{anonymous}()@').split('\n');
+        return e.stack.replace(/\[native code\]\n/m, '')
+            .replace(/^(?=\w+Error\:).*$\n/m, '')
+            .replace(/^@/gm, '{anonymous}()@')
+            .split('\n');
+    },
+
+    /**
+     * Given an Error object, return a formatted Array based on IE's stack string.
+     *
+     * @param e - Error object to inspect
+     * @return Array<String> of function calls, files and line numbers
+     */
+    ie: function(e) {
+        var lineRE = /^.*at (\w+) \(([^\)]+)\)$/gm;
+        return e.stack.replace(/at Anonymous function /gm, '{anonymous}()@')
+            .replace(lineRE, '$1@$2')
+            .split('\n');
     },
 
     /**
