@@ -157,6 +157,7 @@ printStackTrace.implementation.prototype = {
     ie: function(e) {
         var lineRE = /^.*at (\w+) \(([^\)]+)\)$/gm;
         return e.stack.replace(/at Anonymous function /gm, '{anonymous}()@')
+            .replace(/^(?=\w+Error\:).*$\n/m, '')
             .replace(lineRE, '$1@$2')
             .split('\n');
     },
