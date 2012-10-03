@@ -186,7 +186,7 @@ CapturedExceptions.opera_1151 = {
 };
 
 CapturedExceptions.chrome_15 = {
-  'arguments': ["undef", printStackTrace.implementation],
+  'arguments': ["undef"],
   message: "Object #<Object> has no method 'undef'",
   stack: "TypeError: Object #<Object> has no method 'undef'\n" +
   "    at Object.createException (http://127.0.0.1:8000/js/stacktrace.js:42:18)\n" +
