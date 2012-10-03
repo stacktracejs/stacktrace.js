@@ -606,12 +606,14 @@
         equals(lines[1], 'line1');
     });
 
-    test("sync ajax", function() {
-        expect(1);
-        var p = new printStackTrace.implementation();
-        var data = p.ajax(document.location.href);
-        ok(data.indexOf('stacktrace') >= 0, 'synchronous get');
-    });
+    if (window && window.location && window.location.hostname && window.location.hostname !== 'localhost') {
+        test("sync ajax", function() {
+            expect(1);
+            var p = new printStackTrace.implementation();
+            var data = p.ajax(document.location.href);
+            ok(data.indexOf('stacktrace') >= 0, 'synchronous get');
+        });
+    }
 
     test("guessAnonymousFunction", function() {
         expect(1);
