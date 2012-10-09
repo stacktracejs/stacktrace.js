@@ -20,7 +20,7 @@ function printStackTrace(options) {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = printStackTrace
+    module.exports = printStackTrace;
 }
 
 printStackTrace.implementation = function() {
