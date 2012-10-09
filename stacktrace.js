@@ -19,6 +19,10 @@ function printStackTrace(options) {
     return (guess) ? p.guessAnonymousFunctions(result) : result;
 }
 
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = printStackTrace
+}
+
 printStackTrace.implementation = function() {
 };
 
