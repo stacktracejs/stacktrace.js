@@ -18,6 +18,7 @@ function printProp(prop, value) {
 function getExceptionProps(ex) {
   var prop, props = [], obj = {
     message: true,
+    name: true,
     stack: true,
     stacktrace: true,
     'arguments': true
