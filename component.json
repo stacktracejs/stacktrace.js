@@ -1,6 +1,6 @@
 {
     "name": "stacktrace.js",
-    "version": "0.5.1",
+    "version": "0.5.3",
     "main": "./stacktrace.js",
     "dependencies": {}
 }
