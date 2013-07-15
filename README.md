@@ -70,7 +70,8 @@ It is currently tested and working on:
  - Epiphany 2.28.0+
  - Iceape 1.1+
 
-## Contributions
+## Contributions [![Stories in Ready](http://badge.waffle.io/eriwen/javascript-stacktrace.png)](http://waffle.io/eriwen/javascript-stacktrace)  
+
 This project is made possible due to the efforts of these fine people:
 
 * [Eric Wendelin](http://eriwen.com)
