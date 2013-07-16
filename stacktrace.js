@@ -11,7 +11,7 @@
 
   // AMD
   } else if (typeof define === 'function' && define.amd) {
-    define( factory );
+    define(factory);
 
   // Browser globals
   } else {
