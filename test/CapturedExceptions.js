@@ -288,6 +288,7 @@ CapturedExceptions.safari_6 = {
 
 CapturedExceptions.ie_10 = {
     message: "Unable to get property 'undef' of undefined or null reference",
+    name: "TypeError",
     stack: "TypeError: Unable to get property 'undef' of undefined or null reference\n" +
         "   at Anonymous function (http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:48:13)\n" +
         "   at dumpException3 (http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:46:9)\n" +
