@@ -1,4 +1,5 @@
 /*global module, test, equals, expect, ok, printStackTrace, CapturedExceptions */
+/*jshint bitwise:true, curly:true, forin:true, latedef:true, noarg:true, noempty:true, nonew:true, undef:true, trailing:true, indent:4, browser:true */
 //
 //     Copyright (C) 2008 Loic Dachary <loic@dachary.org>
 //     Copyright (C) 2008 Johan Euphrosine <proppy@aminche.com>
@@ -20,26 +21,38 @@
 
 (function(window, document, undefined) {
     var pst = printStackTrace.implementation.prototype;
+
+    var impl = function() {
+        return new printStackTrace.implementation();
+    };
+
+    var ex;
+    try {
+        this.undef();
+    } catch (exception) {
+        ex = exception;
+    }
+
     // Testing util functions
     var UnitTest = function() {
     };
     UnitTest.fn = UnitTest.prototype = {
         genericError: null,
         createGenericError: function() {
-            if(UnitTest.prototype.genericError != null) {
+            if (UnitTest.prototype.genericError != null) {
                 return UnitTest.prototype.genericError;
             }
             //return new Error("Generic error");
             return new Error();
         },
         prepareFakeOperaEnvironment: function() {
-            if(typeof window !== 'undefined' && !window.opera) {
+            if (typeof window !== 'undefined' && !window.opera) {
                 window.opera = "fake";
                 window.fakeOpera = true;
             }
         },
         clearFakeOperaEnvironment: function() {
-            if(typeof window !== 'undefined' && window.fakeOpera) {
+            if (typeof window !== 'undefined' && window.fakeOpera) {
                 delete window.opera;
                 delete window.fakeOpera;
             }
@@ -61,7 +74,7 @@
             pst.guessAnonymousFunctions = guessAnonymousFunctions;
             ok(true, 'guessAnonymousFunctions called');
         };
-        var r = printStackTrace({
+        printStackTrace({
             guess: true
         });
     });
@@ -75,69 +88,74 @@
 
     test("run mode", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.other = p.firefox = p.chrome = p.ie = p.safari = p.opera9 = p.opera10a = p.opera10b = p.opera11 = function() {
-            equals(1, 1, 'called mode() successfully');
+            ok(true, 'called mode() successfully');
         };
         p.run();
     });
 
     test("run chrome", function() {
-        expect(1);
-        var p = new printStackTrace.implementation();
+        expect(2);
+        var p = impl();
         p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.safari = p.ie = function() {
             equals(1, 0, 'must not call run for any mode other than "chrome"');
         };
         p.chrome = function() {
-            equals(1, 1, 'called run for "chrome"');
+            ok(true, 'called run for "chrome"');
         };
         p.run(CapturedExceptions.chrome_15);
+        p.run(CapturedExceptions.chrome_27);
     });
 
     test("run safari", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = p.ie = function() {
             equals(1, 0, 'must not call run for any mode other than "safari"');
         };
         p.safari = function() {
-            equals(1, 1, 'called run for "safari"');
+            ok(true, 'called run for "safari"');
         };
         p.run(CapturedExceptions.safari_6);
     });
 
     test("run ie", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = p.safari = function() {
             equals(1, 0, 'must not call run for any mode other than "ie"');
         };
         p.ie = function() {
-            equals(1, 1, 'called run for "ie"');
+            ok(true, 'called run for "ie"');
         };
         p.run(CapturedExceptions.ie_10);
     });
 
     test("run firefox", function() {
-        expect(1);
-        var p = new printStackTrace.implementation();
+        expect(5);
+        var p = impl();
         p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.chrome = p.safari = p.ie = function() {
             equals(1, 0, 'must not call run for any mode other than "firefox"');
         };
         p.firefox = function() {
-            equals(1, 1, 'called run for "firefox"');
+            ok(true, 'called run for "firefox"');
         };
+        p.run(CapturedExceptions.firefox_3_6);
+        p.run(CapturedExceptions.firefox_3_6_file);
+        p.run(CapturedExceptions.firefox_7);
         p.run(CapturedExceptions.firefox_14);
+        p.run(CapturedExceptions.firefox_22);
     });
 
     test("run opera9", function() {
         expect(5);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.opera10a = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
             equals(1, 0, 'must not call run for any mode other than "opera9"');
         };
         p.opera9 = function() {
-            equals(1, 1, 'called run for "opera9"');
+            ok(true, 'called run for "opera9"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run({
@@ -152,12 +170,12 @@
 
     test("run opera10a", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.opera9 = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
             equals(1, 0, 'must not call run for any mode other than "opera10a"');
         };
         p.opera10a = function() {
-            equals(1, 1, 'called run for "opera10a"');
+            ok(true, 'called run for "opera10a"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1010);
@@ -166,12 +184,12 @@
 
     test("run opera10b", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.opera9 = p.opera10a = p.opera11 = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
             equals(1, 0, 'must not call run for any mode other than "opera10b"');
         };
         p.opera10b = function() {
-            equals(1, 1, 'called run for "opera10b"');
+            ok(true, 'called run for "opera10b"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1063);
@@ -180,32 +198,28 @@
 
     test("run opera11", function() {
         expect(3);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.opera9 = p.opera10a = p.opera10b = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
             equals(1, 0, 'must not be called');
         };
         p.opera11 = function() {
-            equals(1, 1, 'called run for "opera11"');
+            ok(true, 'called run for "opera11"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
-        p.run({
-            message: 'ignored',
-            stack: 'ignored\n' + 'f1([arguments not available])@http://site.com/main.js:2\n' + '<anonymous function: f2>([arguments not available])@http://site.com/main.js:4\n' + '@',
-            stacktrace: 'ignored\n' + 'Error thrown at line 129, column 5 in <anonymous function>():\n' + 'ignored\n' + 'Error thrown at line 129, column 5 in <anonymous function>():\n' + 'ignored\n' + 'Error thrown at line 124, column 4 in <anonymous function>():\n' + 'ignored\n' + 'Error thrown at line 594, column 2 in process():\n' + 'ignored\n' + 'Error thrown at line 124, column 4 in <anonymous function>():\n' + 'ignored\n' + 'Error thrown at line 1, column 55 in discarded():\n' + '    this.undef();\n' + 'called from line 1, column 333 in f1(arg1, arg2):\n' + '   discarded();\n' + 'called from line 1, column 470 in <anonymous function>():\n' + '   f1(1, "abc");\n' + 'called from line 1, column 278 in program code:\n' + '   f2();'
-        });
         p.run(CapturedExceptions.opera_1111);
         p.run(CapturedExceptions.opera_1151);
+        p.run(CapturedExceptions.opera_1216);
         UnitTest.fn.clearFakeOperaEnvironment();
     });
 
     test("run other", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = p.safari = p.ie = function() {
             equals(1, 0, 'must not be called');
         };
         p.other = function() {
-            equals(1, 1, 'called run for other browser');
+            ok(true, 'called run for other browser');
         };
         p.run({});
     });
@@ -213,7 +227,7 @@
     test("function instrumentation", function() {
         expect(4);
         this.toInstrument = function() {
-            equals(1, 1, 'called instrumented function');
+            ok(true, 'called instrumented function');
         };
         this.callback = function(stacktrace) {
             ok(typeof stacktrace !== 'undefined', 'called callback');
@@ -226,101 +240,140 @@
         this.toInstrument = this.callback = null;
     });
 
-    test("firefox", function() {
-        var e = [], ex;
-        var fakeStack = 'f1@file.js:40\n' + '@file.js:41\n' + '@:0  \n' + 'f44@file.js:494';
-        e.push({
-            stack: fakeStack
-        }); // test saved Firefox stacktrace
-        function f1(arg1, arg2) {
-            try {
-                this.undef();
-            } catch(exception) {
-                ex = exception;
+    if (pst.mode(ex) == 'firefox') {
+        test("firefox live", function() {
+            function f1(arg1, arg2) {
+                try {
+                    return this.undef();
+                } catch (exception) {
+                    return exception;
+                }
             }
-        }
 
-        var f2 = function() {
-            f1(1, "abc");
-        };
-        f2();
-        if(pst.mode(ex) == 'firefox') {
-            e.push(ex);
-        }
-        expect(3 * e.length);
-        for(var i = 0; i < e.length; i++) {
-            var stack = pst.firefox(e[i]);
-            //equals(stack.join("\n"), '', 'debug');
-            equals(stack[0].indexOf('f1') === 0, true, 'f1');
-            equals(stack[1].indexOf('{anonymous}()') === 0, true, 'f2 anonymous');
-            equals(stack[2].indexOf('@:0'), -1, '@:0 discarded');
-        }
-    });
+            var f2 = function() {
+                return f1(1, "abc");
+            };
 
-    test("chrome stack", function() {
-        var e = {
-            stack: "TypeError: Object #<Object> has no method 'undef'\n" + "    at Object.createException (stacktrace.js:81:18)\n" + "    at Object.run (stacktrace.js:66:25)\n" + "    at printStackTrace (stacktrace.js:57:62)\n" + "    at instrumented (stacktrace.js:114:33)\n" + "    at bar (testcase4.html:36:9)\n" + "    at testcase4.html:41:9\n" + "    at testcase4.html:48:7"
-        };
+            var e = (function() {
+                return f2();
+            })();
 
-        expect(8);
-        var message = pst.chrome(e);
-        // equals(message.join("\n"), '', 'debug');
-        equals(message.length, 7, '7 stack entries');
+            expect(2);
+            var message = pst.firefox(e);
+            // equals(message.join('\n'), '', 'processed stack trace');
+            equals(message[0].indexOf('f1@'), 0, message[0] + ' should start with f1@');
+            equals(message[1].indexOf('f2@'), 0, message[1] + ' should start with f2@');
+            //equals(message[2].indexOf('{anonymous}()@'), 0, message[2] + ' should start with {anonymous}()@');
+        });
+    }
 
-        equals(message[0].indexOf('Object.createException') >= 0, true, 'Object.createException: ' + message[0]);
-        equals(message[1].indexOf('Object.run') >= 0, true, 'Object.run: ' + message[1]);
-        equals(message[2].indexOf('printStackTrace') >= 0, true, 'printStackTrace: ' + message[2]);
-        equals(message[3].indexOf('instrumented') >= 0, true, 'instrumented: ' + message[3]);
-        equals(message[4].indexOf('bar') >= 0, true, 'bar: ' + message[4]);
-        equals(message[5].indexOf('{anonymous}') >= 0, true, '{anonymous}: ' + message[5]);
-        equals(message[6].indexOf('{anonymous}') >= 0, true, '{anonymous}: ' + message[6]);
+    test("firefox", function() {
+        expect(34);
+
+        var message = pst.firefox(CapturedExceptions.firefox_3_6);
+        // equals(message.join('\n'), '', 'processed stack trace');
+        equals(message.length, 7, 'Firefox 3.6: 7 stack entries');
+        equals(message[0], '{anonymous}()@http://127.0.0.1:8000/js/stacktrace.js:44');
+        equals(message[1], '{anonymous}(null)@http://127.0.0.1:8000/js/stacktrace.js:31');
+        equals(message[2], 'printStackTrace()@http://127.0.0.1:8000/js/stacktrace.js:18');
+        equals(message[3], 'bar(1)@http://127.0.0.1:8000/js/test/functional/testcase1.html:13');
+        equals(message[4], 'bar(2)@http://127.0.0.1:8000/js/test/functional/testcase1.html:16');
+        equals(message[5], 'foo()@http://127.0.0.1:8000/js/test/functional/testcase1.html:20');
+        equals(message[6], '{anonymous}()@http://127.0.0.1:8000/js/test/functional/testcase1.html:24');
+
+        message = pst.firefox(CapturedExceptions.firefox_3_6_file);
+        equals(message.length, 7, 'Firefox 3.6: 7 stack entries');
+        equals(message[0], '{anonymous}()@file:///home/user/js/stacktrace.js:44');
+        equals(message[1], '{anonymous}(null)@file:///home/user/js/stacktrace.js:31');
+        equals(message[2], 'printStackTrace()@file:///home/user/js/stacktrace.js:18');
+        equals(message[3], 'bar(1)@file:///home/user/js/test/functional/testcase1.html:13');
+        equals(message[4], 'bar(2)@file:///home/user/js/test/functional/testcase1.html:16');
+        equals(message[5], 'foo()@file:///home/user/js/test/functional/testcase1.html:20');
+        equals(message[6], '{anonymous}()@file:///home/user/js/test/functional/testcase1.html:24');
+
+        message = pst.firefox(CapturedExceptions.firefox_7);
+        equals(message.length, 7, 'Firefox 7: 7 stack entries');
+        equals(message[0], '{anonymous}()@file:///G:/js/stacktrace.js:44');
+        equals(message[1], '{anonymous}(null)@file:///G:/js/stacktrace.js:31');
+        equals(message[2], 'printStackTrace()@file:///G:/js/stacktrace.js:18');
+        equals(message[3], 'bar(1)@file:///G:/js/test/functional/testcase1.html:13');
+        equals(message[4], 'bar(2)@file:///G:/js/test/functional/testcase1.html:16');
+        equals(message[5], 'foo()@file:///G:/js/test/functional/testcase1.html:20');
+        equals(message[6], '{anonymous}()@file:///G:/js/test/functional/testcase1.html:24');
+
+        message = pst.firefox(CapturedExceptions.firefox_14);
+        equals(message.length, 3, 'Firefox 14: 3 stack entries');
+        equals(message[0], '{anonymous}()@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:48');
+        equals(message[1], 'dumpException3@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:52');
+        equals(message[2], 'onclick@file:///Users/eric/src/javascript-stacktrace/test/functional/ExceptionLab.html:1');
+
+        message = pst.firefox(CapturedExceptions.firefox_22);
+        equals(message.length, 5, 'Firefox 22: 7 stack entries');
+        equals(message[0], '{anonymous}()@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.js:4');
+        equals(message[1], 'createException@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.js:8');
+        equals(message[2], 'createException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:56');
+        equals(message[3], 'dumpException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:60');
+        equals(message[4], 'onclick@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:1');
     });
 
     test("chrome", function() {
-        var e = [], ex;
+        expect(14);
 
-        var stack = "TypeError: Object [object Window] has no method 'undef'\n" + "    at f0 (test/test-stacktrace.js:198:20)\n" + "    at f1 (test/test-stacktrace.js:203:10)\n" + "    at f2 (test/test-stacktrace.js:206:10)\n" + "    at Object.<anonymous> (test/test-stacktrace.js:208:6)\n" + "    at Object.run (test/qunit.js:89:18)\n" + "    at test/qunit.js:214:10\n" + "    at process (test/qunit.js:783:23)\n" + "    at test/qunit.js:383:5";
-        e.push({
-            stack: stack
-        }); // test saved Chrome stacktrace
-        function f0() {
-            try {
-                this.undef();
-            } catch(exception) {
-                ex = exception;
-            }
-        }
+        var message = pst.chrome(CapturedExceptions.chrome_15);
+        // equals(message.join('\n'), '', 'processed stack trace');
+        equals(message.length, 7, '7 stack entries');
+        equals(message[0], 'Object.createException@http://127.0.0.1:8000/js/stacktrace.js:42:18');
+        equals(message[1], 'Object.run@http://127.0.0.1:8000/js/stacktrace.js:31:25');
+        equals(message[2], 'printStackTrace@http://127.0.0.1:8000/js/stacktrace.js:18:62');
+        equals(message[3], 'bar@http://127.0.0.1:8000/js/test/functional/testcase1.html:13:17');
+        equals(message[4], 'bar@http://127.0.0.1:8000/js/test/functional/testcase1.html:16:5');
+        equals(message[5], 'foo@http://127.0.0.1:8000/js/test/functional/testcase1.html:20:5');
+        equals(message[6], '{anonymous}()@http://127.0.0.1:8000/js/test/functional/testcase1.html:24:4');
 
-        function f1(arg1, arg2) {
-            f0();
-        }
-
-        var f2 = function() {
-            f1(1, "abc");
-        };
-        f2();
-        if(pst.mode(ex) == 'chrome') {
-            e.push(ex);
-        } // test native Chrome stacktrace
-        expect(4 * e.length);
-        for(var i = 0; i < e.length; i++) {
-            var message = pst.chrome(e[i]);
-            // equals(e[i].stack, '', 'original stack trace');
-            // equals(message.join("\n"), '', 'processed stack trace');
-            equals(message[0].indexOf('f0') >= 0, true, 'f0 is top of stack');
-            equals(message[1].indexOf('f1') >= 0, true, 'f1 is second called function');
-            equals(message[2].indexOf('f2') >= 0, true, 'f2 anonymous function guessed automatically');
-            equals(message[3].indexOf('anonymous') >= 0, true, 'f2 anonymous function called');
-        }
+        message = pst.chrome(CapturedExceptions.chrome_27);
+        equals(message.length, 5, '5 stack entries');
+        equals(message[0], '{anonymous}()@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.js:4:9');
+        equals(message[1], 'createException@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.js:8:5');
+        equals(message[2], 'createException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:56:16');
+        equals(message[3], 'dumpException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:60:23');
+        equals(message[4], 'HTMLButtonElement.onclick@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:83:126');
     });
+
+    if (pst.mode(ex) == 'chrome') {
+        test("chrome live", function() {
+            function f1(arg1, arg2) {
+                try {
+                    return this.undef();
+                } catch (exception) {
+                    return exception;
+                }
+            }
+
+            var f2 = function() {
+                return f1(1, "abc");
+            };
+
+            var e = (function() {
+                return f2();
+            })();
+
+            expect(3);
+            var message = pst.chrome(e);
+            //equals(e.stack, '', 'original stack trace');
+            //equals(message.join('\n'), '', 'processed stack trace');
+            equals(message[0].indexOf('f1@'), 0, message[0] + ' should start with f1@');
+            equals(message[1].indexOf('f2@'), 0, message[1] + ' should start with f2@');
+            equals(message[2].indexOf('{anonymous}()@'), 0, message[2] + ' should start with {anonymous}()@');
+        });
+    }
 
     test("opera9", function() {
         var mode = pst.mode(UnitTest.fn.createGenericError()), e = [];
-        if(mode == 'opera9') {
+        if (mode == 'opera9') {
             function discarded() {
                 try {
                     this.undef();
-                } catch(exception) {
+                } catch (exception) {
                     e.push(exception);
                 }
             }
@@ -335,7 +388,7 @@
             f2();
         }
         expect(3 * e.length);
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var message = pst.opera9(e[i]);
             var message_string = message.join("\n");
             //equals(message.join("\n"), 'debug', 'debug');
@@ -349,7 +402,7 @@
     test("opera9", function() {
         var e = [CapturedExceptions.opera_854, CapturedExceptions.opera_902, CapturedExceptions.opera_927, CapturedExceptions.opera_964];
         expect(12); // 3 * e.length
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var message = pst.opera9(e[i]);
             //equals(message.join("\n"), 'debug', 'debug');
             equals(message.length, 7, 'number of stack entries');
@@ -361,7 +414,7 @@
     test("opera10a", function() {
         var e = [CapturedExceptions.opera_1010];
         expect(5); // 5 * e.length
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var message = pst.opera10a(e[i]);
             //equals(message.join("\n"), 'debug', 'debug');
             equals(message.length, 7, 'number of stack entries');
@@ -375,7 +428,7 @@
     test("opera10b", function() {
         var e = [CapturedExceptions.opera_1063];
         expect(3); // 3 * e.length
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var message = pst.opera10b(e[i]);
             //equals(message.join("\n"), 'debug', 'debug');
             equals(message.length, 7, 'number of stack entries');
@@ -387,7 +440,7 @@
     test("opera11", function() {
         var e = [CapturedExceptions.opera_1111, CapturedExceptions.opera_1151];
         expect(6); // 3 * e.length
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var message = pst.opera11(e[i]);
             //equals(message.join("\n"), 'debug', 'debug');
             equals(message.length, 7, 'number of stack entries');
@@ -399,11 +452,11 @@
     test("opera11", function() {
         var mode = pst.mode(UnitTest.fn.createGenericError());
         var e = [];
-        if(mode == 'opera11') {
+        if (mode == 'opera11') {
             function discarded() {
                 try {
                     this.undef();
-                } catch(exception) {
+                } catch (exception) {
                     e.push(exception);
                 }
             }
@@ -419,7 +472,7 @@
             f2();
         }
         expect(3 * e.length);
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var stack = pst.opera11(e[i]), stack_string = stack.join('\n');
             //equals(stack_string, 'debug', 'debug');
             equals(stack_string.indexOf('ignored'), -1, 'ignored');
@@ -430,10 +483,11 @@
 
     test("safari", function() {
         var e = [], ex;
+
         function f0() {
             try {
                 this.undef();
-            } catch(exception) {
+            } catch (exception) {
                 ex = exception;
             }
         }
@@ -446,11 +500,11 @@
             f1(1, "abc");
         };
         f2();
-        if(pst.mode(ex) == 'safari') {
+        if (pst.mode(ex) == 'safari') {
             e.push(ex);
         }
         expect(2 * e.length);
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var stack = pst.safari(e[i]), stack_string = stack.join('\n');
             //equals(stack_string, 'debug', 'debug');
             equals(stack[0].indexOf('f0') >= 0, true, 'matched f0');
@@ -460,10 +514,11 @@
 
     test("ie", function() {
         var e = [], ex;
+
         function f0() {
             try {
                 this.undef();
-            } catch(exception) {
+            } catch (exception) {
                 ex = exception;
             }
         }
@@ -476,11 +531,11 @@
             f1(1, "abc");
         };
         f2();
-        if(pst.mode(ex) == 'ie') {
+        if (pst.mode(ex) == 'ie') {
             e.push(ex);
         }
         expect(3 * e.length);
-        for(var i = 0; i < e.length; i++) {
+        for (var i = 0; i < e.length; i++) {
             var stack = pst.ie(e[i]);
             equals(stack[0].indexOf('f0'), 0, 'matched f0');
             equals(stack[1].indexOf('f1'), 0, 'f1 function name: ' + stack[1]);
@@ -514,7 +569,7 @@
         var message_string = message.join("\n");
         equals(message[0].indexOf('f1(1,"abc",#function,#object)') >= 0, true, 'f1');
         equals(message[1].indexOf('{anonymous}()') >= 0, true, 'f2 anonymous');
-        if(mode == 'other') {
+        if (mode == 'other') {
             function f1(arg1, arg2) {
                 var message = pst.other(arguments.callee), message_string = message.join("\n");
                 //equals(message_string, '', 'debug');
@@ -584,7 +639,7 @@
 
     test("getSource cache miss", function() {
         expect(3);
-        var p = new printStackTrace.implementation(), file = 'file:///test', lines;
+        var p = impl(), file = 'file:///test', lines;
         p.ajax = function(fileArg, callback) {
             equals(fileArg, file, 'cache miss');
             return 'line0\nline1\n';
@@ -596,7 +651,7 @@
 
     test("getSource cache hit", function() {
         expect(2);
-        var p = new printStackTrace.implementation(), file = 'file:///test', lines;
+        var p = impl(), file = 'file:///test', lines;
         p.ajax = function(fileArg, callback) {
             ok(false, 'not called');
         };
@@ -609,7 +664,7 @@
     if (window && window.location && window.location.hostname && window.location.hostname !== 'localhost') {
         test("sync ajax", function() {
             expect(1);
-            var p = new printStackTrace.implementation();
+            var p = impl();
             var data = p.ajax(document.location.href);
             ok(data.indexOf('stacktrace') >= 0, 'synchronous get');
         });
@@ -617,7 +672,7 @@
 
     test("guessAnonymousFunction", function() {
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var a = function() {', 'var b = 2;', '};'];
         equals(p.guessAnonymousFunction(file, 2), 'a');
@@ -626,7 +681,7 @@
     test("guessAnonymousFunction exception", function() {
         // FIXME: this test seems to affect guessAnonymousFunction opera11
         expect(1);
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var oldGetSource = p.getSource;
         p.getSource = function() {
             throw 'permission denied';
@@ -639,7 +694,7 @@
 
     test("guessAnonymousFunctions firefox", function() {
         var results = [];
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var f2 = function () {', 'var b = 2;', '};', 'function run() {', 'return true;', '}'];
         results.push(['{anonymous}()@' + file + ':74', '{anonymous}()@' + file + ':5', '{anonymous}()@' + file + ':2']);
@@ -647,15 +702,15 @@
         (function f2() {
             try {
                 this.undef();
-            } catch(e) {
-                if(p.mode(e) == 'firefox') {
+            } catch (e) {
+                if (p.mode(e) == 'firefox') {
                     results.push(p.run());
                 }
             }
         })();
 
         expect(results.length);
-        for(var i = 0; i < results.length; ++i) {
+        for (var i = 0; i < results.length; ++i) {
             //equals(results[i], '', 'stack trace');
             var functions = p.guessAnonymousFunctions(results[i]);
             //equals(functions.join("\n"), '', 'stack trace after guessing');
@@ -666,7 +721,7 @@
 
     test("guessAnonymousFunctions chrome", function() {
         var results = [];
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
         results.push(['createException() (' + file + ':1:1)', 'run() (' + file + ':1:1)', 'f2() (' + file + ':1:1)']);
@@ -674,8 +729,8 @@
         var f2 = function() {
             try {
                 this.undef();
-            } catch(e) {
-                if(p.mode(e) == 'chrome') {
+            } catch (e) {
+                if (p.mode(e) == 'chrome') {
                     results.push(p.run());
                 }
             }
@@ -683,7 +738,7 @@
         f2();
 
         expect(results.length);
-        for(var i = 0; i < results.length; ++i) {
+        for (var i = 0; i < results.length; ++i) {
             //equals((results[i]), '', 'debug');
             var functions = p.guessAnonymousFunctions(results[i]);
             // equals(functions.join("\n"), '', 'debug contents of stack');
@@ -693,7 +748,7 @@
 
     // Test for issue #34
     test("guessAnonymousFunctions chrome with eval", function() {
-        var unit = new printStackTrace.implementation();
+        var unit = impl();
         var expected = '{anonymous}()@eval at buildTmplFn (http://domain.com/file.js:17:10)';
         var actual = unit.guessAnonymousFunctions([expected]);
         expect(1);
@@ -703,7 +758,7 @@
 
     test("guessAnonymousFunctions opera9", function() {
         var results = [];
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var f2 = function() {', 'bar();', '};'];
         results.push(['{anonymous}()@' + file + ':2 -- bar();']);
@@ -711,8 +766,8 @@
         var f2 = function() {
             try {
                 this.undef();
-            } catch(e) {
-                if(p.mode(e) == 'opera9') {
+            } catch (e) {
+                if (p.mode(e) == 'opera9') {
                     results.push(p.run(e));
                 }
             }
@@ -720,7 +775,7 @@
         f2();
 
         expect(results.length * 1);
-        for(var i = 0; i < results.length; ++i) {
+        for (var i = 0; i < results.length; ++i) {
             //equals((results[i]), '', 'debug');
             var functions = p.guessAnonymousFunctions(results[i]);
             //equals(functions, '', 'debug');
@@ -731,7 +786,7 @@
     test("guessAnonymousFunctions opera10", function() {
         // FIXME: currently failing in Opera 10.60
         var results = [];
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
         results.push(["{anonymous}()@" + file + ":1:1", "{anonymous}()@" + file + ":1:1"]);
@@ -739,8 +794,8 @@
         var f2 = function() {
             try {
                 this.undef();
-            } catch(e) {
-                if(p.mode(e) == 'opera10') {
+            } catch (e) {
+                if (p.mode(e) == 'opera10') {
                     //alert("e.message: " + e.message);
                     results.push(p.run());
                 }
@@ -749,7 +804,7 @@
         f2();
 
         expect(results.length * 1);
-        for(var i = 0; i < results.length; ++i) {
+        for (var i = 0; i < results.length; ++i) {
             //equals((results[i]), '', 'debug');
             var functions = p.guessAnonymousFunctions(results[i]);
             //equals(functions.join("\n"), '', 'debug');
@@ -759,7 +814,7 @@
 
     test("guessAnonymousFunctions opera11", function() {
         var results = [];
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var f2 = function() {', 'bar();', '};'];
         results.push(["{anonymous}()@" + file + ":2:1 -- bar();"]);
@@ -767,8 +822,8 @@
         var f2 = function() {
             try {
                 this.undef();
-            } catch(e) {
-                if(p.mode(e) == 'opera11') {
+            } catch (e) {
+                if (p.mode(e) == 'opera11') {
                     results.push(p.run());
                 }
             }
@@ -776,7 +831,7 @@
         f2();
 
         expect(results.length * 1);
-        for(var i = 0; i < results.length; ++i) {
+        for (var i = 0; i < results.length; ++i) {
             //equals((results[i]), '', 'debug');
             var functions = p.guessAnonymousFunctions(results[i]);
             //equals(functions.join("\n"), '', 'debug');
@@ -786,7 +841,7 @@
 
     test("guessAnonymousFunctions other", function() {
         var results = [];
-        var p = new printStackTrace.implementation();
+        var p = impl();
         var file = 'http://' + window.location.hostname + '/file.js';
         p.sourceCache[file] = ['var f2 = function() {', 'var b = 2;', '};'];
         results.push(['{anonymous}()']);
@@ -794,15 +849,15 @@
         (function f2() {
             try {
                 this.undef();
-            } catch(e) {
-                if(p.mode(e) == 'other') {
+            } catch (e) {
+                if (p.mode(e) == 'other') {
                     results.push(p.run());
                 }
             }
         })();
 
         expect(results.length);
-        for(var i = 0; i < results.length; ++i) {
+        for (var i = 0; i < results.length; ++i) {
             //equals((results[i]), '', 'debug');
             equals(p.guessAnonymousFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number in "other" mode');
         }

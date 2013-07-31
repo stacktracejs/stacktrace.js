@@ -4,7 +4,7 @@
 //                  Johan Euphrosine <proppy@aminche.com> (2008)
 //                  Oyvind Sean Kinsey http://kinsey.no/blog (2010)
 //                  Victor Homyakov <victor-homyakov@users.sourceforge.net> (2010)
-/*global module, exports, define*/
+/*global module, exports, define, ActiveXObject*/
 (function(global, factory) {
     if (typeof exports === 'object') {
         // Node
@@ -143,10 +143,13 @@
          * @return Array<String> of function calls, files and line numbers
          */
         chrome: function(e) {
-            var stack = (e.stack + '\n').replace(/^\S[^\(]+?[\n$]/gm, '').
-                replace(/^\s+(at eval )?at\s+/gm, '').
-                replace(/^([^\(]+?)([\n$])/gm, '{anonymous}()@$1$2').
-                replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}()@$1').split('\n');
+            var stack = (e.stack + '\n')
+                .replace(/^\S[^\(]+?[\n$]/gm, '') // remove first line
+                .replace(/^\s+(at eval )?at\s+/gm, '') // remove 'at' and indentation
+                .replace(/^([^\(]+?)([\n$])/gm, '{anonymous}() ($1)$2')
+                .replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}() ($1)')
+                .replace(/^(.+) \((.+)\)$/gm, '$1@$2')
+                .split('\n');
             stack.pop();
             return stack;
         },
@@ -185,7 +188,9 @@
          * @return Array<String> of function calls, files and line numbers
          */
         firefox: function(e) {
-            return e.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^[\(@]/gm, '{anonymous}()@').split('\n');
+            return e.stack.replace(/(?:\n@:0)?\s+$/m, '')
+                .replace(/^(?:\((\S*)\))?@/gm, '{anonymous}($1)@')
+                .split('\n');
         },
 
         opera11: function(e) {
