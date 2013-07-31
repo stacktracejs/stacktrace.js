@@ -185,6 +185,26 @@ CapturedExceptions.opera_1151 = {
         "    foo();"
 };
 
+CapturedExceptions.opera_1216 = {
+    message: "Cannot convert 'x' to object",
+    name: "TypeError",
+    stack: "<anonymous function>([arguments not available])@http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.js:4\n" +
+        "createException([arguments not available])@http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.js:2\n" +
+        "createException4([arguments not available])@http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.html:56\n" +
+        "dumpException4([arguments not available])@http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.html:60\n" +
+        "<anonymous function>([arguments not available])@http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.html:1",
+    stacktrace: "Error thrown at line 4, column 6 in <anonymous function>(x) in http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.js:\n" +
+        "    x.undef();\n" +
+        "called from line 2, column 2 in createException() in http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.js:\n" +
+        "    return ((function(x) {\n" +
+        "called from line 56, column 8 in createException4() in http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.html:\n" +
+        "    return createException();\n" +
+        "called from line 60, column 8 in dumpException4() in http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.html:\n" +
+        "    dumpException(createException4());\n" +
+        "called from line 1, column 0 in <anonymous function>(event) in http://localhost:63342/javascript-stacktrace/test/functional/ExceptionLab.html:\n" +
+        "    dumpException4();"
+};
+
 CapturedExceptions.chrome_15 = {
     'arguments': ["undef"],
     message: "Object #<Object> has no method 'undef'",
