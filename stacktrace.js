@@ -143,15 +143,13 @@
          * @return Array<String> of function calls, files and line numbers
          */
         chrome: function(e) {
-            var stack = (e.stack + '\n')
-                .replace(/^\S[^\(]+?[\n$]/gm, '') // remove first line
+            return (e.stack + '\n')
                 .replace(/^\s+(at eval )?at\s+/gm, '') // remove 'at' and indentation
                 .replace(/^([^\(]+?)([\n$])/gm, '{anonymous}() ($1)$2')
                 .replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}() ($1)')
                 .replace(/^(.+) \((.+)\)$/gm, '$1@$2')
-                .split('\n');
-            stack.pop();
-            return stack;
+                .split('\n')
+                .slice(1, -1);
         },
 
         /**
@@ -174,11 +172,12 @@
          * @return Array<String> of function calls, files and line numbers
          */
         ie: function(e) {
-            var lineRE = /^.*at (\w+) \(([^\)]+)\)$/gm;
-            return e.stack.replace(/at Anonymous function /gm, '{anonymous}()@')
-                .replace(/^(?=\w+Error\:).*$\n/m, '')
-                .replace(lineRE, '$1@$2')
-                .split('\n');
+            return e.stack
+                .replace(/^\s*at\s+(.*)$/gm, '$1')
+                .replace(/^Anonymous function\s+/gm, '{anonymous}() ')
+                .replace(/^(.+)\s+\((.+)\)$/gm, '$1@$2')
+                .split('\n')
+                .slice(1);
         },
 
         /**
