@@ -153,16 +153,13 @@
     });
 
     test("run opera9", function() {
-        expect(5);
+        expect(4);
         var p = impl();
         UnitTest.fn.createModeStubs(p);
         p.opera9 = function() {
             ok(true, 'called run() for "opera9"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
-        p.run({
-            message: 'ignored\n' + 'ignored\n' + 'ignored\n' + 'ignored\n' + 'Line 40 of linked script http://site.com: in function f1\n' + '      discarded()\n' + 'Line 44 of linked script http://site.com\n' + '     f1(1, "abc")\n' + 'ignored\n' + 'ignored'
-        });
         p.run(CapturedExceptions.opera_854);
         p.run(CapturedExceptions.opera_902);
         p.run(CapturedExceptions.opera_927);
