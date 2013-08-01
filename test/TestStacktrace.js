@@ -56,6 +56,18 @@
                 delete window.opera;
                 delete window.fakeOpera;
             }
+        },
+        createModeStub: function(mode) {
+            return function() {
+                ok(false, 'must not call run() for mode "' + mode + '"');
+            };
+        },
+        createModeStubs: function(p, stub) {
+            var modes = ['other', 'opera9', 'opera10a', 'opera10b', 'opera11', 'firefox', 'safari', 'ie', 'chrome'];
+            for (var i = 0, len = modes.length; i < len; i++) {
+                var mode = modes[i];
+                p[mode] = stub || this.createModeStub(mode);
+            }
         }
     };
 
@@ -89,20 +101,18 @@
     test("run mode", function() {
         expect(1);
         var p = impl();
-        p.other = p.firefox = p.chrome = p.ie = p.safari = p.opera9 = p.opera10a = p.opera10b = p.opera11 = function() {
+        UnitTest.fn.createModeStubs(p, function() {
             ok(true, 'called mode() successfully');
-        };
+        });
         p.run();
     });
 
     test("run chrome", function() {
         expect(2);
         var p = impl();
-        p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.safari = p.ie = function() {
-            equals(1, 0, 'must not call run for any mode other than "chrome"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.chrome = function() {
-            ok(true, 'called run for "chrome"');
+            ok(true, 'called run() for "chrome"');
         };
         p.run(CapturedExceptions.chrome_15);
         p.run(CapturedExceptions.chrome_27);
@@ -111,11 +121,9 @@
     test("run safari", function() {
         expect(1);
         var p = impl();
-        p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = p.ie = function() {
-            equals(1, 0, 'must not call run for any mode other than "safari"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.safari = function() {
-            ok(true, 'called run for "safari"');
+            ok(true, 'called run() for "safari"');
         };
         p.run(CapturedExceptions.safari_6);
     });
@@ -123,11 +131,9 @@
     test("run ie", function() {
         expect(1);
         var p = impl();
-        p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = p.safari = function() {
-            equals(1, 0, 'must not call run for any mode other than "ie"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.ie = function() {
-            ok(true, 'called run for "ie"');
+            ok(true, 'called run() for "ie"');
         };
         p.run(CapturedExceptions.ie_10);
     });
@@ -135,11 +141,9 @@
     test("run firefox", function() {
         expect(5);
         var p = impl();
-        p.other = p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.chrome = p.safari = p.ie = function() {
-            equals(1, 0, 'must not call run for any mode other than "firefox"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.firefox = function() {
-            ok(true, 'called run for "firefox"');
+            ok(true, 'called run() for "firefox"');
         };
         p.run(CapturedExceptions.firefox_3_6);
         p.run(CapturedExceptions.firefox_3_6_file);
@@ -151,11 +155,9 @@
     test("run opera9", function() {
         expect(5);
         var p = impl();
-        p.opera10a = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
-            equals(1, 0, 'must not call run for any mode other than "opera9"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.opera9 = function() {
-            ok(true, 'called run for "opera9"');
+            ok(true, 'called run() for "opera9"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run({
@@ -171,11 +173,9 @@
     test("run opera10a", function() {
         expect(1);
         var p = impl();
-        p.opera9 = p.opera10b = p.opera11 = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
-            equals(1, 0, 'must not call run for any mode other than "opera10a"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.opera10a = function() {
-            ok(true, 'called run for "opera10a"');
+            ok(true, 'called run() for "opera10a"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1010);
@@ -185,11 +185,9 @@
     test("run opera10b", function() {
         expect(1);
         var p = impl();
-        p.opera9 = p.opera10a = p.opera11 = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
-            equals(1, 0, 'must not call run for any mode other than "opera10b"');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.opera10b = function() {
-            ok(true, 'called run for "opera10b"');
+            ok(true, 'called run() for "opera10b"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1063);
@@ -199,11 +197,9 @@
     test("run opera11", function() {
         expect(3);
         var p = impl();
-        p.opera9 = p.opera10a = p.opera10b = p.other = p.firefox = p.chrome = p.safari = p.ie = function() {
-            equals(1, 0, 'must not be called');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.opera11 = function() {
-            ok(true, 'called run for "opera11"');
+            ok(true, 'called run() for "opera11"');
         };
         UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1111);
@@ -215,11 +211,9 @@
     test("run other", function() {
         expect(1);
         var p = impl();
-        p.opera9 = p.opera10a = p.opera10b = p.opera11 = p.firefox = p.chrome = p.safari = p.ie = function() {
-            equals(1, 0, 'must not be called');
-        };
+        UnitTest.fn.createModeStubs(p);
         p.other = function() {
-            ok(true, 'called run for other browser');
+            ok(true, 'called run() for other browser');
         };
         p.run({});
     });
@@ -239,33 +233,6 @@
         ok(!this.toInstrument._instrumented, 'function deinstrumented');
         this.toInstrument = this.callback = null;
     });
-
-    if (pst.mode(ex) == 'firefox') {
-        test("firefox live", function() {
-            function f1(arg1, arg2) {
-                try {
-                    return this.undef();
-                } catch (exception) {
-                    return exception;
-                }
-            }
-
-            var f2 = function() {
-                return f1(1, "abc");
-            };
-
-            var e = (function() {
-                return f2();
-            })();
-
-            expect(2);
-            var message = pst.firefox(e);
-            // equals(message.join('\n'), '', 'processed stack trace');
-            equals(message[0].indexOf('f1@'), 0, message[0] + ' should start with f1@');
-            equals(message[1].indexOf('f2@'), 0, message[1] + ' should start with f2@');
-            //equals(message[2].indexOf('{anonymous}()@'), 0, message[2] + ' should start with {anonymous}()@');
-        });
-    }
 
     test("firefox", function() {
         expect(34);
@@ -315,6 +282,33 @@
         equals(message[3], 'dumpException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:60');
         equals(message[4], 'onclick@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:1');
     });
+
+    if (pst.mode(ex) == 'firefox') {
+        test("firefox live", function() {
+            function f1(arg1, arg2) {
+                try {
+                    return this.undef();
+                } catch (exception) {
+                    return exception;
+                }
+            }
+
+            var f2 = function() {
+                return f1(1, "abc");
+            };
+
+            var e = (function() {
+                return f2();
+            })();
+
+            expect(2);
+            var message = pst.firefox(e);
+            // equals(message.join('\n'), '', 'processed stack trace');
+            equals(message[0].indexOf('f1@'), 0, message[0] + ' should start with f1@');
+            equals(message[1].indexOf('f2@'), 0, message[1] + ' should start with f2@');
+            //equals(message[2].indexOf('{anonymous}()@'), 0, message[2] + ' should start with {anonymous}()@');
+        });
+    }
 
     test("chrome", function() {
         expect(14);
@@ -512,35 +506,42 @@
         }
     });
 
-    test("ie", function() {
-        var e = [], ex;
-
-        function f0() {
-            try {
-                this.undef();
-            } catch (exception) {
-                ex = exception;
+    if (pst.mode(ex) == 'ie') {
+        test("ie10 live", function() {
+            function f1(arg1, arg2) {
+                try {
+                    return this.undef();
+                } catch (exception) {
+                    return exception;
+                }
             }
-        }
 
-        function f1(arg1, arg2) {
-            f0();
-        }
+            var f2 = function() {
+                return f1(1, "abc");
+            };
 
-        var f2 = function() {
-            f1(1, "abc");
-        };
-        f2();
-        if (pst.mode(ex) == 'ie') {
-            e.push(ex);
-        }
-        expect(3 * e.length);
-        for (var i = 0; i < e.length; i++) {
-            var stack = pst.ie(e[i]);
-            equals(stack[0].indexOf('f0'), 0, 'matched f0');
-            equals(stack[1].indexOf('f1'), 0, 'f1 function name: ' + stack[1]);
-            equals(stack[2].indexOf('{anonymous}'), 0, 'f2 anonymous');
-        }
+            var e = (function() {
+                return f2();
+            })();
+
+            expect(3);
+            var message = pst.ie(e);
+            //equals(e.stack, '', 'original stack trace');
+            //equals(message.join('\n'), '', 'processed stack trace');
+            equals(message[0].indexOf('f1@'), 0, message[0] + ' should start with f1@');
+            equals(message[1].indexOf('f2@'), 0, message[1] + ' should start with f2@');
+            equals(message[2].indexOf('{anonymous}()@'), 0, message[2] + ' should start with {anonymous}()@');
+        });
+    }
+
+    test("ie10", function() {
+        expect(4);
+
+        var message = pst.ie(CapturedExceptions.ie_10);
+        equals(message.length, 3, '3 stack entries');
+        equals(message[0], '{anonymous}()@http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:48:13');
+        equals(message[1], 'dumpException3@http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:46:9');
+        equals(message[2], 'onclick@http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:82:1');
     });
 
     test("other", function() {
