@@ -45,18 +45,6 @@
             //return new Error("Generic error");
             return new Error();
         },
-        prepareFakeOperaEnvironment: function() {
-            if (typeof window !== 'undefined' && !window.opera) {
-                window.opera = "fake";
-                window.fakeOpera = true;
-            }
-        },
-        clearFakeOperaEnvironment: function() {
-            if (typeof window !== 'undefined' && window.fakeOpera) {
-                delete window.opera;
-                delete window.fakeOpera;
-            }
-        },
         createModeStub: function(mode) {
             return function() {
                 ok(false, 'must not call run() for mode "' + mode + '"');
@@ -159,12 +147,10 @@
         p.opera9 = function() {
             ok(true, 'called run() for "opera9"');
         };
-        UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_854);
         p.run(CapturedExceptions.opera_902);
         p.run(CapturedExceptions.opera_927);
         p.run(CapturedExceptions.opera_964);
-        UnitTest.fn.clearFakeOperaEnvironment();
     });
 
     test("run opera10a", function() {
@@ -174,9 +160,7 @@
         p.opera10a = function() {
             ok(true, 'called run() for "opera10a"');
         };
-        UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1010);
-        UnitTest.fn.clearFakeOperaEnvironment();
     });
 
     test("run opera10b", function() {
@@ -186,9 +170,7 @@
         p.opera10b = function() {
             ok(true, 'called run() for "opera10b"');
         };
-        UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1063);
-        UnitTest.fn.clearFakeOperaEnvironment();
     });
 
     test("run opera11", function() {
@@ -198,11 +180,9 @@
         p.opera11 = function() {
             ok(true, 'called run() for "opera11"');
         };
-        UnitTest.fn.prepareFakeOperaEnvironment();
         p.run(CapturedExceptions.opera_1111);
         p.run(CapturedExceptions.opera_1151);
         p.run(CapturedExceptions.opera_1216);
-        UnitTest.fn.clearFakeOperaEnvironment();
     });
 
     test("run other", function() {
