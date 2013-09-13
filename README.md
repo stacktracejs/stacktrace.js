@@ -30,19 +30,25 @@ try {
    // do something else with error
 }
 
-// Returns stacktrace from lastError!
-printStackTrace({e: lastError});
+if (lastError) {
+    // Returns stacktrace from lastError!
+    var trace = printStackTrace({e: lastError});
+    alert('Error!\n' + 'Message: ' + lastError.message + '\nStack trace:\n' + trace.join('\n'));
+}
 ```
+
+Note that error message is not included in stack trace.
 
 # Function Instrumentation #
 You can now have any (public or privileged) function give you a stacktrace when it is called:
 
 ```javascript
-var p = new printStackTrace.implementation();
-p.instrumentFunction(this, 'baz', logStackTrace);
 function logStackTrace(stack) {
     console.log(stack.join('\n'));
 }
+var p = new printStackTrace.implementation();
+p.instrumentFunction(this, 'baz', logStackTrace);
+
 function foo() {
     var a = 1;
     bar();
