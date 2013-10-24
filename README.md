@@ -1,5 +1,5 @@
-# What is stacktrace.js? #
-A Javascript tool that allows you to debug your JavaScript by giving you a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify)
+# Welcome to stacktrace.js! [![Code Climate](https://codeclimate.com/github/eriwen/javascript-stacktrace.png)](https://codeclimate.com/github/eriwen/javascript-stacktrace)
+A JavaScript tool that allows you to debug your JavaScript by giving you a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify)
 
 # How do I use stacktrace.js? #
 Just include stacktrace.js file on your page, and call it like so:
