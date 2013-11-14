@@ -229,6 +229,22 @@ CapturedExceptions.chrome_27 = {
         "    at HTMLButtonElement.onclick (file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:83:126)"
 };
 
+CapturedExceptions.chrome_31_multiline_message = {
+    message: "Object function () {\n" +
+        "                return {\n" +
+        "                    name: \"provide multi-line source in exception\"\n" +
+        "                };\n" +
+        "            } has no method 'nonExistentMethod'",
+    name: "TypeError",
+    stack: "TypeError: Object function () {\n" +
+        "                return {\n" +
+        "                    name: \"provide multi-line source in exception\"\n" +
+        "                };\n" +
+        "            } has no method 'nonExistentMethod'\n" +
+        "    at dumpException6 (file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:82:20)\n" +
+        "    at HTMLButtonElement.onclick (file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:101:122)"
+};
+
 CapturedExceptions.firefox_3_6 = {
     fileName: "http://127.0.0.1:8000/js/stacktrace.js",
     lineNumber: 44,
