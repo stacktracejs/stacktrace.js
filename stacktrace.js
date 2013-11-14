@@ -143,12 +143,13 @@
          */
         chrome: function(e) {
             return (e.stack + '\n')
+                .replace(/^[\s\S]+?\s+at\s+/, ' at ') // remove message
                 .replace(/^\s+(at eval )?at\s+/gm, '') // remove 'at' and indentation
                 .replace(/^([^\(]+?)([\n$])/gm, '{anonymous}() ($1)$2')
                 .replace(/^Object.<anonymous>\s*\(([^\)]+)\)/gm, '{anonymous}() ($1)')
                 .replace(/^(.+) \((.+)\)$/gm, '$1@$2')
                 .split('\n')
-                .slice(1, -1);
+                .slice(0, -1);
         },
 
         /**

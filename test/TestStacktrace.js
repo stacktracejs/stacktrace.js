@@ -288,11 +288,11 @@
     }
 
     test("chrome", function() {
-        expect(14);
+        expect(17);
 
         var message = pst.chrome(CapturedExceptions.chrome_15);
         // equals(message.join('\n'), '', 'processed stack trace');
-        equals(message.length, 7, '7 stack entries');
+        equals(message.length, 7, 'Chrome 15: 7 stack entries');
         equals(message[0], 'Object.createException@http://127.0.0.1:8000/js/stacktrace.js:42:18');
         equals(message[1], 'Object.run@http://127.0.0.1:8000/js/stacktrace.js:31:25');
         equals(message[2], 'printStackTrace@http://127.0.0.1:8000/js/stacktrace.js:18:62');
@@ -302,12 +302,17 @@
         equals(message[6], '{anonymous}()@http://127.0.0.1:8000/js/test/functional/testcase1.html:24:4');
 
         message = pst.chrome(CapturedExceptions.chrome_27);
-        equals(message.length, 5, '5 stack entries');
+        equals(message.length, 5, 'Chrome 27: 5 stack entries');
         equals(message[0], '{anonymous}()@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.js:4:9');
         equals(message[1], 'createException@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.js:8:5');
         equals(message[2], 'createException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:56:16');
         equals(message[3], 'dumpException4@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:60:23');
         equals(message[4], 'HTMLButtonElement.onclick@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:83:126');
+
+        message = pst.chrome(CapturedExceptions.chrome_31_multiline_message);
+        equals(message.length, 2, 'Chrome 31: 2 stack entries');
+        equals(message[0], 'dumpException6@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:82:20');
+        equals(message[1], 'HTMLButtonElement.onclick@file:///E:/javascript-stacktrace/test/functional/ExceptionLab.html:101:122');
     });
 
     if (pst.mode(ex) == 'chrome') {
