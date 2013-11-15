@@ -39,5 +39,8 @@ function dumpExceptionMultiLine() {
 info("Exception properties:");
 dumpExceptionMultiLine();
 
+var p = new printStackTrace.implementation();
+info("\nException mode: " + p.mode(lastException));
+
 info("\nException stack trace:");
 dumpStacktrace();
