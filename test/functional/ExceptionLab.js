@@ -25,7 +25,8 @@
             name: true,
             stack: true,
             stacktrace: true,
-            'arguments': true
+            'arguments': true,
+            type: true
         };
 
         // find all (including non-enumerable) own properties

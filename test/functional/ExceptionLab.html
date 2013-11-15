@@ -27,14 +27,13 @@
         }
 
         function dumpException(ex) {
-            ex = ex || new Error("Default error");
             var text = "{\n  " + ExceptionLab.getExceptionProps(ex).join(",\n  ") + "\n}";
             info(text);
             lastException = ex;
         }
 
         function dumpExceptionError() {
-            dumpException();
+            dumpException(new Error("Default error"));
         }
 
         function dumpExceptionAnonymous() {

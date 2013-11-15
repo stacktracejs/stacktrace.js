@@ -1,6 +1,6 @@
 /*global require, console*/
 var ExceptionLab = require("./ExceptionLab");
-//stacktrace.js
+var printStackTrace = require("../../stacktrace");
 
 var lastException;
 
@@ -8,12 +8,19 @@ function info(text) {
     console.log(text);
 }
 
+function dumpStacktrace(guess) {
+    var trace = printStackTrace({
+        e: lastException,
+        guess: guess
+    });
+    info(trace.join("\n"));
+}
+
 function dumpException(ex) {
-    ex = ex || new Error("Default error");
     var text = "{\n  " + ExceptionLab.getExceptionProps(ex).join(",\n  ") + "\n}";
     info(text);
+    //info(ex.arguments);
     lastException = ex;
-    console.log(ex.arguments);
 }
 
 function dumpExceptionMultiLine() {
@@ -29,9 +36,8 @@ function dumpExceptionMultiLine() {
     }
 }
 
+info("Exception properties:");
 dumpExceptionMultiLine();
 
-/*
-> Object.getOwnPropertyNames(lastException)
-[ 'stack', 'arguments', 'type', 'message' ]
-*/
+info("\nException stack trace:");
+dumpStacktrace();
