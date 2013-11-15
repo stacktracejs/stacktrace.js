@@ -332,3 +332,21 @@ CapturedExceptions.ie_10 = {
     description: "Unable to get property 'undef' of undefined or null reference",
     number: -2146823281
 };
+
+CapturedExceptions.node_simple = {
+    message: 'x is not defined',
+    name: 'ReferenceError',
+    type: 'not_defined',
+    stack: 'ReferenceError: x is not defined\n' +
+        '    at repl:1:5\n' +
+        '    at REPLServer.self.eval (repl.js:110:21)\n' +
+        '    at repl.js:249:20\n' +
+        '    at REPLServer.self.eval (repl.js:122:7)\n' +
+        '    at Interface.<anonymous> (repl.js:239:12)\n' +
+        '    at Interface.EventEmitter.emit (events.js:95:17)\n' +
+        '    at Interface._onLine (readline.js:202:10)\n' +
+        '    at Interface._line (readline.js:531:8)\n' +
+        '    at Interface._ttyWrite (readline.js:760:14)\n' +
+        '    at ReadStream.onkeypress (readline.js:99:10)',
+    'arguments': [ 'x' ]
+};

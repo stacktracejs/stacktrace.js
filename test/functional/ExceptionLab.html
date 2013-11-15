@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8" />
     <title>Exception Lab</title>
     <style>
         #info {
@@ -28,42 +28,27 @@
 
         function dumpException(ex) {
             ex = ex || new Error("Default error");
-            var text = "{\n  " + getExceptionProps(ex).join(",\n  ") + "\n}";
+            var text = "{\n  " + ExceptionLab.getExceptionProps(ex).join(",\n  ") + "\n}";
             info(text);
             lastException = ex;
         }
 
-        function dumpException1() {
+        function dumpExceptionError() {
             dumpException();
         }
 
-        function dumpException2() {
-            try {
-                undef();
-            } catch (ex) {
-                dumpException(ex);
-            }
-        }
-
-        function dumpException3() {
+        function dumpExceptionAnonymous() {
             dumpException((function(x) {
                 try {
                     x.undef();
+                    return null;
                 } catch (ex) {
                     return ex;
                 }
             })(null));
         }
 
-        function createException4() {
-            return createException();
-        }
-
-        function dumpException4() {
-            dumpException(createException4());
-        }
-
-        function dumpException5() {
+        function dumpExceptionInEval() {
             try {
                 //eval("x.undef()");
                 eval("getExceptionProps()");
@@ -72,10 +57,10 @@
             }
         }
 
-        function dumpException6() {
+        function dumpExceptionMultiLine() {
             var fn = function() {
                 return {
-                    name: "provide multi-line source in exception"
+                    name: "provide multi-line message in exception"
                 };
             };
             try {
@@ -92,14 +77,12 @@
     document.getElementById("userAgent").innerHTML = navigator.userAgent;
 </script>
 <textarea id="info">Info</textarea>
-<br/>
-<button onclick="dumpException1();">Exception 1</button>
-<button onclick="dumpException2();">Exception 2</button>
-<button onclick="dumpException3();">Exception 3</button>
-<button onclick="dumpException4();">Exception 4</button>
-<button onclick="dumpException5();">Exception 5</button>
-<button onclick="dumpException6();">Exception 6</button>
-<br/>
+<br />
+<button onclick="dumpExceptionError();" title="new Error()">Exception 1</button>
+<button onclick="dumpExceptionAnonymous();" title="Stack with anonymous function">Exception 2</button>
+<button onclick="dumpExceptionInEval();" title="Exception in eval()">Exception 3</button>
+<button onclick="dumpExceptionMultiLine();" title="Multi-line message in exception">Exception 4</button>
+<br />
 <button onclick="dumpStacktrace();">Process stack trace</button>
 <button onclick="dumpStacktrace(true);">Guess anonymous functions</button>
 </body>
