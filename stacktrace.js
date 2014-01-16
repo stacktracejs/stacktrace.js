@@ -68,13 +68,21 @@
         mode: function(e) {
             if (e['arguments'] && e.stack) {
                 return 'chrome';
-            } else if (e.stack && e.sourceURL) {
+            } 
+            
+            if (e.stack && e.sourceURL) {
                 return 'safari';
-            } else if (e.stack && e.number) {
+            } 
+            
+            if (e.stack && e.number) {
                 return 'ie';
-            } else if (e.stack && e.fileName) {
+            } 
+            
+            if (e.stack && e.fileName) {
                 return 'firefox';
-            } else if (e.message && e['opera#sourceloc']) {
+            } 
+            
+            if (e.message && e['opera#sourceloc']) {
                 // e.message.indexOf("Backtrace:") > -1 -> opera9
                 // 'opera#sourceloc' in e -> opera9, opera10a
                 // !e.stacktrace -> opera9
@@ -86,18 +94,23 @@
                     return 'opera9'; // use e.message
                 }
                 return 'opera10a'; // use e.stacktrace
-            } else if (e.message && e.stack && e.stacktrace) {
+            } 
+            
+            if (e.message && e.stack && e.stacktrace) {
                 // e.stacktrace && e.stack -> opera10b
                 if (e.stacktrace.indexOf("called from line") < 0) {
                     return 'opera10b'; // use e.stacktrace, format differs from 'opera10a'
                 }
                 // e.stacktrace && e.stack -> opera11
                 return 'opera11'; // use e.stacktrace, format differs from 'opera10a', 'opera10b'
-            } else if (e.stack && !e.fileName) {
+            } 
+            
+            if (e.stack && !e.fileName) {
                 // Chrome 27 does not have e.arguments as earlier versions,
                 // but still does not have e.fileName as Firefox
                 return 'chrome';
             }
+            
             return 'other';
         },
 
