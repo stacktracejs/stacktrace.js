@@ -298,6 +298,7 @@
                 } else if (arg === null) {
                     result[i] = 'null';
                 } else if (arg.constructor) {
+                    // TODO constructor comparison does not work for iframes
                     if (arg.constructor === Array) {
                         if (arg.length < 3) {
                             result[i] = '[' + this.stringifyArguments(arg) + ']';
@@ -312,6 +313,8 @@
                         result[i] = '"' + arg + '"';
                     } else if (arg.constructor === Number) {
                         result[i] = arg;
+                    } else {
+                        result[i] = '?';
                     }
                 }
             }
