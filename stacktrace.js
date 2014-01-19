@@ -268,9 +268,10 @@
         // Safari 5-, IE 9-, and others
         other: function(curr) {
             var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], fn, args, maxStackSize = 10;
+            var slice = Array.prototype.slice;
             while (curr && curr['arguments'] && stack.length < maxStackSize) {
                 fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
-                args = Array.prototype.slice.call(curr['arguments'] || []);
+                args = slice.call(curr['arguments'] || []);
                 stack[stack.length] = fn + '(' + this.stringifyArguments(args) + ')';
                 try {
                     curr = curr.caller;
