@@ -20,6 +20,7 @@
 //
 
 (function(window, document, undefined) {
+    //region setup
     var pst = printStackTrace.implementation.prototype;
 
     var impl = function() {
@@ -58,7 +59,9 @@
             }
         }
     };
+    //endregion
 
+    //region invocation
     module("invocation");
 
     test("printStackTrace", function() {
@@ -78,7 +81,9 @@
             guess: true
         });
     });
+    //endregion
 
+    //region mode
     module("mode");
 
     test("mode", function() {
@@ -547,15 +552,16 @@
                 }
             }
         }], 'FUNCTION f1  (a,b,c)', frame_f2);
+
         expect(mode == 'other' ? 4 : 2);
         var message = pst.other(frame_f1);
-        var message_string = message.join("\n");
         equals(message[0].indexOf('f1(1,"abc",#function,#object)') >= 0, true, 'f1');
         equals(message[1].indexOf('{anonymous}()') >= 0, true, 'f2 anonymous');
+
         if (mode == 'other') {
             function f1(arg1, arg2) {
-                var message = pst.other(arguments.callee), message_string = message.join("\n");
-                //equals(message_string, '', 'debug');
+                var message = pst.other(arguments.callee);
+                //equals(message.join("\n"), '', 'debug');
                 equals(message[0].indexOf('f1(1,"abc",#function,#object)') >= 0, true, 'f1');
                 equals(message[1].indexOf('{anonymous}()') >= 0, true, 'f2 anonymous');
             }
@@ -572,7 +578,9 @@
             f2();
         }
     });
+    //endregion
 
+    //region util
     module("util");
 
     test("stringify", function() {
@@ -807,7 +815,7 @@
                 this.undef();
             } catch (e) {
                 if (p.mode(e) == 'opera11') {
-                    results.push(p.run());
+                    results.push(p.run(e));
                 }
             }
         };
@@ -845,4 +853,5 @@
             equals(p.guessAnonymousFunctions(results[i])[0].indexOf('{anonymous}'), 0, 'no file and line number in "other" mode');
         }
     });
+    //endregion
 })(window, document);
