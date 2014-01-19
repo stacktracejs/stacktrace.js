@@ -36,13 +36,11 @@
 
     printStackTrace.implementation.prototype = {
         /**
-         * @param {Error} ex The error to create a stacktrace from (optional)
-         * @param {String} mode Forced mode (optional, mostly for unit tests)
+         * @param {Error} [ex] The error to create a stacktrace from (optional)
+         * @param {String} [mode] Forced mode (optional, mostly for unit tests)
          */
         run: function(ex, mode) {
             ex = ex || this.createException();
-            // examine exception properties w/o debugger
-            //for (var prop in ex) {alert("Ex['" + prop + "']=" + ex[prop]);}
             mode = mode || this.mode(ex);
             if (mode === 'other') {
                 return this.other(arguments.callee);
@@ -274,7 +272,12 @@
                 fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
                 args = Array.prototype.slice.call(curr['arguments'] || []);
                 stack[stack.length] = fn + '(' + this.stringifyArguments(args) + ')';
-                curr = curr.caller;
+                try {
+                    curr = curr.caller;
+                } catch (e) {
+                    stack[stack.length] = '' + e;
+                    break;
+                }
             }
             return stack;
         },
