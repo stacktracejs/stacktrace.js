@@ -578,6 +578,37 @@
             f2();
         }
     });
+
+    test("other in strict mode", function() {
+        var results = [];
+        var p = impl();
+
+        function f1() {
+            try {
+                this.undef();
+            } catch (e) {
+                debugger;
+                results = p.run(e, 'other');
+            }
+        }
+
+        function f2() {
+            f1();
+        }
+
+        function f3() {
+            "use strict";
+            f2();
+        }
+
+        f3();
+
+        ok(results.length >= 3, 'Stack should contain at least 3 frames in non-strict mode');
+        //equals(results, '', 'debug');
+        equals(results[1], 'f1()');
+        equals(results[2], 'f2()');
+    });
+
     //endregion
 
     //region util
