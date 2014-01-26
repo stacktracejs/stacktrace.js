@@ -69,19 +69,19 @@
             if (e['arguments'] && e.stack) {
                 return 'chrome';
             }
-            
+
             if (e.stack && e.sourceURL) {
                 return 'safari';
             }
-            
+
             if (e.stack && e.number) {
                 return 'ie';
             }
-            
+
             if (e.stack && e.fileName) {
                 return 'firefox';
             }
-            
+
             if (e.message && e['opera#sourceloc']) {
                 // e.message.indexOf("Backtrace:") > -1 -> opera9
                 // 'opera#sourceloc' in e -> opera9, opera10a
@@ -95,7 +95,7 @@
                 }
                 return 'opera10a'; // use e.stacktrace
             }
-            
+
             if (e.message && e.stack && e.stacktrace) {
                 // e.stacktrace && e.stack -> opera10b
                 if (e.stacktrace.indexOf("called from line") < 0) {
@@ -104,13 +104,13 @@
                 // e.stacktrace && e.stack -> opera11
                 return 'opera11'; // use e.stacktrace, format differs from 'opera10a', 'opera10b'
             }
-            
+
             if (e.stack && !e.fileName) {
                 // Chrome 27 does not have e.arguments as earlier versions,
                 // but still does not have e.fileName as Firefox
                 return 'chrome';
             }
-            
+
             return 'other';
         },
 
