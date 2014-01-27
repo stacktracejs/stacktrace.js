@@ -5,39 +5,33 @@ A JavaScript tool that allows you to debug your JavaScript by giving you a [stac
 Just include stacktrace.js file on your page, and call it like so:
 
 ```html
-<script type="text/javascript" src="path/to/stacktrace.js" />
+<script type="text/javascript" src="https://rawgithub.com/stacktracejs/stacktrace.js/master/stacktrace.js"></script>
 <script type="text/javascript">
-    ... your code ...
-    if (errorCondition) {
-         var trace = printStackTrace();
-         //Output however you want!
-         alert(trace.join('\n\n'));
-    }
-    ... more code of yours ...
+    // your code...
+    var trace = printStackTrace();
+    alert(trace.join('\n\n')); // Output however you want!
+    // more code of yours...
 </script>
 ```
 
-Bookmarklet available on the [project home page](http://stacktracejs.com).
-
 You can also pass in your own Error to get a stacktrace *not available in IE or Safari 5-*
 
-```javascript
-var lastError;
-try {
-    // error producing code
-} catch(e) {
-   lastError = e;
-   // do something else with error
-}
-
-if (lastError) {
-    // Returns stacktrace from lastError!
-    var trace = printStackTrace({e: lastError});
-    alert('Error!\n' + 'Message: ' + lastError.message + '\nStack trace:\n' + trace.join('\n'));
-}
+```html
+<script type="text/javascript" src="https://rawgithub.com/stacktracejs/stacktrace.js/master/stacktrace.js"></script>
+<script type="text/javascript">
+    try {
+        // error producing code
+    } catch(e) {
+        var trace = printStackTrace({e: e});
+        alert('Error!\n' + 'Message: ' + e.message + '\nStack trace:\n' + trace.join('\n'));
+        // do something else with error
+    }
+</script>
 ```
 
 Note that error message is not included in stack trace.
+
+Bookmarklet available on the [project home page](http://stacktracejs.com).
 
 # Function Instrumentation #
 You can now have any (public or privileged) function give you a stacktrace when it is called:
