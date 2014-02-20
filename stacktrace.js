@@ -320,7 +320,19 @@
                             result[i] = '[' + this.stringifyArguments(slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(slice.call(arg, -1)) + ']';
                         }
                     } else if (arg.constructor === Object) {
-                        result[i] = '#object';
+                        var temp = "";
+    					for(x in arg)
+    					{
+    						if(typeof arg[x] == "object")
+    						{
+    							var tempArr = new Array();
+    							tempArr[0] = arg[x];
+    							temp+=x+"="+this.stringifyArguments(tempArr)+",";
+    						}
+    						else
+    							temp+=x+"="+arg[x]+",";
+    					}
+                        result[i] = '#object ['+temp+']';
                     } else if (arg.constructor === Function) {
                         result[i] = '#function';
                     } else if (arg.constructor === String) {
