@@ -5,7 +5,7 @@
 //                  Oyvind Sean Kinsey http://kinsey.no/blog (2010)
 //                  Victor Homyakov <victor-homyakov@users.sourceforge.net> (2010)
 /*global module, exports, define, ActiveXObject*/
-(function(global, factory) {
+(function (global, factory) {
     if (typeof exports === 'object') {
         // Node
         module.exports = factory();
@@ -16,7 +16,7 @@
         // Browser globals
         global.printStackTrace = factory();
     }
-}(this, function() {
+}(this, function () {
     /**
      * Main function giving a function stack trace with a forced or passed in Error
      *
@@ -24,6 +24,11 @@
      * @cfg {Boolean} guess If we should try to resolve the names of anonymous functions
      * @return {Array} of Strings with functions, lines, files, and arguments where possible
      */
+    var ANON = '{anonymous}',
+        fnRE = /function\s*([\w\-$]+)?\s*\(/i,
+        slice = [].slice,
+        toString = {}.toString;
+
     function printStackTrace(options) {
         options = options || {guess: true};
         var ex = options.e || null, guess = !!options.guess;
@@ -31,7 +36,12 @@
         return (guess) ? p.guessAnonymousFunctions(result) : result;
     }
 
-    printStackTrace.implementation = function() {
+    function getFunctionName(fn) {
+        if (!fn) return ANON;
+        return fnRE.test(fn.toString()) ? RegExp.$1 || ANON : ANON;
+    }
+
+    printStackTrace.implementation = function () {
     };
 
     printStackTrace.implementation.prototype = {
@@ -39,7 +49,7 @@
          * @param {Error} [ex] The error to create a stacktrace from (optional)
          * @param {String} [mode] Forced mode (optional, mostly for unit tests)
          */
-        run: function(ex, mode) {
+        run: function (ex, mode) {
             ex = ex || this.createException();
             mode = mode || this.mode(ex);
             if (mode === 'other') {
@@ -49,7 +59,7 @@
             }
         },
 
-        createException: function() {
+        createException: function () {
             try {
                 this.undef();
             } catch (e) {
@@ -63,7 +73,7 @@
          *
          * @return {String} mode of operation for the exception
          */
-        mode: function(e) {
+        mode: function (e) {
             if (e['arguments'] && e.stack) {
                 return 'chrome';
             }
@@ -120,7 +130,7 @@
          * @param {String} functionName to instrument
          * @param {Function} callback function to call with a stack trace on invocation
          */
-        instrumentFunction: function(context, functionName, callback) {
+        instrumentFunction: function (context, functionName, callback) {
             context = context || window;
             var original = context[functionName];
             context[functionName] = function instrumented() {
@@ -138,7 +148,7 @@
          * @param {Object} context of execution (e.g. window)
          * @param {String} functionName to de-instrument
          */
-        deinstrumentFunction: function(context, functionName) {
+        deinstrumentFunction: function (context, functionName) {
             if (context[functionName].constructor === Function &&
                 context[functionName]._instrumented &&
                 context[functionName]._instrumented.constructor === Function) {
@@ -152,7 +162,7 @@
          * @param e - Error object to inspect
          * @return Array<String> of function calls, files and line numbers
          */
-        chrome: function(e) {
+        chrome: function (e) {
             return (e.stack + '\n')
                 .replace(/^[\s\S]+?\s+at\s+/, ' at ') // remove message
                 .replace(/^\s+(at eval )?at\s+/gm, '') // remove 'at' and indentation
@@ -169,7 +179,7 @@
          * @param e - Error object to inspect
          * @return Array<String> of function calls, files and line numbers
          */
-        safari: function(e) {
+        safari: function (e) {
             return e.stack.replace(/\[native code\]\n/m, '')
                 .replace(/^(?=\w+Error\:).*$\n/m, '')
                 .replace(/^@/gm, '{anonymous}()@')
@@ -182,7 +192,7 @@
          * @param e - Error object to inspect
          * @return Array<String> of function calls, files and line numbers
          */
-        ie: function(e) {
+        ie: function (e) {
             return e.stack
                 .replace(/^\s*at\s+(.*)$/gm, '$1')
                 .replace(/^Anonymous function\s+/gm, '{anonymous}() ')
@@ -197,14 +207,14 @@
          * @param e - Error object to inspect
          * @return Array<String> of function calls, files and line numbers
          */
-        firefox: function(e) {
+        firefox: function (e) {
             return e.stack.replace(/(?:\n@:0)?\s+$/m, '')
                 .replace(/^(?:\((\S*)\))?@/gm, '{anonymous}($1)@')
                 .split('\n');
         },
 
-        opera11: function(e) {
-            var ANON = '{anonymous}', lineRE = /^.*line (\d+), column (\d+)(?: in (.+))? in (\S+):$/;
+        opera11: function (e) {
+            var lineRE = /^.*line (\d+), column (\d+)(?: in (.+))? in (\S+):$/;
             var lines = e.stacktrace.split('\n'), result = [];
 
             for (var i = 0, len = lines.length; i < len; i += 2) {
@@ -220,7 +230,7 @@
             return result;
         },
 
-        opera10b: function(e) {
+        opera10b: function (e) {
             // "<anonymous function: run>([arguments not available])@file://localhost/G:/js/stacktrace.js:27\n" +
             // "printStackTrace([arguments not available])@file://localhost/G:/js/stacktrace.js:18\n" +
             // "@file://localhost/G:/js/test/functional/testcase1.html:15"
@@ -244,10 +254,10 @@
          * @param e - Error object to inspect
          * @return Array<String> of function calls, files and line numbers
          */
-        opera10a: function(e) {
+        opera10a: function (e) {
             // "  Line 27 of linked script file://localhost/G:/js/stacktrace.js\n"
             // "  Line 11 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html: In function foo\n"
-            var ANON = '{anonymous}', lineRE = /Line (\d+).*script (?:in )?(\S+)(?:: In function (\S+))?$/i;
+            var lineRE = /Line (\d+).*script (?:in )?(\S+)(?:: In function (\S+))?$/i;
             var lines = e.stacktrace.split('\n'), result = [];
 
             for (var i = 0, len = lines.length; i < len; i += 2) {
@@ -262,10 +272,10 @@
         },
 
         // Opera 7.x-9.2x only!
-        opera9: function(e) {
+        opera9: function (e) {
             // "  Line 43 of linked script file://localhost/G:/js/stacktrace.js\n"
             // "  Line 7 of inline#1 script in file://localhost/G:/js/test/functional/testcase1.html\n"
-            var ANON = '{anonymous}', lineRE = /Line (\d+).*script (?:in )?(\S+)/i;
+            var lineRE = /Line (\d+).*script (?:in )?(\S+)/i;
             var lines = e.message.split('\n'), result = [];
 
             for (var i = 2, len = lines.length; i < len; i += 2) {
@@ -279,11 +289,10 @@
         },
 
         // Safari 5-, IE 9-, and others
-        other: function(curr) {
-            var ANON = '{anonymous}', fnRE = /function\s*([\w\-$]+)?\s*\(/i, stack = [], fn, args, maxStackSize = 10;
-            var slice = Array.prototype.slice;
+        other: function (curr) {
+            var stack = [], fn, args, maxStackSize = 10;
             while (curr && curr['arguments'] && stack.length < maxStackSize) {
-                fn = fnRE.test(curr.toString()) ? RegExp.$1 || ANON : ANON;
+                fn = getFunctionName(curr);
                 args = slice.call(curr['arguments'] || []);
                 stack[stack.length] = fn + '(' + this.stringifyArguments(args) + ')';
                 try {
@@ -302,33 +311,37 @@
          * @param {Arguments,Array} args
          * @return {String} stringified arguments
          */
-        stringifyArguments: function(args) {
-            var result = [];
-            var slice = Array.prototype.slice;
+        stringifyArguments: function (args) {
+            var result = [], checker;
             for (var i = 0; i < args.length; ++i) {
                 var arg = args[i];
                 if (arg === undefined) {
                     result[i] = 'undefined';
                 } else if (arg === null) {
                     result[i] = 'null';
-                } else if (arg.constructor) {
-                    // TODO constructor comparison does not work for iframes
-                    if (arg.constructor === Array) {
+                } else {
+                    checker = toString.call(arg);
+                    if (checker === '[object Array]') {
                         if (arg.length < 3) {
                             result[i] = '[' + this.stringifyArguments(arg) + ']';
                         } else {
                             result[i] = '[' + this.stringifyArguments(slice.call(arg, 0, 1)) + '...' + this.stringifyArguments(slice.call(arg, -1)) + ']';
                         }
-                    } else if (arg.constructor === Object) {
-                        result[i] = '#object';
-                    } else if (arg.constructor === Function) {
+                    } else if (checker === '[object Function]') {
                         result[i] = '#function';
-                    } else if (arg.constructor === String) {
+                        //result[i] = '#function ' + getFunctionName(arg);
+                    } else if (checker === '[object String]') {
                         result[i] = '"' + arg + '"';
-                    } else if (arg.constructor === Number) {
+                    } else if (checker === '[object Number]') {
                         result[i] = arg;
-                    } else {
-                        result[i] = '?';
+                    } else if (checker === '[object Boolean]') {
+                        result[i] = arg;
+                    } else if (checker === '[object Date]') {
+                        result[i] = "#date";
+                    } else if (checker === '[object RegExp]') {
+                        result[i] = "#regexp";
+                    } else if (checker === '[object Object]') {
+                        result[i] = '#object';
                     }
                 }
             }
@@ -340,7 +353,7 @@
         /**
          * @return {String} the text from a given URL
          */
-        ajax: function(url) {
+        ajax: function (url) {
             var req = this.createXMLHTTPObject();
             if (req) {
                 try {
@@ -361,15 +374,15 @@
          *
          * @return {XMLHttpRequest} XHR function or equivalent
          */
-        createXMLHTTPObject: function() {
+        createXMLHTTPObject: function () {
             var xmlhttp, XMLHttpFactories = [
-                function() {
+                function () {
                     return new XMLHttpRequest();
-                }, function() {
+                }, function () {
                     return new ActiveXObject('Msxml2.XMLHTTP');
-                }, function() {
+                }, function () {
                     return new ActiveXObject('Msxml3.XMLHTTP');
-                }, function() {
+                }, function () {
                     return new ActiveXObject('Microsoft.XMLHTTP');
                 }
             ];
@@ -391,7 +404,7 @@
          * @param url {String} source url
          * @return {Boolean} False if we need a cross-domain request
          */
-        isSameDomain: function(url) {
+        isSameDomain: function (url) {
             return typeof location !== "undefined" && url.indexOf(location.hostname) !== -1; // location may not be defined, e.g. when running from nodejs.
         },
 
@@ -401,7 +414,7 @@
          * @param url {String} JS source URL
          * @return {Array} Array of source code lines
          */
-        getSource: function(url) {
+        getSource: function (url) {
             // TODO reuse source from script tags?
             if (!(url in this.sourceCache)) {
                 this.sourceCache[url] = this.ajax(url).split('\n');
@@ -409,7 +422,7 @@
             return this.sourceCache[url];
         },
 
-        guessAnonymousFunctions: function(stack) {
+        guessAnonymousFunctions: function (stack) {
             for (var i = 0; i < stack.length; ++i) {
                 var reStack = /\{anonymous\}\(.*\)@(.*)/,
                     reRef = /^(.*?)(?::(\d+))(?::(\d+))?(?: -- .+)?$/,
@@ -429,7 +442,7 @@
             return stack;
         },
 
-        guessAnonymousFunction: function(url, lineNo, charNo) {
+        guessAnonymousFunction: function (url, lineNo, charNo) {
             var ret;
             try {
                 ret = this.findFunctionName(this.getSource(url), lineNo);
@@ -439,7 +452,7 @@
             return ret;
         },
 
-        findFunctionName: function(source, lineNo) {
+        findFunctionName: function (source, lineNo) {
             // FIXME findFunctionName fails for compressed source
             // (more than one function on the same line)
             // function {name}({args}) m[1]=name m[2]=args
