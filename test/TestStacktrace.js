@@ -532,54 +532,36 @@
     });
 
     test("other", function() {
-        var mode = pst.mode(UnitTest.fn.createGenericError());
-        var frame = function(args, fun, caller) {
-            this['arguments'] = args;
-            this.caller = caller;
-            this.fun = fun;
-        };
-        frame.prototype.toString = function() {
-            return 'function ' + this.fun + '() {}';
-        };
-        function f10() {
+        expect(5);
+        var results = [];
+
+        function f1() {
+            try {
+                this.undef();
+            } catch (e) {
+                var p = impl();
+                results = p.run(e, 'other');
+            }
         }
 
-        var frame_f2 = new frame([], '', undefined);
-        var frame_f1 = new frame([1, 'abc', f10, {
-            1: {
-                2: {
-                    3: 4
-                }
-            }
-        }], 'FUNCTION f1  (a,b,c)', frame_f2);
+        function f2() {
+            f1(0, 'abc', f1, {a: 0});
+        }
 
-        expect(mode == 'other' ? 4 : 2);
-        var message = pst.other(frame_f1);
-        equals(message[0].indexOf('f1(1,"abc",#function,#object)') >= 0, true, 'f1');
-        equals(message[1].indexOf('{anonymous}()') >= 0, true, 'f2 anonymous');
-
-        if (mode == 'other') {
-            function f1(arg1, arg2) {
-                var message = pst.other(arguments.callee);
-                //equals(message.join("\n"), '', 'debug');
-                equals(message[0].indexOf('f1(1,"abc",#function,#object)') >= 0, true, 'f1');
-                equals(message[1].indexOf('{anonymous}()') >= 0, true, 'f2 anonymous');
-            }
-
-            var f2 = function() {
-                f1(1, 'abc', f10, {
-                    1: {
-                        2: {
-                            3: 4
-                        }
-                    }
-                });
-            };
+        (function longName_$1() {
             f2();
-        }
+        }());
+
+        ok(results.length >= 3, 'Call chain should contain at least 4 frames');
+        //equals(results, '', 'debug');
+        equals(results[1], 'f1(0,"abc",#function,#object)');
+        equals(results[2], 'f2()');
+        equals(results[3], 'longName_$1()');
+        equals(results[4], '{anonymous}()');
     });
 
     test("other in strict mode", function() {
+        expect(3);
         var results = [];
         var p = impl();
 
@@ -587,7 +569,6 @@
             try {
                 this.undef();
             } catch (e) {
-                debugger;
                 results = p.run(e, 'other');
             }
         }
@@ -603,7 +584,7 @@
 
         f3();
 
-        ok(results.length >= 3, 'Stack should contain at least 3 frames in non-strict mode');
+        ok(results.length >= 3, 'Call chain should contain at least 3 frames (2 non-strict and 1 strict)');
         //equals(results, '', 'debug');
         equals(results[1], 'f1()');
         equals(results[2], 'f2()');
