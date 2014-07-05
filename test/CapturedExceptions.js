@@ -350,3 +350,20 @@ CapturedExceptions.node_simple = {
         '    at ReadStream.onkeypress (readline.js:99:10)',
     'arguments': [ 'x' ]
 };
+
+CapturedExceptions.phantomjs = {
+    message: "'undefined' is not a function (evaluating 'this.undef()')",
+    line: 852,
+    sourceId: 163911584,
+    sourceURL: 'http://localhost:10015/packages/peerdb.js?fe1089e34c777737beadb68e0657ca0bbe2e54b4',
+    name: 'TypeError',
+    stack: "TypeError: 'undefined' is not a function (evaluating 'this.undef()')\n" +
+        '    at http://localhost:10015/packages/peerdb.js?fe1089e34c777737beadb68e0657ca0bbe2e54b4:852\n' +
+        '    at http://localhost:10015/packages/meteor-peerdb:tests.js?36eb638af853e313daf7222afac0edaf9eb3bbc6:4476\n' +
+        '    at http://localhost:10015/packages/meteor-peerdb:tests.js?36eb638af853e313daf7222afac0edaf9eb3bbc6:4481\n' +
+        '    at http://localhost:10015/packages/tinytest.js?3fa2a6f5f9fadecfe9cf5d3420b3a1c719407388:393\n' +
+        '    at http://localhost:10015/packages/meteor.js?148e9381d225ecad703f4b858769b636ff7a2537:794\n' +
+        '    at http://localhost:10015/packages/meteor.js?148e9381d225ecad703f4b858769b636ff7a2537:379\n' +
+        '    at http://localhost:10015/packages/meteor.js?148e9381d225ecad703f4b858769b636ff7a2537:822\n' +
+        '    at onGlobalMessage (http://localhost:10015/packages/meteor.js?148e9381d225ecad703f4b858769b636ff7a2537:316)'
+};
