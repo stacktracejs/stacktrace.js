@@ -1,7 +1,7 @@
 {
     "name": "stacktrace.js",
-    "version": "0.6.0",
-    "repo": "eriwen/javascript-stacktrace",
+    "version": "0.6.1",
+    "repo": "stacktracejs/stacktrace.js",
     "main": "stacktrace.js",
     "scripts": [
       "stacktrace.js"

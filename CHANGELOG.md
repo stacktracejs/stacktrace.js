@@ -1,3 +1,7 @@
+## v0.6.1
+
+* Fix printStackTrace throws exception with "use strict" code and PhantomJS
+
 ## v0.6.0
 
 * Added AMD support using a UMD pattern (thanks @jeffrose)
