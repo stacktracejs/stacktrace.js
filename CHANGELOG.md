@@ -1,3 +1,8 @@
+## v0.6.2
+
+* Ignore test/ dir in bower
+* Migrate references eriwen/javascript-stacktrace -> stacktracejs/stacktrace.js
+
 ## v0.6.1
 
 * Fix printStackTrace throws exception with "use strict" code and PhantomJS

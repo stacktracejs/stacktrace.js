@@ -1,7 +1,7 @@
-# Welcome to stacktrace.js! [![Code Climate](https://codeclimate.com/github/eriwen/javascript-stacktrace.png)](https://codeclimate.com/github/eriwen/javascript-stacktrace)
+# Welcome to stacktrace.js! [![Code Climate](https://codeclimate.com/github/stacktracejs/stacktrace.js.png)](https://codeclimate.com/github/stacktracejs/stacktrace.js)
 A JavaScript tool that allows you to debug your JavaScript by giving you a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify)
 
-# How do I use stacktrace.js? #
+# Usage
 Just include stacktrace.js file on your page, and call it like so:
 
 ```html
@@ -55,7 +55,15 @@ foo(); //Will log a stacktrace when 'baz()' is called containing 'foo()'!
 p.deinstrumentFunction(this, 'baz'); //Remove function instrumentation
 ```
 
-# What browsers does stacktrace.js support? #
+# Get stacktrace.js
+```
+npm install stacktrace-js
+bower install stacktrace-js
+component install stacktrace.js
+wget https://rawgithub.com/stacktracejs/stacktrace.js/master/stacktrace.js
+```
+
+# Browser Support
 It is currently tested and working on:
 
  - Firefox (and Iceweasel) 0.9+
@@ -70,13 +78,11 @@ It is currently tested and working on:
  - Epiphany 2.28.0+
  - Iceape 1.1+
 
-## Contributions [![Stories in Ready](http://badge.waffle.io/eriwen/javascript-stacktrace.png)](http://waffle.io/eriwen/javascript-stacktrace)  
+## Contributions [![Stories in Ready](http://badge.waffle.io/stacktracejs/stacktrace.js.png)](http://waffle.io/stacktracejs/stacktrace.js)  
 
 This project is made possible due to the efforts of these fine people:
 
-* [Eric Wendelin](http://eriwen.com)
+* [Eric Wendelin](http://www.eriwen.com)
+* [Victor Homyakov] (https://github.com/victor-homyakov)
 * [Luke Smith](http://lucassmith.name/)
-* Loic Dachary
-* Johan Euphrosine
-* Øyvind Sean Kinsey
-* Victor Homyakov
+* [Many others](https://github.com/stacktracejs/stacktrace.js/graphs/contributors)
