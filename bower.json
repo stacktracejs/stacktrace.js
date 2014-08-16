@@ -5,6 +5,7 @@
   "dependencies": {},
   "ignore": [
     "**/.*",
+    "test"
     "node_modules",
     "components"
   ]
