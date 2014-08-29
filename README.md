@@ -77,6 +77,7 @@ It is currently tested and working on:
  - K-Meleon 1.5.3+
  - Epiphany 2.28.0+
  - Iceape 1.1+
+ - PhantomJS
 
 ## Contributions [![Stories in Ready](http://badge.waffle.io/stacktracejs/stacktrace.js.png)](http://waffle.io/stacktracejs/stacktrace.js)  
 
