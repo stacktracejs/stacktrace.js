@@ -26,8 +26,8 @@
      */
     function printStackTrace(options) {
         options = options || {guess: true};
-        var ex = options.e || null, guess = !!options.guess;
-        var p = new printStackTrace.implementation(), result = p.run(ex);
+        var ex = options.e || null, guess = !!options.guess, mode = options.mode || null;
+        var p = new printStackTrace.implementation(), result = p.run(ex, mode);
         return (guess) ? p.guessAnonymousFunctions(result) : result;
     }
 
