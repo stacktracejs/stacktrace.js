@@ -52,7 +52,7 @@
             };
         },
         createModeStubs: function(p, stub) {
-            var modes = ['other', 'opera9', 'opera10a', 'opera10b', 'opera11', 'firefox', 'safari', 'ie', 'chrome'];
+            var modes = ['other', 'opera9', 'opera10a', 'opera10b', 'opera11', 'firefox', 'safari', 'ie', 'chrome', 'phantomjs'];
             for (var i = 0, len = modes.length; i < len; i++) {
                 var mode = modes[i];
                 p[mode] = stub || this.createModeStub(mode);
@@ -88,7 +88,7 @@
 
     test("mode", function() {
         expect(1);
-        equals("chrome safari firefox ie other opera9 opera10a opera10b opera11".indexOf(pst.mode(UnitTest.fn.createGenericError())) >= 0, true);
+        equals("chrome safari firefox ie other opera9 opera10a opera10b opera11 phantomjs".indexOf(pst.mode(UnitTest.fn.createGenericError())) >= 0, true);
     });
 
     test("run mode", function() {
@@ -529,6 +529,16 @@
         equals(message[0], '{anonymous}()@http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:48:13');
         equals(message[1], 'dumpException3@http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:46:9');
         equals(message[2], 'onclick@http://jenkins.eriwen.com/job/stacktrace.js/ws/test/functional/ExceptionLab.html:82:1');
+    });
+
+    test("phantomjs", function() {
+        var e = [CapturedExceptions.phantomjs];
+        expect(2); // 2 * e.length
+        for (var i = 0; i < e.length; i++) {
+            var message = pst.phantomjs(e[i]);
+            equals(message.length, 8, 'number of stack entries');
+            equals(message[message.length - 1].indexOf('onGlobalMessage()') >= 0, true, 'onGlobalMessage() is 1st from the bottom of stack');
+        }
     });
 
     test("other", function() {
