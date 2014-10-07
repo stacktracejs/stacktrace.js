@@ -1,7 +1,17 @@
-.gradle
-*/.DS_Store
-.DS_Store
-target
-.idea
-node_modules
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
 
+pids
+logs
+results
+
+node_modules
+bower_components
+
+.idea
