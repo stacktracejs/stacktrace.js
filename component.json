@@ -6,5 +6,7 @@
     "scripts": [
       "stacktrace.js"
     ],
-    "dependencies": {}
+    "dependencies": {
+        "error-stack-parser": "~0.1.0"
+    }
 }
