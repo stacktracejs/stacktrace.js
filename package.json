@@ -1,20 +1,17 @@
 {
-  "name": "stacktrace-js",
-  "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
-  "author": "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
-  "version": "0.6.2",
-  "keywords": ["stack-trace", "cross-browser", "framework-agnostic", "client", "browser"],
-  "homepage": "http://stacktracejs.com",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/stacktracejs/stacktrace.js.git"
-  },
-  "main": "./stacktrace.js",
-  "engines": {
-    "node": "*"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "jshint": "0.9.x"
-  }
+    "name": "stacktrace-js",
+    "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
+    "author": "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
+    "version": "0.6.2",
+    "keywords": ["stack-trace", "cross-browser", "framework-agnostic", "client", "browser"],
+    "homepage": "http://www.stacktracejs.com",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/stacktracejs/stacktrace.js.git"
+    },
+    "main": "./stacktrace.js",
+    "engines": {
+        "node": "*"
+    },
+    "dependencies": {}
 }

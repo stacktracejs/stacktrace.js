@@ -4,9 +4,10 @@
     "repo": "stacktracejs/stacktrace.js",
     "main": "stacktrace.js",
     "scripts": [
-      "stacktrace.js"
+        "stacktrace.js"
     ],
     "dependencies": {
-        "error-stack-parser": "~0.1.0"
+        "error-stack-parser": "~0.1.0",
+        "stack-generator": "~0.1.0"
     }
 }

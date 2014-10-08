@@ -34,9 +34,19 @@ describe('StackTrace', function () {
         });
     });
 
+    describe('#generateArtificially', function () {
+        var unit = new StackTrace();
+        it('gets stacktrace from current location', function testGenerateArtificially() {
+            var stackFrames = unit.generateArtificially().filter(function (stackFrame) {
+                return stackFrame.getFunctionName() && stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
+            });
+            expect(stackFrames.length).toEqual(1);
+        });
+    });
+
     describe('#withFilter', function () {
         var unit = new StackTrace();
-        xit('throws an error given input other than a function', function () {
+        it('throws an error given input other than a function', function () {
             expect(function () {
                 unit.withFilter('BOGUS')
             }).toThrow(new TypeError('Can only apply filter with a function'));

@@ -3,15 +3,13 @@
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
     if (typeof define === 'function' && define.amd) {
-        define(['error-stack-parser'], factory);
+        define(['error-stack-parser', 'stack-generator'], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('error-stack-parser'));
+        module.exports = factory(require('error-stack-parser'), require('stack-generator'));
     } else {
-        root.StackTrace = factory(root.ErrorStackParser);
+        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator);
     }
-}(this, function () {
-    'use strict';
-
+}(this, function (ErrorStackParser, StackGenerator) {
     // { filter: fnRef
     //   sourceMap: ???
     //   cors: ???
@@ -25,6 +23,7 @@
     //      .withEnhancedFunctionNames()
     //      .withEnhancedSourceLocations()
     //      .withFilter(fn)
+    //      .withMaxStackSize(10)
     //      .withFormatter(fn)
     //      .instrument(fn)
     //      .get(opts) => Array[StackFrame]
@@ -41,7 +40,7 @@
         var target = {};
         var prop;
 
-        [first, second].forEach(function(obj) {
+        [first, second].forEach(function (obj) {
             for (prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     target[prop] = obj[prop];
@@ -51,6 +50,14 @@
         });
 
         return target;
+    }
+
+    /**
+     * Return true if called from context within strict mode.
+     * @private
+     */
+    function _isStrictMode() {
+        return (eval("var __temp = null"), (typeof __temp === "undefined"));
     }
 
     return function StackTrace() {
@@ -67,7 +74,11 @@
             try {
                 throw new Error("From StackTrace.get()");
             } catch (e) {
-                return this.fromError(e, _merge(this.options, opts));
+                if (e['stack'] || e['opera#sourceloc']) {
+                    return this.fromError(e, _merge(this.options, opts));
+                } else {
+                    return this.generateArtificially(_merge(this.options, opts));
+                }
             }
         };
 
@@ -92,6 +103,15 @@
             return stackframes;
         };
 
+        /**
+         * Use StackGenerator to generate a backtrace.
+         * @param opts Object options
+         * @returns Array[StackFrame]
+         */
+        this.generateArtificially = function generateArtificially(opts) {
+            return StackGenerator.backtrace(opts);
+        };
+
         this.withFilter = function withFilter(fn) {
             if (typeof fn !== 'function') {
                 throw new TypeError('Can only apply filter with a function')
@@ -104,11 +124,6 @@
             this.options.formatter = fn;
             return this;
         };
-
-        // I want to know when a specific function is called
-        this.instrument = function instrument(fnRef, opts) {};
-
-        this.deinstrument = function deinstrument(fnRef) {};
     }
 }));
 
