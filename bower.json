@@ -4,17 +4,10 @@
     "main": "./stacktrace.js",
     "homepage": "https://github.com/stacktracejs/stacktrace.js",
     "authors": [
-        "Eric Wendelin <me@eriwen.com>"
+        "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
+        "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)"
     ],
-    "description": "Extract meaning from JS Errors",
-    "dependencies": {
-        "error-stack-parser": "~0.1.0",
-        "stack-generator": "~0.1.0"
-    },
-    "devDependencies": {
-        "jasmine": "~1.3.1",
-        "jasmine-jstd-adapter": "~1.1.2"
-    },
+    "description": "Turns partial code location into precise code location",
     "moduleType": [
         "amd",
         "globals",
@@ -26,13 +19,13 @@
         "backtrace",
         "cross-browser",
         "framework-agnostic",
-        "error"
+        "error",
+        "debugger"
     ],
     "license": "Public Domain",
     "ignore": [
         "**/.*",
         "node_modules",
-        "bower_components",
         "spec"
     ]
 }

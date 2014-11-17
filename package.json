@@ -1,17 +1,59 @@
 {
     "name": "stacktrace-js",
     "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
-    "author": "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
-    "version": "0.6.2",
-    "keywords": ["stack-trace", "cross-browser", "framework-agnostic", "client", "browser"],
+    "maintainers": [
+        "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
+        "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)"
+    ],
+    "version": "1.0.0",
+    "keywords": [
+        "stacktrace",
+        "error",
+        "debugger",
+        "client",
+        "browser"
+    ],
     "homepage": "http://www.stacktracejs.com",
     "repository": {
         "type": "git",
         "url": "git://github.com/stacktracejs/stacktrace.js.git"
     },
-    "main": "./stacktrace.js",
-    "engines": {
-        "node": "*"
+    "dependencies": {
+        "error-stack-parser": "~0",
+        "stack-generator": "~1",
+        "stacktrace-gps": "~0"
     },
-    "dependencies": {}
+    "devDependencies": {
+        "colors": "~1.0.3",
+        "coveralls": "^2.11.2",
+        "jasmine-node": "~1.14",
+        "jasmine-sinon": "^0.4.0",
+        "jshint": "^2.5.6",
+        "karma": "~0.12",
+        "karma-chrome-launcher": "^0.1.5",
+        "karma-coverage": "^0.2.6",
+        "karma-firefox-launcher": "^0.1.3",
+        "karma-ie-launcher": "^0.1.5",
+        "karma-jasmine": "^0.1.5",
+        "karma-opera-launcher": "^0.1.0",
+        "karma-phantomjs-launcher": "^0.1.4",
+        "karma-safari-launcher": "^0.1.1",
+        "karma-sauce-launcher": "^0.2.10",
+        "karma-sinon": "^1.0.3",
+        "sinon": "^1.10.3",
+        "uglify-js2": "^2.1.11"
+    },
+    "bugs": {
+        "url": "https://github.com/stacktracejs/stacktrace.js/issues"
+    },
+    "licenses": [
+        {
+            "type": "Public Domain",
+            "url": "https://github.com/stacktracejs/stacktrace.js/blob/master/LICENSE"
+        }
+    ],
+    "main": "./stacktrace.js",
+    "scripts": {
+        "test": "make clean test"
+    }
 }

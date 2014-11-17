@@ -1,24 +1,29 @@
-BROWSER_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+BROWSERS=Firefox,ChromeCanary,Opera,Safari
 
-deploy:
-	npm publish
+test: build/jshint.xml
+	@NODE_ENV=test ./node_modules/karma/bin/karma start --single-run --browsers $(BROWSERS)
 
-browser:
-	open spec/spec-runner.html
+build/jshint.xml: build
+	./node_modules/.bin/jshint --reporter checkstyle ./spec/stacktrace-spec.js ./stacktrace.js > build/jshint.xml
 
-phantom:
-	/usr/bin/env DISPLAY=:1 phantomjs spec/lib/run-jasmine.js spec/spec-runner.html
-
-jstd:
-	/usr/bin/env DISPLAY=:1 java -jar spec/JsTestDriver-1.3.5.jar --config spec/jsTestDriver.conf --browser ${BROWSER_PATH} --port 4224 --tests 'all' --testOutput './target'
-
-build: components
-	@component build --dev
-
-components: component.json
-	@component install --dev
+test-ci: build/jshint.xml
+	@echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
+	@NODE_ENV=test ./node_modules/karma/bin/karma start karma.conf.ci.js --single-run && \
+    		cat ./coverage/IE\ 7*/lcov.info | ./node_modules/coveralls/bin/coveralls.js --verbose
 
 clean:
-	rm -fr build components template.js
+	rm -fr build coverage dist *.log
 
-.PHONY: clean
+build:
+	mkdir build
+
+dist:
+	mkdir dist
+	./node_modules/.bin/uglifyjs2 \
+		node_modules/error-stack-parser/dist/error-stack-parser.min.js \
+		node_modules/stack-generator/dist/stack-generator.min.js \
+		node_modules/stacktrace-gps/dist/stacktrace-gps.min.js \
+		stacktrace.js -o stacktrace.min.js --source-map stacktrace.js.map
+	mv stacktrace.min.js stacktrace.js.map dist/
+
+.PHONY: clean test dist
