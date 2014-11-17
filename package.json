@@ -2,7 +2,7 @@
   "name": "stacktrace-js",
   "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
   "author": "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "keywords": ["stack-trace", "cross-browser", "framework-agnostic", "client", "browser"],
   "homepage": "http://stacktracejs.com",
   "repository": {
