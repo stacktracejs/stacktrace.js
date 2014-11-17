@@ -5,7 +5,7 @@
         "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
         "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)"
     ],
-    "version": "1.0.0",
+    "version": "0.6.3",
     "keywords": [
         "stacktrace",
         "error",
