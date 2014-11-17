@@ -4,4 +4,7 @@
 target
 .idea
 node_modules
+coverage
+.coveralls.yml
+build
 
