@@ -1,8 +1,13 @@
 target/
 test/
+build/
+coverage/
 gradle/
 gradlew.*
 jshint.json
 stacktrace-bookmarklet.js
 build.gradle
+.idea
+*.log
+.coveralls.yml
 
