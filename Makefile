@@ -1,4 +1,4 @@
-BROWSERS=Firefox,ChromeCanary,Opera,Safari
+BROWSERS=Firefox,ChromeCanary,Opera
 
 test: build/jshint.xml
 	@NODE_ENV=test ./node_modules/karma/bin/karma start --single-run --browsers $(BROWSERS)
