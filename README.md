@@ -15,6 +15,11 @@ bower install stacktrace-js
 https://rawgithub.com/stacktracejs/stacktrace.js/master/dist/stacktrace.min.js
 ```
 
+### stacktrace.js is available on cdnjs.com
+https://cdnjs.com/libraries/stacktrace.js
+
+`//cdnjs.cloudflare.com/ajax/libs/stacktrace.js/0.6.3/stacktrace.min.js`
+
 ## Contributions  
 
 This project is made possible due to the efforts of these fine people:
