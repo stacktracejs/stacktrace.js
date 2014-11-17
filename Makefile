@@ -9,7 +9,7 @@ build/jshint.xml: build
 test-ci: build/jshint.xml
 	@echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
 	@NODE_ENV=test ./node_modules/karma/bin/karma start karma.conf.ci.js --single-run && \
-    		cat ./coverage/IE\ 7*/lcov.info | ./node_modules/coveralls/bin/coveralls.js --verbose
+    		cat ./coverage/Chrome*/lcov.info | ./node_modules/coveralls/bin/coveralls.js --verbose
 
 clean:
 	rm -fr build coverage dist *.log
