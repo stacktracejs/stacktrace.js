@@ -10,7 +10,7 @@ Looking for the [stable version](https://github.com/stacktracejs/stacktrace.js/t
 ```
 npm install stacktrace-js
 bower install stacktrace-js
-wget https://rawgithub.com/stacktracejs/stacktrace.js/master/stacktrace.js
+https://rawgithub.com/stacktracejs/stacktrace.js/master/dist/stacktrace.min.js
 ```
 
 ## Contributions  
