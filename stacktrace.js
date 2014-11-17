@@ -3,13 +3,13 @@
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
     if (typeof define === 'function' && define.amd) {
-        define(['error-stack-parser', 'stack-generator'], factory);
+        define(['error-stack-parser', 'stack-generator', 'stacktrace-gps'], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('error-stack-parser'), require('stack-generator'));
+        module.exports = factory(require('error-stack-parser'), require('stack-generator'), require('stacktrace-gps'));
     } else {
-        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator);
+        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator, root.StackTraceGPS);
     }
-}(this, function (ErrorStackParser, StackGenerator) {
+}(this, function (ErrorStackParser, StackGenerator, StackTraceGPS) {
     // { filter: fnRef
     //   sourceMap: ???
     //   cors: ???
@@ -17,16 +17,6 @@
     //   enhancedSourceLocations: true
     //   formatter: fnRef
     // }
-
-    // Do not process or try to enhance filtered StackFrames
-    // new StackTrace()
-    //      .withEnhancedFunctionNames()
-    //      .withEnhancedSourceLocations()
-    //      .withFilter(fn)
-    //      .withMaxStackSize(10)
-    //      .withFormatter(fn)
-    //      .instrument(fn)
-    //      .get(opts) => Array[StackFrame]
 
     /**
      * Merge 2 given Objects. If a conflict occurs the second object wins.
@@ -57,12 +47,12 @@
      * @private
      */
     function _isStrictMode() {
-        return (eval("var __temp = null"), (typeof __temp === "undefined"));
+        return (eval("var __temp = null"), (typeof __temp === "undefined")); // jshint ignore:line
     }
 
     return function StackTrace() {
         // TODO: utils to facilitate automatic bug reporting
-
+        this.gps = undefined;
         this.options = {};
 
         /**
@@ -72,9 +62,9 @@
          */
         this.get = function (opts) {
             try {
-                throw new Error("From StackTrace.get()");
+                throw new Error('From StackTrace.get()');
             } catch (e) {
-                if (e['stack'] || e['opera#sourceloc']) {
+                if (e.stack || e['opera#sourceloc']) {
                     return this.fromError(e, _merge(this.options, opts));
                 } else {
                     return this.generateArtificially(_merge(this.options, opts));
@@ -91,14 +81,22 @@
         this.fromError = function fromError(error, opts) {
             opts = _merge(this.options, opts);
 
-            var stackframes = new ErrorStackParser().parse(error); //ErrorStackParser.parse(error)
+            var stackframes = ErrorStackParser.parse(error);
             if (typeof opts.filter === 'function') {
-                // TODO: stackframes = stackframes.filter(opts.filter);
+                stackframes = stackframes.filter(opts.filter);
             }
-            // TODO: apply enhancements here
-            if (typeof opts.formatter === 'function') {
-                // TODO: stackframes = stackframes.map(opts.formatter);
-            }
+
+            stackframes.map(function(sf) {
+                if (typeof this.gps !== 'function') {
+                    this.gps = new StackTraceGPS();
+                }
+                this.gps.findFunctionName(sf, function(name) {
+                    sf.setFunctionName(name);
+                    return sf;
+                }, function(err) {
+                    return sf;
+                });
+            }.bind(this));
 
             return stackframes;
         };
@@ -111,19 +109,6 @@
         this.generateArtificially = function generateArtificially(opts) {
             return StackGenerator.backtrace(opts);
         };
-
-        this.withFilter = function withFilter(fn) {
-            if (typeof fn !== 'function') {
-                throw new TypeError('Can only apply filter with a function')
-            }
-            this.options.filter = fn;
-            return this;
-        };
-
-        this.withFormatter = function withFormatter(fn) {
-            this.options.formatter = fn;
-            return this;
-        };
-    }
+    };
 }));
 
