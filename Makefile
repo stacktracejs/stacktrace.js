@@ -25,5 +25,6 @@ dist:
 		node_modules/stacktrace-gps/dist/stacktrace-gps.min.js \
 		stacktrace.js -o stacktrace.min.js --source-map stacktrace.js.map
 	mv stacktrace.min.js stacktrace.js.map dist/
+	cp stacktrace.js dist/
 
 .PHONY: clean test dist
