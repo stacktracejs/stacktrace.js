@@ -20,8 +20,9 @@
     },
     "dependencies": {
         "error-stack-parser": "~0",
+        "es6-promise": "~2",
         "stack-generator": "~1",
-        "stacktrace-gps": "~0"
+        "stacktrace-gps": "~1"
     },
     "devDependencies": {
         "colors": "~1.0.3",
@@ -40,7 +41,7 @@
         "karma-safari-launcher": "^0.1.1",
         "karma-sauce-launcher": "^0.2.10",
         "karma-sinon": "^1.0.3",
-        "sinon": "^1.10.3",
+        "sinon": "^1.12.1",
         "uglify-js2": "^2.1.11"
     },
     "bugs": {

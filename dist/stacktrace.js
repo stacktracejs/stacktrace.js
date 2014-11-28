@@ -1,22 +1,16 @@
-/* global StackFrame: false, ErrorStackParser: false */
 (function (root, factory) {
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
     if (typeof define === 'function' && define.amd) {
-        define(['error-stack-parser', 'stack-generator', 'stacktrace-gps'], factory);
+        define(['error-stack-parser', 'stack-generator', 'stacktrace-gps', 'es6-promise'], factory);
     } else if (typeof exports === 'object') {
-        module.exports = factory(require('error-stack-parser'), require('stack-generator'), require('stacktrace-gps'));
+        module.exports = factory(require('error-stack-parser'), require('stack-generator'), require('stacktrace-gps'), require('es6-promise'));
     } else {
-        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator, root.StackTraceGPS);
+        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator, root.StackTraceGPS, root.ES6Promise);
     }
-}(this, function (ErrorStackParser, StackGenerator, StackTraceGPS) {
-    // { filter: fnRef
-    //   sourceMap: ???
-    //   cors: ???
-    //   enhancedFunctionNames: true
-    //   enhancedSourceLocations: true
-    //   formatter: fnRef
-    // }
+}(this, function StackTrace(ErrorStackParser, StackGenerator, StackTraceGPS, RSVP) {
+    ES6Promise.polyfill();
+    var Promise = ES6Promise.Promise;
 
     /**
      * Merge 2 given Objects. If a conflict occurs the second object wins.
@@ -28,10 +22,9 @@
      */
     function _merge(first, second) {
         var target = {};
-        var prop;
 
         [first, second].forEach(function (obj) {
-            for (prop in obj) {
+            for (var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     target[prop] = obj[prop];
                 }
@@ -42,18 +35,13 @@
         return target;
     }
 
-    /**
-     * Return true if called from context within strict mode.
-     * @private
-     */
-    function _isStrictMode() {
-        return (eval("var __temp = null"), (typeof __temp === "undefined")); // jshint ignore:line
-    }
-
     return function StackTrace() {
-        // TODO: utils to facilitate automatic bug reporting
-        this.gps = undefined;
-        this.options = {};
+        this.options = {
+            filter: function (stackframe) {
+                // Filter out stackframes for this library by default
+                return (stackframe.fileName || '').indexOf('stacktrace.') === -1;
+            }
+        };
 
         /**
          * Get a backtrace from invocation point.
@@ -80,25 +68,25 @@
          */
         this.fromError = function fromError(error, opts) {
             opts = _merge(this.options, opts);
-
-            var stackframes = ErrorStackParser.parse(error);
-            if (typeof opts.filter === 'function') {
-                stackframes = stackframes.filter(opts.filter);
-            }
-
-            stackframes.map(function(sf) {
-                if (typeof this.gps !== 'function') {
-                    this.gps = new StackTraceGPS();
+            return new Promise(function (resolve) {
+                var stackframes = ErrorStackParser.parse(error);
+                if (typeof opts.filter === 'function') {
+                    stackframes = stackframes.filter(opts.filter);
                 }
-                this.gps.findFunctionName(sf, function(name) {
-                    sf.setFunctionName(name);
-                    return sf;
-                }, function(err) {
-                    return sf;
-                });
-            }.bind(this));
 
-            return stackframes;
+                resolve(Promise.all(stackframes.map(this.getMappedLocation)));
+            }.bind(this));
+        };
+
+        this.getMappedLocation = function getMappedLocation(stackframe) {
+            return new Promise(function(resolve) {
+                new StackTraceGPS().getMappedLocation(stackframe)
+                    .then(function (loc) {
+                        resolve(new StackFrame(loc.name, stackframe.args, loc.source, loc.line, loc.column));
+                    })['catch'](function() {
+                        resolve(stackframe);
+                    });
+            });
         };
 
         /**

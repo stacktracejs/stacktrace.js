@@ -7,6 +7,7 @@ module.exports = function (config) {
             'node_modules/stack-generator/dist/stack-generator.min.js',
             'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
             'stacktrace.js',
+            'spec/spec-helper.js',
             'spec/*-spec.js'
         ],
         reporters: ['progress', 'coverage'],
