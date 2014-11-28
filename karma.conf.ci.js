@@ -45,7 +45,7 @@ module.exports = function (config) {
         browserNoActivityTimeout : 240000,
         captureTimeout : 240000,
         sauceLabs: {
-            testName: 'stacktrace-gps unit tests',
+            testName: 'stacktrace.js unit tests',
             recordScreenshots: false,
             connectOptions: {
                 port: 5757,
@@ -56,7 +56,7 @@ module.exports = function (config) {
         browsers: Object.keys(customLaunchers),
         reporters: ['progress', 'saucelabs', 'coverage'],
         preprocessors: {
-            'stacktrace-gps.js': 'coverage'
+            'stacktrace.js': 'coverage'
         },
         coverageReporter: {
             type: 'lcov',
