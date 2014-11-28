@@ -1,6 +1,6 @@
 stacktrace.js
 ===============
-[![Build Status](https://travis-ci.org/stacktracejs/stacktrace.js.svg?branch=master)](https://travis-ci.org/stacktracejs/stacktrace.js) [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg)](https://coveralls.io/r/stacktracejs/stacktrace.js) [![Code Climate](https://codeclimate.com/github/stacktracejs/stacktrace.js.png)](https://codeclimate.com/github/stacktracejs/stacktrace.js)
+[![Build Status](https://travis-ci.org/stacktracejs/stacktrace.js.svg?branch=master)](https://travis-ci.org/stacktracejs/stacktrace.js) [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg)](https://coveralls.io/r/stacktracejs/stacktrace.js?branch=master) [![Code Climate](https://codeclimate.com/github/stacktracejs/stacktrace.js.png)](https://codeclimate.com/github/stacktracejs/stacktrace.js)
 
 A JavaScript tool that allows you to debug your JavaScript by giving you a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify)
 
