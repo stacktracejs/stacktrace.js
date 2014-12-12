@@ -7,6 +7,13 @@ module.exports = function (config) {
 
     // Check out https://saucelabs.com/platforms for all browser/platform combos
     var customLaunchers = {
+        // FIXME: for iOS8 - TypeError: Can only call XMLHttpRequest.send on instances of XMLHttpRequest
+        //slIOS8: {
+        //    base: 'SauceLabs',
+        //    browserName: 'iPhone',
+        //    platform: 'OS X 10.9',
+        //    version: '8.1'
+        //},
         slChrome: {
             base: 'SauceLabs',
             browserName: 'chrome'
@@ -15,12 +22,22 @@ module.exports = function (config) {
             base: 'SauceLabs',
             browserName: 'firefox'
         },
+        slOpera: {
+            base: 'SauceLabs',
+            browserName: 'opera'
+        },
         slIE11: {
             base: 'SauceLabs',
             browserName: 'internet explorer',
             platform: 'Windows 8.1',
             version: '11'
         }
+        //slIE9: {
+        //    base: 'SauceLabs',
+        //    browserName: 'internet explorer',
+        //    platform: 'Windows 7',
+        //    version: '9'
+        //}
     };
 
     config.set({
@@ -28,7 +45,6 @@ module.exports = function (config) {
         frameworks: ['jasmine', 'sinon'],
         files: [
             'node_modules/error-stack-parser/dist/error-stack-parser.min.js',
-            'node_modules/es6-promise/dist/es6-promise.js',
             'node_modules/stack-generator/dist/stack-generator.min.js',
             'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
             'stacktrace.js',
