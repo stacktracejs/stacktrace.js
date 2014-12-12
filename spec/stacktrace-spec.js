@@ -26,13 +26,13 @@ describe('StackTrace', function () {
 
     describe('#get', function () {
         it('gets stacktrace from current location', function () {
-            runs(function () {
-                new StackTrace().get().then(callback, errback);
+            runs(function testStackTraceGet() {
+                new StackTrace().get().then(callback, errback)['catch'](debugErrback);
             });
             waits(100);
             runs(function () {
                 expect(callback).toHaveBeenCalled();
-                expect(callback.mostRecentCall.args[0][0].fileName).toMatch(/stacktrace\-spec\.js\b/);
+                expect(callback.mostRecentCall.args[0][0].functionName).toEqual('testStackTraceGet');
                 expect(errback).not.toHaveBeenCalled();
             });
         });
@@ -41,7 +41,8 @@ describe('StackTrace', function () {
     describe('#fromError', function () {
         it('rejects with Error given non-Error object', function () {
             runs(function () {
-                new StackTrace().fromError('BOGUS').then(callback, errback);
+                new StackTrace().fromError('BOGUS')
+                    .then(callback, errback)['catch'](errback);
             });
             waits(100);
             runs(function () {
@@ -51,11 +52,13 @@ describe('StackTrace', function () {
         });
 
         it('parses stacktrace from given Error object', function () {
+            //FIXME: shims for IE9
             runs(function () {
                 try {
                     throw new Error('Yikes!');
                 } catch (e) {
-                    new StackTrace().fromError(e).then(callback, errback);
+                    new StackTrace().fromError(e)
+                        .then(callback, errback)['catch'](errback);
                 }
             });
             waits(100);
@@ -66,7 +69,9 @@ describe('StackTrace', function () {
         });
 
         it('totally extracts function names', function () {
-            var TEST_FUNCTION = function () {
+            //FIXME: shims for IE9
+            //FIXME: need function name for opera 12
+            var TEST_FUNCTION = function TEST_FUNCTION() {
                 try {
                     throw new Error('Yikes!');
                 } catch (e) {
@@ -75,7 +80,7 @@ describe('StackTrace', function () {
                     }
 
                     new StackTrace().fromError(e, {filter: onlySpecSourcesPlease})
-                        .then(callback, errback);
+                        .then(callback, errback)['catch'](errback);
                 }
             };
             runs(TEST_FUNCTION);
@@ -95,7 +100,7 @@ describe('StackTrace', function () {
         });
     });
 
-    describe('#getMappedLocation', function() {
+    describe('#getMappedLocation', function () {
         var server;
         beforeEach(function () {
             server = sinon.fakeServer.create();
@@ -104,14 +109,14 @@ describe('StackTrace', function () {
             server.restore();
         });
 
-        it('defaults to given stackframe if source map location not found', function() {
-            runs(function() {
+        it('defaults to given stackframe if source map location not found', function () {
+            runs(function () {
                 var stackframe = new StackFrame(undefined, [], 'http://localhost:9999/test.min.js', 1, 32);
-                new StackTrace().getMappedLocation(stackframe).then(callback, errback);
+                new StackTrace().getMappedLocation(stackframe).then(callback, errback)['catch'](debugErrback);
                 server.requests[0].respond(404, {}, '');
             });
             waits(100);
-            runs(function() {
+            runs(function () {
                 expect(callback).toHaveBeenCalled();
                 expect(callback.mostRecentCall.args[0]).toMatchStackFrame([undefined, [], 'http://localhost:9999/test.min.js', 1, 32]);
                 expect(errback).not.toHaveBeenCalled();
@@ -119,19 +124,19 @@ describe('StackTrace', function () {
         });
 
         it('uses source maps to enhance stack frames', function () {
-            runs(function() {
+            runs(function () {
                 var stackframe = new StackFrame(undefined, [], 'http://localhost:9999/test.min.js', 1, 32);
-                new StackTrace().getMappedLocation(stackframe).then(callback, errback);
+                new StackTrace().getMappedLocation(stackframe).then(callback, errback)['catch'](debugErrback);
                 var source = 'var foo=function(){};function bar(){}var baz=eval("XXX");\n//@ sourceMappingURL=test.js.map';
-                server.requests[0].respond(200, { 'Content-Type': 'application/x-javascript' }, source);
+                server.requests[0].respond(200, {'Content-Type': 'application/x-javascript'}, source);
             });
             waits(100);
-            runs(function() {
+            runs(function () {
                 var sourceMap = '{"version":3,"sources":["./test.js"],"names":["foo","bar","baz","eval"],"mappings":"AAAA,GAAIA,KAAM,YACV,SAASC,QACT,GAAIC,KAAMC,KAAK","file":"test.min.js"}';
-                server.requests[1].respond(200, { 'Content-Type': 'application/json' }, sourceMap);
+                server.requests[1].respond(200, {'Content-Type': 'application/json'}, sourceMap);
             });
             waits(100);
-            runs(function() {
+            runs(function () {
                 expect(callback).toHaveBeenCalled();
                 expect(callback.mostRecentCall.args[0]).toMatchStackFrame(['bar', [], './test.js', 2, 9]);
                 expect(errback).not.toHaveBeenCalled();
@@ -140,12 +145,21 @@ describe('StackTrace', function () {
     });
 
     describe('#generateArtificially', function () {
-        var unit = new StackTrace();
-        it('gets stacktrace from current location', function testGenerateArtificially() {
-            var stackFrames = unit.generateArtificially().filter(function (stackFrame) {
-                return stackFrame.getFunctionName() && stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
+        it('gets stacktrace from current location', function () {
+            runs(function testGenerateArtificially() {
+                var stackFrameFilter = function (stackFrame) {
+                    return stackFrame.getFunctionName() &&
+                        stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
+                };
+                new StackTrace().generateArtificially({filter: stackFrameFilter})
+                    .then(callback, errback)['catch'](debugErrback);
             });
-            expect(stackFrames.length).toEqual(1);
+            waits(100);
+            runs(function () {
+                expect(callback).toHaveBeenCalled();
+                expect(callback.mostRecentCall.args[0][0]).toMatchStackFrame(['testGenerateArtificially', []]);
+                expect(errback).not.toHaveBeenCalled();
+            });
         });
     });
 });

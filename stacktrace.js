@@ -8,7 +8,7 @@
     } else {
         root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator, root.StackTraceGPS, root.ES6Promise);
     }
-}(this, function StackTrace(ErrorStackParser, StackGenerator, StackTraceGPS, RSVP) {
+}(this, function StackTrace(ErrorStackParser, StackGenerator, StackTraceGPS, ES6Promise) {
     ES6Promise.polyfill();
     var Promise = ES6Promise.Promise;
 
@@ -39,7 +39,10 @@
         this.options = {
             filter: function (stackframe) {
                 // Filter out stackframes for this library by default
-                return (stackframe.fileName || '').indexOf('stacktrace.') === -1;
+                return (stackframe.functionName || '').indexOf('StackTrace$$') !== 0 &&
+                    (stackframe.functionName || '').indexOf('ErrorStackParser$$') !== 0 &&
+                    (stackframe.functionName || '').indexOf('StackTraceGPS$$') !== 0 &&
+                    (stackframe.functionName || '').indexOf('StackGenerator$$') !== 0;
             }
         };
 
@@ -48,15 +51,12 @@
          * @param opts Options Object
          * @return Array[StackFrame]
          */
-        this.get = function (opts) {
-            try {
-                throw new Error('From StackTrace.get()');
-            } catch (e) {
-                if (e.stack || e['opera#sourceloc']) {
-                    return this.fromError(e, _merge(this.options, opts));
-                } else {
-                    return this.generateArtificially(_merge(this.options, opts));
-                }
+        this.get = function StackTrace$$get(opts) {
+            var err = new Error();
+            if (err.stack || err['opera#sourceloc']) {
+                return this.fromError(err, opts);
+            } else {
+                return this.generateArtificially(opts);
             }
         };
 
@@ -66,26 +66,26 @@
          * @param opts Object for options
          * @return Array[StackFrame]
          */
-        this.fromError = function fromError(error, opts) {
+        this.fromError = function StackTrace$$fromError(error, opts) {
             opts = _merge(this.options, opts);
             return new Promise(function (resolve) {
                 var stackframes = ErrorStackParser.parse(error);
                 if (typeof opts.filter === 'function') {
                     stackframes = stackframes.filter(opts.filter);
                 }
-
                 resolve(Promise.all(stackframes.map(this.getMappedLocation)));
             }.bind(this));
         };
 
-        this.getMappedLocation = function getMappedLocation(stackframe) {
-            return new Promise(function(resolve) {
+        this.getMappedLocation = function StackTrace$$getMappedLocation(stackframe) {
+            return new Promise(function (resolve) {
+                // TODO: pass along pre-cache
                 new StackTraceGPS().getMappedLocation(stackframe)
-                    .then(function (loc) {
+                    .then(function onResolved(loc) {
                         resolve(new StackFrame(loc.name, stackframe.args, loc.source, loc.line, loc.column));
-                    })['catch'](function() {
-                        resolve(stackframe);
-                    });
+                    })['catch'](function onError() {
+                    resolve(stackframe);
+                });
             });
         };
 
@@ -94,8 +94,13 @@
          * @param opts Object options
          * @returns Array[StackFrame]
          */
-        this.generateArtificially = function generateArtificially(opts) {
-            return StackGenerator.backtrace(opts);
+        this.generateArtificially = function StackTrace$$generateArtificially(opts) {
+            opts = _merge(this.options, opts);
+            var stackFrames = StackGenerator.backtrace(opts);
+            if (typeof opts.filter === 'function') {
+                stackFrames = stackFrames.filter(opts.filter);
+            }
+            return Promise.resolve(stackFrames);
         };
     };
 }));
