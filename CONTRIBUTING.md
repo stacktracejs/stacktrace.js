@@ -1,16 +1,27 @@
-## Making contributions
-When submitting your pull requests, please do the following to make it easier to incorporate your changes:
+## Submitting bugs
+Please include the following information to help us reproduce and fix:
 
-* Include unit and/or functional tests that validate changes you're making.
+* What you did
+* What you expected to happen
+* What actually happened
+* Browser and version
+* Example code that reproduces the problem (if possible)
+* *(l33t mode)* A failing test
+
+## Making contributions
+Want to be listed as a *Contributor*? Make a pull request with: 
+
+* Unit and/or functional tests that validate changes you're making.
 * Run unit tests in the latest IE, Firefox, Chrome, Safari and Opera and make sure they pass.
 * Rebase your changes onto origin/HEAD if you can do so cleanly.
 * If submitting additional functionality, provide an example of how to use it.
 * Please keep code style consistent with surrounding code.
 
-## Testing
-There are a few ways to run tests:
+## Dev Setup
+* Make sure you have [NodeJS v0.10](http://nodejs.org/) installed
+* Run `npm install` from the project directory
 
-* You can run tests in PhantomJS by simply running `gradlew test` from your favorite shell.
-* Run tests with JSTestDriver using `gradlew jstd`
-* Point any browser to `≤project dir>/test/TestStacktrace.html` for unit tests
-* Point your browser to `≤project dir>/test/functional/index.html` for more real-world functional tests
+## Testing
+* (Local) Run `npm test`. Make sure [Karma Local Config](karma.conf.js) has the browsers you want
+* (Any browser, remotely) Run `make test-ci` to run tests on [Sauce Labs](https://saucelabs.com).
+Make sure the target browser is enabled in [Karma CI Config](karma.conf.ci.js)
