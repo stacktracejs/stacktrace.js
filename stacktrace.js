@@ -12,6 +12,16 @@
     ES6Promise.polyfill();
     var Promise = ES6Promise.Promise;
 
+    var _options = {
+        filter: function (stackframe) {
+            // Filter out stackframes for this library by default
+            return (stackframe.functionName || '').indexOf('StackTrace$$') === -1 &&
+                (stackframe.functionName || '').indexOf('ErrorStackParser$$') === -1 &&
+                (stackframe.functionName || '').indexOf('StackTraceGPS$$') === -1 &&
+                (stackframe.functionName || '').indexOf('StackGenerator$$') === -1;
+        }
+    };
+
     /**
      * Merge 2 given Objects. If a conflict occurs the second object wins.
      * Does not do deep merges.
@@ -35,30 +45,20 @@
         return target;
     }
 
-    return function StackTrace() {
-        this.options = {
-            filter: function (stackframe) {
-                // Filter out stackframes for this library by default
-                return (stackframe.functionName || '').indexOf('StackTrace$$') !== 0 &&
-                    (stackframe.functionName || '').indexOf('ErrorStackParser$$') !== 0 &&
-                    (stackframe.functionName || '').indexOf('StackTraceGPS$$') !== 0 &&
-                    (stackframe.functionName || '').indexOf('StackGenerator$$') !== 0;
-            }
-        };
-
+    return {
         /**
          * Get a backtrace from invocation point.
          * @param opts Options Object
          * @return Array[StackFrame]
          */
-        this.get = function StackTrace$$get(opts) {
+        get: function StackTrace$$get(opts) {
             var err = new Error();
             if (err.stack || err['opera#sourceloc']) {
                 return this.fromError(err, opts);
             } else {
                 return this.generateArtificially(opts);
             }
-        };
+        },
 
         /**
          * Given an error object, parse it.
@@ -66,42 +66,35 @@
          * @param opts Object for options
          * @return Array[StackFrame]
          */
-        this.fromError = function StackTrace$$fromError(error, opts) {
-            opts = _merge(this.options, opts);
+        fromError: function StackTrace$$fromError(error, opts) {
+            opts = _merge(_options, opts);
             return new Promise(function (resolve) {
                 var stackframes = ErrorStackParser.parse(error);
                 if (typeof opts.filter === 'function') {
                     stackframes = stackframes.filter(opts.filter);
                 }
-                resolve(Promise.all(stackframes.map(this.getMappedLocation)));
+                resolve(Promise.all(stackframes.map(function(sf) {
+                    return new Promise(function (resolve) {
+                        function resolveOriginal(_) { resolve(sf); }
+                        new StackTraceGPS(opts).pinpoint(sf)
+                            .then(resolve, resolveOriginal)['catch'](resolveOriginal);
+                    });
+                })));
             }.bind(this));
-        };
-
-        this.getMappedLocation = function StackTrace$$getMappedLocation(stackframe) {
-            return new Promise(function (resolve) {
-                // TODO: pass along pre-cache
-                new StackTraceGPS().getMappedLocation(stackframe)
-                    .then(function onResolved(loc) {
-                        resolve(new StackFrame(loc.name, stackframe.args, loc.source, loc.line, loc.column));
-                    })['catch'](function onError() {
-                    resolve(stackframe);
-                });
-            });
-        };
+        },
 
         /**
          * Use StackGenerator to generate a backtrace.
          * @param opts Object options
          * @returns Array[StackFrame]
          */
-        this.generateArtificially = function StackTrace$$generateArtificially(opts) {
-            opts = _merge(this.options, opts);
+        generateArtificially: function StackTrace$$generateArtificially(opts) {
+            opts = _merge(_options, opts);
             var stackFrames = StackGenerator.backtrace(opts);
             if (typeof opts.filter === 'function') {
                 stackFrames = stackFrames.filter(opts.filter);
             }
             return Promise.resolve(stackFrames);
-        };
+        }
     };
 }));
-
