@@ -1,7 +1,5 @@
-BROWSERS=Firefox,ChromeCanary,Opera
-
 test: build/jshint.xml
-	@NODE_ENV=test ./node_modules/karma/bin/karma start --single-run --browsers $(BROWSERS)
+	@NODE_ENV=test ./node_modules/karma/bin/karma start --single-run
 
 build/jshint.xml: build
 	./node_modules/.bin/jshint --reporter checkstyle ./spec/stacktrace-spec.js ./stacktrace.js > build/jshint.xml
@@ -22,6 +20,7 @@ dist:
 	./node_modules/.bin/uglifyjs2 \
 		node_modules/error-stack-parser/dist/error-stack-parser.min.js \
 		node_modules/stack-generator/dist/stack-generator.min.js \
+		node_modules/es6-promise/dist/es6-promise.min.js \
 		node_modules/stacktrace-gps/dist/stacktrace-gps.min.js \
 		stacktrace.js -o stacktrace.min.js --source-map stacktrace.js.map
 	mv stacktrace.min.js stacktrace.js.map dist/
