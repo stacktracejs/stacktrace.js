@@ -5,8 +5,10 @@ module.exports = function (config) {
         files: [
             'node_modules/error-stack-parser/dist/error-stack-parser.min.js',
             'node_modules/stack-generator/dist/stack-generator.min.js',
+            'node_modules/es6-promise/dist/es6-promise.min.js',
             'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
             'stacktrace.js',
+            'spec/fixtures/*.js',
             'spec/spec-helper.js',
             'spec/*-spec.js'
         ],
@@ -23,7 +25,7 @@ module.exports = function (config) {
         logLevel: config.LOG_INFO,
         autoWatch: true,
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['ChromeCanary', 'Firefox', 'Opera', 'Safari'],
+        browsers: ['ChromeCanary', 'Firefox'],
         singleRun: false
     });
 };
