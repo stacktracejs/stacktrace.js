@@ -20,9 +20,9 @@
     },
     "dependencies": {
         "error-stack-parser": "~1",
-        "es6-promise": "~2",
+        "es6-promise": "^2.0.1",
         "stack-generator": "~1",
-        "stacktrace-gps": "~1"
+        "stacktrace-gps": "~2"
     },
     "devDependencies": {
         "colors": "~1.0.3",
@@ -35,14 +35,15 @@
         "karma-coverage": "^0.2.6",
         "karma-firefox-launcher": "^0.1.3",
         "karma-ie-launcher": "^0.1.5",
-        "karma-ios-launcher": "0.0.3",
+        "karma-ios-launcher": "^0.0.3",
         "karma-jasmine": "^0.1.5",
         "karma-opera-launcher": "^0.1.0",
         "karma-phantomjs-launcher": "^0.1.4",
         "karma-safari-launcher": "^0.1.1",
         "karma-sauce-launcher": "^0.2.10",
         "karma-sinon": "^1.0.3",
-        "sinon": "^1.12.1",
+        "karma-sinon-ie": "^1.0.1",
+        "sinon": "git://github.com/eriwen/Sinon.JS#v1.12.3-prebuilt",
         "uglify-js2": "^2.1.11"
     },
     "bugs": {
