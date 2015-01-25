@@ -22,7 +22,7 @@
         "error-stack-parser": "~1",
         "es6-promise": "^2.0.1",
         "stack-generator": "~1",
-        "stacktrace-gps": "~2"
+        "stacktrace-gps": "~2.1"
     },
     "devDependencies": {
         "colors": "~1.0.3",
@@ -42,8 +42,7 @@
         "karma-safari-launcher": "^0.1.1",
         "karma-sauce-launcher": "^0.2.10",
         "karma-sinon": "^1.0.3",
-        "karma-sinon-ie": "^1.0.1",
-        "sinon": "git://github.com/eriwen/Sinon.JS#v1.12.3-prebuilt",
+        "sinon": "^1.2.22",
         "uglify-js2": "^2.1.11"
     },
     "bugs": {
