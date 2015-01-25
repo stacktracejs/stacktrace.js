@@ -75,9 +75,10 @@ describe('StackTrace', function () {
                     return stackFrame.functionName === 'foo';
                 }
 
+                server.respondWith('GET', 'http://path/to/file.js', [404, { 'Content-Type': 'text/plain' }, '']);
                 StackTrace.fromError(Errors.IE_11, {filter: onlyFoos})
-                    .then(callback, errback)['catch'](debugErrback);
-                server.requests[0].respond(404, {}, '');
+                    .then(callback, debugErrback)['catch'](debugErrback);
+                server.respond();
             });
             waits(100);
             runs(function () {
@@ -92,15 +93,18 @@ describe('StackTrace', function () {
 
         it('uses source maps to enhance stack frames', function () {
             runs(function () {
+                var sourceMin = 'var foo=function(){};function bar(){}var baz=eval("XXX");\n//@ sourceMappingURL=test.js.map';
+                var sourceMap = '{"version":3,"sources":["./test.js"],"names":["foo","bar","baz","eval"],"mappings":"AAAA,GAAIA,KAAM,YACV,SAASC,QACT,GAAIC,KAAMC,KAAK","file":"test.min.js"}';
+                server.respondWith('GET', 'http://path/to/file.js', [200, { 'Content-Type': 'application/x-javascript' }, sourceMin]);
+                server.respondWith('GET', 'test.js.map', [200, { 'Content-Type': 'application/json' }, sourceMap]);
+
                 var stack = 'TypeError: Unable to get property \'undef\' of undefined or null reference\n   at foo (http://path/to/file.js:45:13)';
                 StackTrace.fromError({stack: stack}).then(callback, errback)['catch'](debugErrback);
-                var sourceMin = 'var foo=function(){};function bar(){}var baz=eval("XXX");\n//@ sourceMappingURL=test.js.map';
-                server.requests[0].respond(200, {'Content-Type': 'application/x-javascript'}, sourceMin);
+                server.respond();
             });
             waits(100);
             runs(function () {
-                var sourceMap = '{"version":3,"sources":["./test.js"],"names":["foo","bar","baz","eval"],"mappings":"AAAA,GAAIA,KAAM,YACV,SAASC,QACT,GAAIC,KAAMC,KAAK","file":"test.min.js"}';
-                server.requests[1].respond(200, {'Content-Type': 'application/json'}, sourceMap);
+                server.respond();
             });
             waits(100);
             runs(function () {
