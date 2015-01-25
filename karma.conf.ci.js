@@ -24,7 +24,7 @@ module.exports = function (config) {
         //    base: 'SauceLabs',
         //    browserName: 'Android',
         //    platform: 'Linux',
-        //    version: '4.0'
+        //    version: '4.4'
         //},
         slChrome: {
             base: 'SauceLabs',
@@ -61,7 +61,7 @@ module.exports = function (config) {
             browserName: 'internet explorer',
             platform: 'Windows 8.1',
             version: '11'
-        }
+        },
         //slIE10: {
         //    base: 'SauceLabs',
         //    browserName: 'internet explorer',
@@ -73,19 +73,19 @@ module.exports = function (config) {
         //    browserName: 'internet explorer',
         //    platform: 'Windows 7',
         //    version: '9'
-        //}
+        //},
         //slIE8: {
         //    base: 'SauceLabs',
         //    browserName: 'internet explorer',
         //    platform: 'Windows XP',
         //    version: '8'
-        //}
-        //slIE7: {
-        //    base: 'SauceLabs',
-        //    browserName: 'internet explorer',
-        //    platform: 'Windows XP',
-        //    version: '7'
-        //}
+        //},
+        slIE7: {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows XP',
+            version: '7'
+        }
         //slIE6: {
         //    base: 'SauceLabs',
         //    browserName: 'internet explorer',
@@ -102,6 +102,7 @@ module.exports = function (config) {
             'node_modules/stack-generator/dist/stack-generator.min.js',
             'node_modules/es6-promise/dist/es6-promise.min.js',
             'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
+            'polyfills.js',
             'stacktrace.js',
             'spec/fixtures/*.js',
             'spec/spec-helper.js',
