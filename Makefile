@@ -14,7 +14,7 @@ coveralls			:= node_modules/coveralls/bin/coveralls.js
 
 build/jshint.xml: $(sources) $(specs)
 	mkdir -p $(dir $@)
-	node_modules/.bin/jshint $^
+	jshint $^
 	jshint --reporter checkstyle $^ > $@
 
 test: $(build_files)
