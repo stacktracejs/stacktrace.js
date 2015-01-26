@@ -2,7 +2,7 @@
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
     if (typeof define === 'function' && define.amd) {
-        define(['error-stack-parser', 'stack-generator', 'stacktrace-gps', 'es6-promise'], factory);
+        define('stacktrace', ['error-stack-parser', 'stack-generator', 'stacktrace-gps', 'es6-promise'], factory);
     } else if (typeof exports === 'object') {
         module.exports = factory(require('error-stack-parser'), require('stack-generator'), require('stacktrace-gps'), require('es6-promise'));
     } else {
