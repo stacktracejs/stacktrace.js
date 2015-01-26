@@ -19,7 +19,7 @@
         "url": "git://github.com/stacktracejs/stacktrace.js.git"
     },
     "dependencies": {
-        "error-stack-parser": "~1",
+        "error-stack-parser": "~1.1",
         "es6-promise": "^2.0.1",
         "stack-generator": "~1",
         "stacktrace-gps": "~2.1"
