@@ -1,21 +1,27 @@
 // ES5 Polyfills
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 if (!Function.prototype.bind) {
-    Function.prototype.bind = function bind(obj) {
-        var args = slice.call(arguments, 1);
-        var self = this;
-        var F = function() {};
-        var bounded = function() {
-            return self.apply(
-                this instanceof F ? this : (obj || {}),
-                args.concat(slice.call(arguments))
-            );
+    Function.prototype.bind = function (oThis) {
+        if (typeof this !== 'function') {
+            throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+        }
+
+        var aArgs = Array.prototype.slice.call(arguments, 1);
+        var fToBind = this;
+        var NoOp = function () {
         };
-        F.prototype = this.prototype || {};
-        bounded.prototype = new F();
-        return bounded;
+        var fBound = function () {
+            return fToBind.apply(this instanceof NoOp && oThis ? this : oThis,
+                aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+
+        NoOp.prototype = this.prototype;
+        fBound.prototype = new NoOp();
+
+        return fBound;
     };
 }
+
 
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 if (!Array.prototype.map) {
