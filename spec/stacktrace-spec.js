@@ -152,7 +152,9 @@ describe('StackTrace', function () {
             runs(function() {
                 expect(errback).not.toHaveBeenCalled();
                 expect(callback).toHaveBeenCalled();
-                expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+                if (callback.mostRecentCall.args[0][0].fileName) { // Work around IE9-
+                    expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+                }
             });
         });
 
@@ -168,7 +170,9 @@ describe('StackTrace', function () {
             runs(function() {
                 expect(errback).not.toHaveBeenCalled();
                 expect(callback).toHaveBeenCalled();
-                expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+                if (callback.mostRecentCall.args[0][0].fileName) { // Work around IE9-
+                    expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+                }
             });
         });
 
