@@ -54,7 +54,7 @@ describe('StackTrace', function () {
 
         it('parses stacktrace from given Error object', function () {
             runs(function () {
-                server.respondWith('GET', 'http://path/to/file.js', [404, { 'Content-Type': 'text/plain' }, '']);
+                server.respondWith('GET', 'http://path/to/file.js', [404, {'Content-Type': 'text/plain'}, '']);
                 StackTrace.fromError(Errors.IE_11)
                     .then(callback, debugErrback)['catch'](debugErrback);
                 server.respond();
@@ -75,7 +75,7 @@ describe('StackTrace', function () {
                     return stackFrame.functionName === 'foo';
                 }
 
-                server.respondWith('GET', 'http://path/to/file.js', [404, { 'Content-Type': 'text/plain' }, '']);
+                server.respondWith('GET', 'http://path/to/file.js', [404, {'Content-Type': 'text/plain'}, '']);
                 StackTrace.fromError(Errors.IE_11, {filter: onlyFoos})
                     .then(callback, debugErrback)['catch'](debugErrback);
                 server.respond();
@@ -95,8 +95,8 @@ describe('StackTrace', function () {
             runs(function () {
                 var sourceMin = 'var foo=function(){};function bar(){}var baz=eval("XXX");\n//@ sourceMappingURL=test.js.map';
                 var sourceMap = '{"version":3,"sources":["./test.js"],"names":["foo","bar","baz","eval"],"mappings":"AAAA,GAAIA,KAAM,YACV,SAASC,QACT,GAAIC,KAAMC,KAAK","file":"test.min.js"}';
-                server.respondWith('GET', 'http://path/to/file.js', [200, { 'Content-Type': 'application/x-javascript' }, sourceMin]);
-                server.respondWith('GET', 'test.js.map', [200, { 'Content-Type': 'application/json' }, sourceMap]);
+                server.respondWith('GET', 'http://path/to/file.js', [200, {'Content-Type': 'application/x-javascript'}, sourceMin]);
+                server.respondWith('GET', 'test.js.map', [200, {'Content-Type': 'application/json'}, sourceMap]);
 
                 var stack = 'TypeError: Unable to get property \'undef\' of undefined or null reference\n   at foo (http://path/to/file.js:45:13)';
                 StackTrace.fromError({stack: stack}).then(callback, errback)['catch'](debugErrback);
@@ -133,6 +133,72 @@ describe('StackTrace', function () {
                 expect(callback.mostRecentCall.args[0][0]).toMatchStackFrame(['testGenerateArtificially', []]);
                 expect(errback).not.toHaveBeenCalled();
             });
+        });
+    });
+
+    describe('#instrument', function () {
+        it('throws Error given non-function input', function() {
+            expect(function() { StackTrace.instrument('BOGUS'); })
+                .toThrow(new Error('Cannot instrument non-function object'));
+        });
+
+        it('wraps given function and calls given callback when called', function() {
+            runs(function() {
+                function interestingFn() { return 'something'; }
+                var wrapped = StackTrace.instrument(interestingFn, callback, errback);
+                wrapped();
+            });
+            waits(100);
+            runs(function() {
+                expect(errback).not.toHaveBeenCalled();
+                expect(callback).toHaveBeenCalled();
+                expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+            });
+        });
+
+        it('calls callback with stack trace when wrapped function throws an Error', function() {
+            runs(function() {
+                function interestingFn() { throw new Error('BOOM'); }
+                var wrapped = StackTrace.instrument(interestingFn, callback, errback);
+
+                // Exception should be re-thrown from instrument
+                expect(function() { wrapped(); }).toThrow(new Error('BOOM'));
+            });
+            waits(100);
+            runs(function() {
+                expect(errback).not.toHaveBeenCalled();
+                expect(callback).toHaveBeenCalled();
+                expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+            });
+        });
+
+        it('does not re-instrument already instrumented function', function() {
+            function interestingFn() { return 'something'; }
+            var wrapped = StackTrace.instrument(interestingFn, callback, errback);
+            expect(StackTrace.instrument(wrapped)).toEqual(wrapped);
+        });
+    });
+
+    describe('#deinstrument', function () {
+        it('throws Error given non-function input', function () {
+            expect(function () {
+                StackTrace.deinstrument('BOGUS');
+            }).toThrow(new Error('Cannot de-instrument non-function object'));
+        });
+
+        it('given unwrapped input, returns input', function() {
+            function interestingFn() { return 'something'; }
+            expect(StackTrace.deinstrument(interestingFn)).toEqual(interestingFn);
+        });
+
+        it('de-instruments instrumented function', function() {
+            function interestingFn() { return 'something'; }
+            var wrapped = StackTrace.instrument(interestingFn);
+            expect(wrapped.__stacktraceOriginalFn).toEqual(interestingFn);
+
+            var unwrapped = StackTrace.deinstrument(wrapped);
+            expect(unwrapped.__stacktraceOriginalFn).toBeUndefined();
+            expect(unwrapped).toEqual(interestingFn);
         });
     });
 });

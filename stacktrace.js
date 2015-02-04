@@ -52,11 +52,15 @@
          * @return Array[StackFrame]
          */
         get: function StackTrace$$get(opts) {
-            var err = new Error();
-            if (err.stack || err['opera#sourceloc']) {
-                return this.fromError(err, opts);
-            } else {
-                return this.generateArtificially(opts);
+            try {
+                // Error must be thrown to get stack in IE
+                throw new Error();
+            } catch (err) {
+                if (err.stack || err['opera#sourceloc']) {
+                    return this.fromError(err, opts);
+                } else {
+                    return this.generateArtificially(opts);
+                }
             }
         },
 
@@ -73,9 +77,12 @@
                 if (typeof opts.filter === 'function') {
                     stackframes = stackframes.filter(opts.filter);
                 }
-                resolve(Promise.all(stackframes.map(function(sf) {
+                resolve(Promise.all(stackframes.map(function (sf) {
                     return new Promise(function (resolve) {
-                        function resolveOriginal(_) { resolve(sf); }
+                        function resolveOriginal(_) {
+                            resolve(sf);
+                        }
+
                         new StackTraceGPS(opts).pinpoint(sf)
                             .then(resolve, resolveOriginal)['catch'](resolveOriginal);
                     });
@@ -95,6 +102,54 @@
                 stackFrames = stackFrames.filter(opts.filter);
             }
             return Promise.resolve(stackFrames);
+        },
+
+        /**
+         * Given a function, wrap it such that invocations trigger a callback that
+         * is called with a stack trace.
+         *
+         * @param {Function} fn to be instrumented
+         * @param {Function} callback function to call with a stack trace on invocation
+         * @param {Function} errback optional function to call with error if unable to get stack trace.
+         * @param {Object} thisArg optional context object (e.g. window)
+         */
+        instrument: function StackTrace$$instrument(fn, callback, errback, thisArg) {
+            if (typeof fn !== 'function') {
+                throw new Error('Cannot instrument non-function object');
+            } else if (typeof fn.__stacktraceOriginalFn === 'function') {
+                // Already instrumented, return given Function
+                return fn;
+            }
+
+            var instrumented = function StackTrace$$instrumented() {
+                try {
+                    this.get().then(callback, errback)['catch'](errback);
+                    fn.apply(thisArg || this, arguments);
+                } catch (e) {
+                    this.fromError(e).then(callback, errback)['catch'](errback);
+                    throw e;
+                }
+            }.bind(this);
+            instrumented.__stacktraceOriginalFn = fn;
+
+            return instrumented;
+        },
+
+        /**
+         * Given a function that has been instrumented,
+         * revert the function to it's original (non-instrumented) state.
+         *
+         * @param fn {Function}
+         */
+        deinstrument: function StackTrace$$deinstrument(fn) {
+            if (typeof fn !== 'function') {
+                throw new Error('Cannot de-instrument non-function object');
+            } else if (typeof fn.__stacktraceOriginalFn === 'function') {
+                return fn.__stacktraceOriginalFn;
+            } else {
+                // Function not instrumented, return original
+                return fn;
+            }
         }
     };
 }));
