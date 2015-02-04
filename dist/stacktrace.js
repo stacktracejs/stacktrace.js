@@ -45,6 +45,10 @@
         return target;
     }
 
+    function _isShapedLikeParsableError(err) {
+        return err.stack || err['opera#sourceloc'];
+    }
+
     return {
         /**
          * Get a backtrace from invocation point.
@@ -56,7 +60,7 @@
                 // Error must be thrown to get stack in IE
                 throw new Error();
             } catch (err) {
-                if (err.stack || err['opera#sourceloc']) {
+                if (_isShapedLikeParsableError(err)) {
                     return this.fromError(err, opts);
                 } else {
                     return this.generateArtificially(opts);
@@ -126,7 +130,9 @@
                     this.get().then(callback, errback)['catch'](errback);
                     fn.apply(thisArg || this, arguments);
                 } catch (e) {
-                    this.fromError(e).then(callback, errback)['catch'](errback);
+                    if (_isShapedLikeParsableError(e)) {
+                        this.fromError(e).then(callback, errback)['catch'](errback);
+                    }
                     throw e;
                 }
             }.bind(this);
