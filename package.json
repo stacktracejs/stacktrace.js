@@ -22,7 +22,7 @@
         "error-stack-parser": "~1.1",
         "es6-promise": "^2.0.1",
         "stack-generator": "~1",
-        "stacktrace-gps": "^2.1.1"
+        "stacktrace-gps": "^2.1.2"
     },
     "devDependencies": {
         "colors": "~1.0.3",
