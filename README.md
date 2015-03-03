@@ -10,7 +10,7 @@ The promises referenced below are [ES6-Promises](https://github.com/jakearchibal
 ```js
 var callback = function(stackframes) {
     var stringifiedStack = stackframes.map(function(sf) { 
-        sf.toString(); 
+        return sf.toString(); 
     }).join('\n'); 
     console.log(stringifiedStack); 
 };
