@@ -8,7 +8,7 @@ A JavaScript tool that allows you to debug your JavaScript by giving you a [stac
 ```js
 var callback = function(stackframes) {
     var stringifiedStack = stackframes.map(function(sf) { 
-        sf.toString(); 
+        return sf.toString(); 
     }).join('\n'); 
     console.log(stringifiedStack); 
 };
