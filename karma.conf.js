@@ -3,10 +3,10 @@ module.exports = function (config) {
         basePath: '',
         frameworks: ['jasmine', 'sinon'],
         files: [
-            'node_modules/error-stack-parser/dist/error-stack-parser.min.js',
-            'node_modules/stack-generator/dist/stack-generator.min.js',
-            'node_modules/es6-promise/dist/es6-promise.min.js',
+            'node_modules/es6-promise/dist/es6-promise.js',
             'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
+            'node_modules/error-stack-parser/dist/error-stack-parser.js',
+            'node_modules/stack-generator/dist/stack-generator.js',
             'stacktrace.js',
             'spec/fixtures/*.js',
             'spec/spec-helper.js',
@@ -25,7 +25,8 @@ module.exports = function (config) {
         logLevel: config.LOG_INFO,
         autoWatch: true,
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['ChromeCanary', 'Firefox'],
+        //browsers: ['ChromeCanary', 'Firefox'],
+        browsers: ['PhantomJS2'],
         singleRun: false
     });
 };

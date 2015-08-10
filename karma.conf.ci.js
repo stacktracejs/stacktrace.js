@@ -98,12 +98,8 @@ module.exports = function (config) {
         basePath: '',
         frameworks: ['jasmine', 'sinon'],
         files: [
-            'node_modules/error-stack-parser/dist/error-stack-parser.min.js',
-            'node_modules/stack-generator/dist/stack-generator.min.js',
-            'node_modules/es6-promise/dist/es6-promise.min.js',
-            'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
             'polyfills.js',
-            'stacktrace.js',
+            'dist/stacktrace.min.js',
             'spec/fixtures/*.js',
             'spec/spec-helper.js',
             'spec/*-spec.js'

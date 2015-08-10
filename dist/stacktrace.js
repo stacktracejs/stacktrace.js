@@ -1,17 +1,16 @@
 (function (root, factory) {
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
-    if (typeof define === 'function' && define.amd) {
-        define('stacktrace', ['error-stack-parser', 'stack-generator', 'stacktrace-gps', 'es6-promise'], factory);
-    } else if (typeof exports === 'object') {
-        module.exports = factory(require('error-stack-parser'), require('stack-generator'), require('stacktrace-gps'), require('es6-promise'));
-    } else {
-        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator, root.StackTraceGPS, root.ES6Promise);
-    }
-}(this, function StackTrace(ErrorStackParser, StackGenerator, StackTraceGPS, ES6Promise) {
-    ES6Promise.polyfill();
-    var Promise = ES6Promise.Promise;
 
+    /* istanbul ignore next */
+    if (typeof define === 'function' && define.amd) {
+        define('stacktrace', ['error-stack-parser', 'stack-generator', 'stacktrace-gps'], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory(require('error-stack-parser'), require('stack-generator'), require('stacktrace-gps'));
+    } else {
+        root.StackTrace = factory(root.ErrorStackParser, root.StackGenerator, root.StackTraceGPS);
+    }
+}(this, function StackTrace(ErrorStackParser, StackGenerator, StackTraceGPS) {
     var _options = {
         filter: function (stackframe) {
             // Filter out stackframes for this library by default

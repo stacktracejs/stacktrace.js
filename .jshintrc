@@ -19,7 +19,7 @@
         "StackFrame": false,
         "ErrorStackParser": false,
         "StackTraceGPS": false,
-        "ES6Promise": false,
+        "Promise": false,
         "afterEach": false,
         "beforeEach": false,
         "define": false,

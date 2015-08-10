@@ -1,3 +1,7 @@
+if (typeof Promise === 'undefined') {
+    ES6Promise.polyfill();
+}
+
 // ES5 Polyfills
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 if (!Function.prototype.bind) {

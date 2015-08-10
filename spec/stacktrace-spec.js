@@ -6,6 +6,10 @@ describe('StackTrace', function () {
     var debugErrback;
 
     beforeEach(function () {
+        if (typeof Promise === 'undefined') {
+            ES6Promise.polyfill();
+        }
+
         callback = jasmine.createSpy('callback');
         errback = jasmine.createSpy('errback');
         debugCallback = function (stackframes) {
