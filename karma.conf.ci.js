@@ -99,7 +99,11 @@ module.exports = function (config) {
         frameworks: ['jasmine', 'sinon'],
         files: [
             'polyfills.js',
-            'dist/stacktrace.min.js',
+            'node_modules/es6-promise/dist/es6-promise.js',
+            'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
+            'node_modules/error-stack-parser/dist/error-stack-parser.js',
+            'node_modules/stack-generator/dist/stack-generator.js',
+            'stacktrace.js',
             'spec/fixtures/*.js',
             'spec/spec-helper.js',
             'spec/*-spec.js'
