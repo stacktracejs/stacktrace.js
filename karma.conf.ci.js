@@ -62,12 +62,12 @@ module.exports = function (config) {
             platform: 'Windows 8.1',
             version: '11'
         },
-        //slIE10: {
-        //    base: 'SauceLabs',
-        //    browserName: 'internet explorer',
-        //    platform: 'Windows 8',
-        //    version: '10'
-        //}
+        slIE10: {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 8',
+            version: '10'
+        }
         //slIE9: {
         //    base: 'SauceLabs',
         //    browserName: 'internet explorer',
@@ -79,13 +79,13 @@ module.exports = function (config) {
         //    browserName: 'internet explorer',
         //    platform: 'Windows XP',
         //    version: '8'
-        //},
-        slIE7: {
-            base: 'SauceLabs',
-            browserName: 'internet explorer',
-            platform: 'Windows XP',
-            version: '7'
-        }
+        //}
+        //slIE7: {
+        //    base: 'SauceLabs',
+        //    browserName: 'internet explorer',
+        //    platform: 'Windows XP',
+        //    version: '7'
+        //}
         //slIE6: {
         //    base: 'SauceLabs',
         //    browserName: 'internet explorer',
@@ -98,8 +98,8 @@ module.exports = function (config) {
         basePath: '',
         frameworks: ['jasmine', 'sinon'],
         files: [
-            'polyfills.js',
             'node_modules/es6-promise/dist/es6-promise.js',
+            'polyfills.js',
             'node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
             'node_modules/error-stack-parser/dist/error-stack-parser.js',
             'node_modules/stack-generator/dist/stack-generator.js',
