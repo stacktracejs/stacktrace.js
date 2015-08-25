@@ -1,6 +1,6 @@
 # stacktrace.js
 ## Framework-agnostic, micro-library for getting stack traces in all web browsers
-<p class="shields">[![Build Status](https://travis-ci.org/stacktracejs/stacktrace.js.svg?branch=master)](https://travis-ci.org/stacktracejs/stacktrace.js) [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg)](https://coveralls.io/r/stacktracejs/stacktrace.js?branch=master) [![Code Climate](https://codeclimate.com/github/stacktracejs/stacktrace.js/badges/gpa.svg)](https://codeclimate.com/github/stacktracejs/stacktrace.js)</p>
+[![Build Status](https://travis-ci.org/stacktracejs/stacktrace.js.svg?branch=master)](https://travis-ci.org/stacktracejs/stacktrace.js) [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg)](https://coveralls.io/r/stacktracejs/stacktrace.js?branch=master) [![Code Climate](https://codeclimate.com/github/stacktracejs/stacktrace.js/badges/gpa.svg)](https://codeclimate.com/github/stacktracejs/stacktrace.js)
 
 Debug and profile your JavaScript with a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify).
 
