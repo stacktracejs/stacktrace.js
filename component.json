@@ -1,0 +1,22 @@
+{
+    "name": "stacktrace.js",
+    "repository": "stacktracejs/stacktrace.js",
+    "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
+    "version": "0.6.4",
+    "keywords": [
+        "stacktrace",
+        "error",
+        "debugger",
+        "client",
+        "browser"
+    ],
+    "main": "stacktrace.js",
+    "scripts": [
+        "stacktrace.js"
+    ],
+    "dependencies": {
+        "stacktracejs/error-stack-parser": "~1.2",
+        "stacktracejs/stack-generator": "~1",
+        "stacktracejs/stacktrace-gps": "~2"
+    }
+}
