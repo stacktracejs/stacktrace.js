@@ -15,8 +15,8 @@
         "stacktrace.js"
     ],
     "dependencies": {
-        "stacktracejs/error-stack-parser": "~1.2",
-        "stacktracejs/stack-generator": "~1",
-        "stacktracejs/stacktrace-gps": "~2"
+        "stacktracejs/error-stack-parser": "1.2",
+        "stacktracejs/stack-generator": "1",
+        "stacktracejs/stacktrace-gps": "2"
     }
 }
