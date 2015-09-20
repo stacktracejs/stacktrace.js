@@ -6,7 +6,7 @@
         "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)",
         "Oliver Salzburg (https://github.com/oliversalzburg)"
     ],
-    "version": "0.6.4",
+    "version": "1.0.0",
     "license": "SEE LICENSE IN LICENSE",
     "keywords": [
         "stacktrace",
@@ -34,12 +34,12 @@
         "gulp-coveralls": "^0.1.4",
         "gulp-jshint": "^1.11.2",
         "gulp-sourcemaps": "^1.5.2",
-        "gulp-uglify": "^1.2.0",
+        "gulp-uglify": "^1.4.1",
         "jasmine-node": "~1.14",
         "jasmine-sinon": "^0.4.0",
         "karma": "^0.13.9",
         "karma-chrome-launcher": "^0.2.0",
-        "karma-coverage": "^0.5.0",
+        "karma-coverage": "^0.5.2",
         "karma-firefox-launcher": "^0.1.6",
         "karma-ie-launcher": "^0.2.0",
         "karma-jasmine": "^0.1.5",
@@ -48,12 +48,20 @@
         "karma-safari-launcher": "^0.1.1",
         "karma-sauce-launcher": "^0.2.14",
         "karma-sinon": "^1.0.4",
-        "run-sequence": "^1.1.2"
+        "run-sequence": "^1.1.2",
+        "sinon": "^1.16.1"
     },
     "bugs": {
         "url": "https://github.com/stacktracejs/stacktrace.js/issues"
     },
     "main": "./stacktrace.js",
+    "files": [
+        "LICENSE",
+        "CHANGELOG.md",
+        "README.md",
+        "stacktrace.js",
+        "dist/"
+    ],
     "scripts": {
         "test": "gulp test"
     }

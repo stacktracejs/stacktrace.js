@@ -2,7 +2,7 @@
     "name": "stacktrace.js",
     "repository": "stacktracejs/stacktrace.js",
     "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
-    "version": "0.6.4",
+    "version": "1.0.0",
     "keywords": [
         "stacktrace",
         "error",
