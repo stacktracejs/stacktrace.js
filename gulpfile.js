@@ -3,7 +3,7 @@ var coveralls = require('gulp-coveralls');
 var del = require('del');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
-var karma = require('karma').server;
+var karma = require('karma');
 var runSequence = require('run-sequence');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
@@ -27,17 +27,19 @@ gulp.task('lint', function () {
 });
 
 gulp.task('test', function (done) {
-    karma.start({
+    var server = new karma.Server({
         configFile: __dirname + '/karma.conf.js',
         singleRun: true
     }, done);
+    server.start();
 });
 
 gulp.task('test-ci', ['dist'], function (done) {
-    karma.start({
+    var server = new karma.Server({
         configFile: __dirname + '/karma.conf.ci.js',
         singleRun: true
     }, done);
+    server.start();
 });
 
 gulp.task('copy', function () {
