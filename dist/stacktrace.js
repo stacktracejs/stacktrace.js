@@ -155,6 +155,31 @@
                 // Function not instrumented, return original
                 return fn;
             }
+        },
+
+        /**
+         * Given an Array of StackFrames, serialize and POST to given URL.
+         *
+         * @param stackframes - Array[StackFrame]
+         * @param url - URL as String
+         */
+        report: function StackTrace$$report(stackframes, url) {
+            return new Promise(function (resolve, reject) {
+                var req = new XMLHttpRequest();
+                req.onerror = reject;
+                req.onreadystatechange = function onreadystatechange() {
+                    if (req.readyState === 4) {
+                        if (req.status >= 200 && req.status < 400) {
+                            resolve(req.responseText);
+                        } else {
+                            reject(new Error('POST to ' + url + ' failed with status: ' + req.status));
+                        }
+                    }
+                };
+                req.open('post', url);
+                req.setRequestHeader('Content-Type', 'application/json');
+                req.send({stack: stackframes});
+            });
         }
     };
 }));
