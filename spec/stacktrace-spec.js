@@ -24,7 +24,7 @@ describe('StackTrace', function () {
     describe('#get', function () {
         it('gets stacktrace from current location', function () {
             runs(function testStackTraceGet() {
-                StackTrace.get().then(callback, errback)['catch'](debugErrback);
+                StackTrace.get().then(callback, errback)['catch'](errback);
             });
             waits(100);
             runs(function () {
@@ -60,7 +60,7 @@ describe('StackTrace', function () {
             runs(function () {
                 server.respondWith('GET', 'http://path/to/file.js', [404, {'Content-Type': 'text/plain'}, '']);
                 StackTrace.fromError(Errors.IE_11)
-                    .then(callback, debugErrback)['catch'](debugErrback);
+                    .then(callback, errback)['catch'](errback);
                 server.respond();
             });
             waits(100);
@@ -81,7 +81,7 @@ describe('StackTrace', function () {
 
                 server.respondWith('GET', 'http://path/to/file.js', [404, {'Content-Type': 'text/plain'}, '']);
                 StackTrace.fromError(Errors.IE_11, {filter: onlyFoos})
-                    .then(callback, debugErrback)['catch'](debugErrback);
+                    .then(callback, errback)['catch'](errback);
                 server.respond();
             });
             waits(100);
@@ -103,7 +103,7 @@ describe('StackTrace', function () {
                 server.respondWith('GET', 'test.js.map', [200, {'Content-Type': 'application/json'}, sourceMap]);
 
                 var stack = 'TypeError: Unable to get property \'undef\' of undefined or null reference\n   at foo (http://path/to/file.js:45:13)';
-                StackTrace.fromError({stack: stack}).then(callback, errback)['catch'](debugErrback);
+                StackTrace.fromError({stack: stack}).then(callback, errback)['catch'](errback);
                 server.respond();
             });
             waits(100);
@@ -129,7 +129,7 @@ describe('StackTrace', function () {
                         stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
                 };
                 StackTrace.generateArtificially({filter: stackFrameFilter})
-                    .then(callback, errback)['catch'](debugErrback);
+                    .then(callback, errback)['catch'](errback);
             });
             waits(100);
             runs(function () {
@@ -207,6 +207,49 @@ describe('StackTrace', function () {
             var unwrapped = StackTrace.deinstrument(wrapped);
             expect(unwrapped.__stacktraceOriginalFn).toBeUndefined();
             expect(unwrapped).toEqual(interestingFn);
+        });
+    });
+
+    describe('#report', function () {
+        var server;
+        beforeEach(function () {
+            server = sinon.fakeServer.create();
+        });
+        afterEach(function () {
+            server.restore();
+        });
+
+        it('sends POST request to given URL', function () {
+            var url = 'http://domain.ext/endpoint';
+            var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
+
+            runs(function () {
+                server.respondWith('POST', url, [201, {'Content-Type': 'text/plain'}, 'OK']);
+                StackTrace.report(stackframes, url).then(callback, errback)['catch'](errback);
+                server.respond();
+            });
+            waits(100);
+            runs(function () {
+                expect(server.requests[0].requestBody).toEqual({stack: stackframes});
+                expect(server.requests[0].url).toEqual(url);
+                expect(callback).toHaveBeenCalledWith('OK');
+                expect(errback).not.toHaveBeenCalled();
+            });
+        });
+
+        it('rejects if POST request fails', function () {
+            runs(function () {
+                var url = 'http://domain.ext/endpoint';
+                var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
+                server.respondWith('POST', url, [404, {'Content-Type': 'text/plain'}, '']);
+                StackTrace.report(stackframes, url).then(callback, errback)['catch'](errback);
+                server.respond();
+            });
+            waits(100);
+            runs(function () {
+                expect(callback).not.toHaveBeenCalled();
+                expect(errback).toHaveBeenCalled();
+            });
         });
     });
 });
