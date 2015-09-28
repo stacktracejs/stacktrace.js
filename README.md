@@ -9,7 +9,7 @@ stacktrace.js uses browsers' `Error.stack` mechanism to generate stack traces, p
 [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 to return an Array of [StackFrames](https://github.com/stacktracejs/stackframe).
 
-#### Upgrading? Check the [0.x -> 1.x Migration Guide](http://www.stacktracejs.com/docs/v0-migration-guide)
+#### Upgrading? Check the [0.x -> 1.x Migration Guide](http://www.stacktracejs.com/#!/docs/v0-migration-guide)
 
 ## Usage
 #### Get a stack trace from current location
