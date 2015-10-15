@@ -44,6 +44,7 @@
         "JASMINE": true,
         "JASMINE_ADAPTER": true,
         "matchers": true,
-        "priv": true
+        "priv": true,
+        "JSON": true
     }
 }
