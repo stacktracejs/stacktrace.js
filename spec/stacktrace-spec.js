@@ -230,7 +230,8 @@ describe('StackTrace', function () {
             });
             waits(100);
             runs(function () {
-                expect(server.requests[0].requestBody).toEqual({stack: stackframes});
+                var expectedResponse = JSON.stringify({stack: stackframes});
+                expect(server.requests[0].requestBody).toEqual(expectedResponse);
                 expect(server.requests[0].url).toEqual(url);
                 expect(callback).toHaveBeenCalledWith('OK');
                 expect(errback).not.toHaveBeenCalled();

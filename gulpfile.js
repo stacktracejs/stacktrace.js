@@ -10,6 +10,7 @@ var uglify = require('gulp-uglify');
 
 var polyfills = [
     './node_modules/es6-promise/dist/es6-promise.js',
+    './node_modules/json3/lib/json3.js',
     './polyfills.js'
 ];
 var dependencies = [
