@@ -8,6 +8,7 @@ pids
 logs
 results
 
+bower_components
 node_modules
 build
 coverage
