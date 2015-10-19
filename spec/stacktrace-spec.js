@@ -97,13 +97,17 @@ describe('StackTrace', function () {
 
         it('uses source maps to enhance stack frames', function () {
             runs(function () {
-                var sourceMin = 'var foo=function(){};function bar(){}var baz=eval("XXX");\n//@ sourceMappingURL=test.js.map';
-                var sourceMap = '{"version":3,"sources":["./test.js"],"names":["foo","bar","baz","eval"],"mappings":"AAAA,GAAIA,KAAM,YACV,SAASC,QACT,GAAIC,KAAMC,KAAK","file":"test.min.js"}';
-                server.respondWith('GET', 'http://path/to/file.js', [200, {'Content-Type': 'application/x-javascript'}, sourceMin]);
-                server.respondWith('GET', 'test.js.map', [200, {'Content-Type': 'application/json'}, sourceMap]);
+                var sourceMin = 'function increment(){someVariable+=2;null.x()}var someVariable=2;increment();\n//# sourceMappingURL=file.min.js.map';
+                var sourceMap = '{"version":3,"file":"file.min.js","sources":["file.js"],"names":["increment","someVariable","x"],"mappings":"AAAA,QAASA,aACLC,cAAgB,CAChB,MAAKC,IAET,GAAID,cAAe,CACnBD"}';
+                server.respondWith('GET', 'http://path/to/file.min.js', [200, {'Content-Type': 'application/x-javascript'}, sourceMin]);
+                server.respondWith('GET', 'http://path/to/file.min.js.map', [200, {'Content-Type': 'application/json'}, sourceMap]);
 
-                var stack = 'TypeError: Unable to get property \'undef\' of undefined or null reference\n   at foo (http://path/to/file.js:45:13)';
-                StackTrace.fromError({stack: stack}).then(callback, errback)['catch'](errback);
+                var stack = 'TypeError: Cannot read property \'x\' of null\n   at increment (http://path/to/file.min.js:1:38)';
+                StackTrace.fromError({stack: stack}).then(callback, debugErrback)['catch'](debugErrback);
+                server.respond();
+            });
+            waits(100);
+            runs(function () {
                 server.respond();
             });
             waits(100);
@@ -115,7 +119,7 @@ describe('StackTrace', function () {
                 expect(callback).toHaveBeenCalled();
                 var stackFrames = callback.mostRecentCall.args[0];
                 expect(stackFrames.length).toEqual(1);
-                expect(stackFrames[0]).toMatchStackFrame(['foo', undefined, 'http://path/to/file.js', 45, 13]);
+                expect(stackFrames[0]).toMatchStackFrame(['null', undefined, 'file.js', 3, 4]);
                 expect(errback).not.toHaveBeenCalled();
             });
         });
