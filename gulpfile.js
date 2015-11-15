@@ -43,12 +43,7 @@ gulp.task('test-ci', ['dist'], function (done) {
     server.start();
 });
 
-gulp.task('copy', function () {
-    return gulp.src(sources)
-        .pipe(gulp.dest('dist'));
-});
-
-gulp.task('dist', ['copy'], function () {
+gulp.task('dist', function () {
     gulp.src(polyfills.concat(dependencies.concat(sources)))
         .pipe(sourcemaps.init())
         .pipe(concat(sources.replace('.js', '-with-polyfills.min.js')))
