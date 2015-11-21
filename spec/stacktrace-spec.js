@@ -1,146 +1,102 @@
 /* global Errors: false */
 describe('StackTrace', function () {
-    var callback;
-    var debugCallback;
-    var errback;
-    var debugErrback;
 
     beforeEach(function () {
         if (typeof Promise === 'undefined') {
             ES6Promise.polyfill();
         }
-
-        callback = jasmine.createSpy('callback');
-        errback = jasmine.createSpy('errback');
-        debugCallback = function (stackframes) {
-            console.log(stackframes);
-        };
-        debugErrback = function (e) {
-            console.log(e.message);
-            console.log(e.stack);
-        };
     });
 
     describe('#get', function () {
-        it('gets stacktrace from current location', function () {
-            runs(function testStackTraceGet() {
-                StackTrace.get().then(callback, errback)['catch'](errback);
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).toHaveBeenCalled();
-                expect(callback.mostRecentCall.args[0][0].functionName).toEqual('testStackTraceGet');
-                expect(errback).not.toHaveBeenCalled();
-            });
+        it('gets stacktrace from current location', function testStackTraceGet(done) {
+            StackTrace.get().then(callback, done.fail)['catch'](done.fail);
+
+            function callback(stackFrames) {
+                expect(stackFrames[0].functionName).toMatch(/.*testStackTraceGet$/);
+                done();
+            }
         });
     });
 
     describe('#fromError', function () {
-        var server;
-        beforeEach(function () {
-            server = sinon.fakeServer.create();
+        beforeEach(function() {
+            jasmine.Ajax.install();
         });
-        afterEach(function () {
-            server.restore();
-        });
-
-        it('rejects with Error given unparsable Error object', function () {
-            runs(function () {
-                StackTrace.fromError({message: 'ERROR_MESSAGE'})
-                    .then(callback, errback)['catch'](errback);
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).not.toHaveBeenCalled();
-                expect(errback).toHaveBeenCalled();
-            });
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
         });
 
-        it('parses stacktrace from given Error object', function () {
-            runs(function () {
-                server.respondWith('GET', 'http://path/to/file.js', [404, {'Content-Type': 'text/plain'}, '']);
-                StackTrace.fromError(Errors.IE_11)
-                    .then(callback, errback)['catch'](errback);
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).toHaveBeenCalled();
-                var stackFrames = callback.mostRecentCall.args[0];
+        it('rejects with Error given unparsable Error object', function (done) {
+            StackTrace.fromError({message: 'ERROR_MESSAGE'})
+                .then(done.fail)['catch'](done);
+        });
+
+        it('parses stacktrace from given Error object', function (done) {
+            jasmine.Ajax.stubRequest('http://path/to/file.js').andError();
+
+            StackTrace.fromError(Errors.IE_11)
+                .then(callback, done.fail)['catch'](done.fail);
+
+            function callback(stackFrames) {
                 expect(stackFrames.length).toEqual(3);
                 expect(stackFrames[0].fileName).toEqual('http://path/to/file.js');
-                expect(errback).not.toHaveBeenCalled();
-            });
+                done();
+            }
         });
 
-        it('filters returned stack', function () {
-            runs(function () {
-                function onlyFoos(stackFrame) {
-                    return stackFrame.functionName === 'foo';
-                }
+        it('filters returned stack', function (done) {
+            function onlyFoos(stackFrame) {
+                return stackFrame.functionName === 'foo';
+            }
 
-                server.respondWith('GET', 'http://path/to/file.js', [404, {'Content-Type': 'text/plain'}, '']);
-                StackTrace.fromError(Errors.IE_11, {filter: onlyFoos})
-                    .then(callback, errback)['catch'](errback);
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).toHaveBeenCalled();
-                var stackFrames = callback.mostRecentCall.args[0];
+            jasmine.Ajax.stubRequest('http://path/to/file.js').andError();
+
+            StackTrace.fromError(Errors.IE_11, {filter: onlyFoos})
+                .then(callback, done.fail)['catch'](done.fail);
+
+            function callback(stackFrames) {
                 expect(stackFrames.length).toEqual(1);
                 expect(stackFrames[0].fileName).toEqual('http://path/to/file.js');
                 expect(stackFrames[0].functionName).toEqual('foo');
-                expect(errback).not.toHaveBeenCalled();
-            });
+                done();
+            }
         });
 
-        it('uses source maps to enhance stack frames', function () {
-            runs(function () {
-                var sourceMin = 'function increment(){someVariable+=2;null.x()}var someVariable=2;increment();\n//# sourceMappingURL=file.min.js.map';
-                var sourceMap = '{"version":3,"file":"file.min.js","sources":["file.js"],"names":["increment","someVariable","x"],"mappings":"AAAA,QAASA,aACLC,cAAgB,CAChB,MAAKC,IAET,GAAID,cAAe,CACnBD"}';
-                server.respondWith('GET', 'http://path/to/file.min.js', [200, {'Content-Type': 'application/x-javascript'}, sourceMin]);
-                server.respondWith('GET', 'http://path/to/file.min.js.map', [200, {'Content-Type': 'application/json'}, sourceMap]);
+        it('uses source maps to enhance stack frames', function (done) {
+            var sourceCache = {
+                'http://path/to/file.js': 'function increment(){\nsomeVariable+=2;\nnull.x()\n}\nvar someVariable=2;increment();',
+                'http://path/to/file.min.js': 'function increment(){someVariable+=2;null.x()}var someVariable=2;increment();\n//# sourceMappingURL=file.min.js.map',
+                'http://path/to/file.min.js.map': '{"version":3,"file":"file.min.js","sources":["file.js"],"names":["increment","someVariable","x"],"mappings":"AAAA,QAASA,aACLC,cAAgB,CAChB,MAAKC,IAET,GAAID,cAAe,CACnBD"}'
+            };
 
-                var stack = 'TypeError: Cannot read property \'x\' of null\n   at increment (http://path/to/file.min.js:1:38)';
-                StackTrace.fromError({stack: stack}).then(callback, debugErrback)['catch'](debugErrback);
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).toHaveBeenCalled();
-                var stackFrames = callback.mostRecentCall.args[0];
+            var stack = 'TypeError: Cannot read property \'x\' of null\n   at increment (http://path/to/file.min.js:1:38)';
+            StackTrace.fromError({stack: stack}, {offline: true, sourceCache: sourceCache})
+                .then(callback, done.fail)['catch'](done.fail);
+
+            function callback(stackFrames) {
                 expect(stackFrames.length).toEqual(1);
                 expect(stackFrames[0]).toMatchStackFrame(['null', undefined, 'file.js', 3, 4]);
-                expect(errback).not.toHaveBeenCalled();
-            });
+                done();
+            }
         });
     });
 
     describe('#generateArtificially', function () {
-        it('gets stacktrace from current location', function () {
-            runs(function testGenerateArtificially() {
-                var stackFrameFilter = function (stackFrame) {
-                    return stackFrame.getFunctionName() &&
-                        stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
-                };
+        it('gets stacktrace from current location', function (done) {
+            var stackFrameFilter = function (stackFrame) {
+                return stackFrame.getFunctionName() &&
+                    stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
+            };
+
+            (function testGenerateArtificially() {
                 StackTrace.generateArtificially({filter: stackFrameFilter})
-                    .then(callback, errback)['catch'](errback);
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).toHaveBeenCalled();
-                expect(callback.mostRecentCall.args[0][0]).toMatchStackFrame(['testGenerateArtificially', []]);
-                expect(errback).not.toHaveBeenCalled();
-            });
+                    .then(callback, done.fail)['catch'](done.fail);
+            })();
+
+            function callback(stackFrames) {
+                expect(stackFrames[0]).toMatchStackFrame(['testGenerateArtificially', []]);
+                done();
+            }
         });
     });
 
@@ -150,43 +106,37 @@ describe('StackTrace', function () {
                 .toThrow(new Error('Cannot instrument non-function object'));
         });
 
-        it('wraps given function and calls given callback when called', function() {
-            runs(function() {
-                function interestingFn() { return 'something'; }
-                var wrapped = StackTrace.instrument(interestingFn, callback, errback);
-                wrapped();
-            });
-            waits(100);
-            runs(function() {
-                expect(errback).not.toHaveBeenCalled();
-                expect(callback).toHaveBeenCalled();
-                if (callback.mostRecentCall.args[0][0].fileName) { // Work around IE9-
-                    expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+        it('wraps given function and calls given callback when called', function(done) {
+            function interestingFn() { return 'something'; }
+            var wrapped = StackTrace.instrument(interestingFn, callback, done.fail);
+            wrapped();
+
+            function callback(stackFrames) {
+                if (stackFrames[0].fileName) { // Work around IE9-
+                    expect(stackFrames[0].fileName).toMatch('stacktrace-spec.js');
                 }
-            });
+                done();
+            }
         });
 
-        it('calls callback with stack trace when wrapped function throws an Error', function() {
-            runs(function() {
-                function interestingFn() { throw new Error('BOOM'); }
-                var wrapped = StackTrace.instrument(interestingFn, callback, errback);
+        it('calls callback with stack trace when wrapped function throws an Error', function(done) {
+            function interestingFn() { throw new Error('BOOM'); }
+            var wrapped = StackTrace.instrument(interestingFn, callback, done.fail);
 
-                // Exception should be re-thrown from instrument
-                expect(function() { wrapped(); }).toThrow(new Error('BOOM'));
-            });
-            waits(100);
-            runs(function() {
-                expect(errback).not.toHaveBeenCalled();
-                expect(callback).toHaveBeenCalled();
-                if (callback.mostRecentCall.args[0][0].fileName) { // Work around IE9-
-                    expect(callback.mostRecentCall.args[0][0].fileName).toMatch('stacktrace-spec.js');
+            // Exception should be re-thrown from instrument
+            expect(function() { wrapped(); }).toThrow(new Error('BOOM'));
+
+            function callback(stackFrames) {
+                if (stackFrames[0].fileName) { // Work around IE9-
+                    expect(stackFrames[0].fileName).toMatch('stacktrace-spec.js');
                 }
-            });
+                done();
+            }
         });
 
         it('does not re-instrument already instrumented function', function() {
             function interestingFn() { return 'something'; }
-            var wrapped = StackTrace.instrument(interestingFn, callback, errback);
+            var wrapped = StackTrace.instrument(interestingFn);
             expect(StackTrace.instrument(wrapped)).toEqual(wrapped);
         });
     });
@@ -215,46 +165,36 @@ describe('StackTrace', function () {
     });
 
     describe('#report', function () {
-        var server;
-        beforeEach(function () {
-            server = sinon.fakeServer.create();
+        beforeEach(function() {
+            jasmine.Ajax.install();
         });
-        afterEach(function () {
-            server.restore();
+        afterEach(function() {
+            jasmine.Ajax.uninstall();
         });
 
-        it('sends POST request to given URL', function () {
+        it('sends POST request to given URL', function (done) {
             var url = 'http://domain.ext/endpoint';
             var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
 
-            runs(function () {
-                server.respondWith('POST', url, [201, {'Content-Type': 'text/plain'}, 'OK']);
-                StackTrace.report(stackframes, url).then(callback, errback)['catch'](errback);
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                var expectedResponse = JSON.stringify({stack: stackframes});
-                expect(server.requests[0].requestBody).toEqual(expectedResponse);
-                expect(server.requests[0].url).toEqual(url);
-                expect(callback).toHaveBeenCalledWith('OK');
-                expect(errback).not.toHaveBeenCalled();
-            });
+            StackTrace.report(stackframes, url).then(callback, done.fail)['catch'](done.fail);
+
+            var postRequest = jasmine.Ajax.requests.mostRecent();
+            postRequest.respondWith({status: 201, contentType: 'text/plain', responseText: 'OK'});
+
+            function callback() {
+                expect(postRequest.data()).toEqual({stack: stackframes});
+                expect(postRequest.method).toBe('post');
+                expect(postRequest.url).toBe(url);
+                done();
+            }
         });
 
-        it('rejects if POST request fails', function () {
-            runs(function () {
-                var url = 'http://domain.ext/endpoint';
-                var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
-                server.respondWith('POST', url, [404, {'Content-Type': 'text/plain'}, '']);
-                StackTrace.report(stackframes, url).then(callback, errback)['catch'](errback);
-                server.respond();
-            });
-            waits(100);
-            runs(function () {
-                expect(callback).not.toHaveBeenCalled();
-                expect(errback).toHaveBeenCalled();
-            });
+        it('rejects if POST request fails', function (done) {
+            var url = 'http://domain.ext/endpoint';
+            var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
+
+            jasmine.Ajax.stubRequest(url).andError();
+            StackTrace.report(stackframes, url).then(done.fail, done)['catch'](done);
         });
     });
 });
