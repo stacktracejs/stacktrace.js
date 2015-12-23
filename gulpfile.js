@@ -46,7 +46,7 @@ gulp.task('test-ci', ['dist'], function (done) {
 gulp.task('dist', function () {
     gulp.src(polyfills.concat(dependencies.concat(sources)))
         .pipe(sourcemaps.init())
-        .pipe(concat(sources.replace('.js', '-with-polyfills.min.js')))
+        .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.min.js')))
         .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
