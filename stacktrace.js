@@ -74,6 +74,7 @@
          * @return Array[StackFrame]
          */
         fromError: function StackTrace$$fromError(error, opts) {
+            var self = this; // rather than attempting to bind this through the entire promise chain
             opts = _merge(_options, opts);
             return new Promise(function (resolve) {
                 var stackframes = ErrorStackParser.parse(error);
@@ -85,8 +86,8 @@
                         function resolveOriginal(_) {
                             resolve(sf);
                         }
-
-                        new StackTraceGPS(opts).pinpoint(sf)
+                        var stackTraceGPS = self.stackTraceGPS || new StackTraceGPS(opts);
+                        stackTraceGPS.pinpoint(sf)
                             .then(resolve, resolveOriginal)['catch'](resolveOriginal);
                     });
                 })));
@@ -157,6 +158,16 @@
             }
         },
 
+        /**
+         * Caches an instance of StackTraceGPS to ensure that source maps can use it's client side cache
+         *
+         * @param opts {Object}
+         */
+        createGlobalGPSInstance: function StackTrace$$createGlobalGPSInstance(opts) {
+            opts = _merge(_options, opts);
+            this.stackTraceGPS = new StackTraceGPS(opts);
+        },
+        
         /**
          * Given an Array of StackFrames, serialize and POST to given URL.
          *
