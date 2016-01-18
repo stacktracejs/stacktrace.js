@@ -163,7 +163,7 @@
          *
          * @param opts {Object}
          */
-        createGlobalGPSInstance: function StackTrace$$(opts) {
+        createGlobalGPSInstance: function StackTrace$$createGlobalGPSInstance(opts) {
             opts = _merge(_options, opts);
             this.stackTraceGPS = new StackTraceGPS(opts);
         },
