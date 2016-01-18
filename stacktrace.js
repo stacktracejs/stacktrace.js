@@ -158,7 +158,7 @@
             }
         },
 
-          /**
+        /**
          * Caches an instance of StackTraceGPS to ensure that source maps can use it's client side cache
          *
          * @param opts {Object}
