@@ -1,13 +1,14 @@
+// jscs:disable maximumLineLength
 /* global Errors: false */
-describe('StackTrace', function () {
+describe('StackTrace', function() {
 
-    beforeEach(function () {
+    beforeEach(function() {
         if (typeof Promise === 'undefined') {
             ES6Promise.polyfill();
         }
     });
 
-    describe('#get', function () {
+    describe('#get', function() {
         it('gets stacktrace from current location', function testStackTraceGet(done) {
             StackTrace.get().then(callback, done.fail)['catch'](done.fail);
 
@@ -18,7 +19,7 @@ describe('StackTrace', function () {
         });
     });
 
-    describe('#fromError', function () {
+    describe('#fromError', function() {
         beforeEach(function() {
             jasmine.Ajax.install();
         });
@@ -26,12 +27,12 @@ describe('StackTrace', function () {
             jasmine.Ajax.uninstall();
         });
 
-        it('rejects with Error given unparsable Error object', function (done) {
+        it('rejects with Error given unparsable Error object', function(done) {
             StackTrace.fromError({message: 'ERROR_MESSAGE'})
                 .then(done.fail)['catch'](done);
         });
 
-        it('parses stacktrace from given Error object', function (done) {
+        it('parses stacktrace from given Error object', function(done) {
             jasmine.Ajax.stubRequest('http://path/to/file.js').andError();
 
             StackTrace.fromError(Errors.IE_11)
@@ -44,7 +45,7 @@ describe('StackTrace', function () {
             }
         });
 
-        it('filters returned stack', function (done) {
+        it('filters returned stack', function(done) {
             function onlyFoos(stackFrame) {
                 return stackFrame.functionName === 'foo';
             }
@@ -62,7 +63,7 @@ describe('StackTrace', function () {
             }
         });
 
-        it('uses source maps to enhance stack frames', function (done) {
+        it('uses source maps to enhance stack frames', function(done) {
             var sourceCache = {
                 'http://path/to/file.js': 'function increment(){\nsomeVariable+=2;\nnull.x()\n}\nvar someVariable=2;increment();',
                 'http://path/to/file.min.js': 'function increment(){someVariable+=2;null.x()}var someVariable=2;increment();\n//# sourceMappingURL=file.min.js.map',
@@ -81,9 +82,9 @@ describe('StackTrace', function () {
         });
     });
 
-    describe('#generateArtificially', function () {
-        it('gets stacktrace from current location', function (done) {
-            var stackFrameFilter = function (stackFrame) {
+    describe('#generateArtificially', function() {
+        it('gets stacktrace from current location', function(done) {
+            var stackFrameFilter = function(stackFrame) {
                 return stackFrame.getFunctionName() &&
                     stackFrame.getFunctionName().indexOf('testGenerateArtificially') > -1;
             };
@@ -100,14 +101,19 @@ describe('StackTrace', function () {
         });
     });
 
-    describe('#instrument', function () {
+    describe('#instrument', function() {
         it('throws Error given non-function input', function() {
-            expect(function() { StackTrace.instrument('BOGUS'); })
+            expect(function() {
+                StackTrace.instrument('BOGUS');
+            })
                 .toThrow(new Error('Cannot instrument non-function object'));
         });
 
         it('wraps given function and calls given callback when called', function(done) {
-            function interestingFn() { return 'something'; }
+            function interestingFn() {
+                return 'something';
+            }
+
             var wrapped = StackTrace.instrument(interestingFn, callback, done.fail);
             expect(wrapped()).toBe('something');
 
@@ -120,11 +126,16 @@ describe('StackTrace', function () {
         });
 
         it('calls callback with stack trace when wrapped function throws an Error', function(done) {
-            function interestingFn() { throw new Error('BOOM'); }
+            function interestingFn() {
+                throw new Error('BOOM');
+            }
+
             var wrapped = StackTrace.instrument(interestingFn, callback, done.fail);
 
             // Exception should be re-thrown from instrument
-            expect(function() { wrapped(); }).toThrow(new Error('BOOM'));
+            expect(function() {
+                wrapped();
+            }).toThrow(new Error('BOOM'));
 
             function callback(stackFrames) {
                 if (stackFrames[0].fileName) { // Work around IE9-
@@ -135,26 +146,35 @@ describe('StackTrace', function () {
         });
 
         it('does not re-instrument already instrumented function', function() {
-            function interestingFn() { return 'something'; }
+            function interestingFn() {
+                return 'something';
+            }
+
             var wrapped = StackTrace.instrument(interestingFn);
             expect(StackTrace.instrument(wrapped)).toEqual(wrapped);
         });
     });
 
-    describe('#deinstrument', function () {
-        it('throws Error given non-function input', function () {
-            expect(function () {
+    describe('#deinstrument', function() {
+        it('throws Error given non-function input', function() {
+            expect(function() {
                 StackTrace.deinstrument('BOGUS');
             }).toThrow(new Error('Cannot de-instrument non-function object'));
         });
 
         it('given unwrapped input, returns input', function() {
-            function interestingFn() { return 'something'; }
+            function interestingFn() {
+                return 'something';
+            }
+
             expect(StackTrace.deinstrument(interestingFn)).toEqual(interestingFn);
         });
 
         it('de-instruments instrumented function', function() {
-            function interestingFn() { return 'something'; }
+            function interestingFn() {
+                return 'something';
+            }
+
             var wrapped = StackTrace.instrument(interestingFn);
             expect(wrapped.__stacktraceOriginalFn).toEqual(interestingFn);
 
@@ -164,7 +184,7 @@ describe('StackTrace', function () {
         });
     });
 
-    describe('#report', function () {
+    describe('#report', function() {
         beforeEach(function() {
             jasmine.Ajax.install();
         });
@@ -172,7 +192,7 @@ describe('StackTrace', function () {
             jasmine.Ajax.uninstall();
         });
 
-        it('sends POST request to given URL', function (done) {
+        it('sends POST request to given URL', function(done) {
             var url = 'http://domain.ext/endpoint';
             var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
 
@@ -189,7 +209,7 @@ describe('StackTrace', function () {
             }
         });
 
-        it('rejects if POST request fails', function (done) {
+        it('rejects if POST request fails', function(done) {
             var url = 'http://domain.ext/endpoint';
             var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
 
