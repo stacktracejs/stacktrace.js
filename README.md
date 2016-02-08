@@ -54,12 +54,15 @@ StackTrace.generateArtificially().then(callback).catch(errback)
 
 #### Trace every time a given function is invoked
 ```js
-// callback is called with an Array[StackFrame] every time  
-// the wrapped interestingFn is called
-StackTrace.instrument(interestingFn, callback, errback)
+// callback is called with an Array[StackFrame] every time wrapped function is called
+var myFunc = function(arg) { return 'Hello ' + arg; }
+var myWrappedFunc = StackTrace.instrument(myFunc, callback, errback)
 => Instrumented Function
+myWrappedFunc('world');
+=> 'Hello world'
 
-StackTrace.deinstrument(interestingFn)
+// Use this if you overwrote you original function
+myFunc = StackTrace.deinstrument(myFunc)
 => De-instrumented Function
 ```
 
@@ -147,6 +150,8 @@ I recommend the [stack-trace node package](https://www.npmjs.com/package/stack-t
 It has a very similar API and also supports source maps.
 
 ## Contributing
+This project adheres to the [Open Code of Conduct](http://todogroup.org/opencodeofconduct/#stacktrace.js/me@eriwen.com). By participating, you are expected to honor this code.
+
 Want to be listed as a *Contributor*? Start with the [Contributing Guide](https://github.com/stacktracejs/stacktrace.js/blob/master/CONTRIBUTING.md)!
 
 This project is made possible due to the efforts of these fine people:
