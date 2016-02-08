@@ -12,19 +12,17 @@ module.exports = function (config) {
             'spec/spec-helper.js',
             'spec/*-spec.js'
         ],
-        reporters: ['progress', 'coverage'],
-        preprocessors: {
-            '*.js': 'coverage'
-        },
-        coverageReporter: {
-            type: 'lcov',
-            dir: 'coverage'
-        },
+        reporters: ['spec'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
-        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+        customLaunchers: {
+            Chrome_Travis: {
+                base: 'Chrome',
+                flags: ['--no-sandbox']
+            }
+        },
         //browsers: ['ChromeCanary', 'Firefox'],
         browsers: ['PhantomJS2'],
         singleRun: false
