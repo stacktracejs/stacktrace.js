@@ -6,7 +6,7 @@
         "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)",
         "Oliver Salzburg (https://github.com/oliversalzburg)"
     ],
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "Unlicense",
     "keywords": [
         "stacktrace",
