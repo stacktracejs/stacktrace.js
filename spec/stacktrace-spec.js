@@ -109,7 +109,7 @@ describe('StackTrace', function () {
         it('wraps given function and calls given callback when called', function(done) {
             function interestingFn() { return 'something'; }
             var wrapped = StackTrace.instrument(interestingFn, callback, done.fail);
-            wrapped();
+            expect(wrapped()).toBe('something');
 
             function callback(stackFrames) {
                 if (stackFrames[0].fileName) { // Work around IE9-
