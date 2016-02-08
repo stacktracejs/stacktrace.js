@@ -7,7 +7,7 @@
         "Oliver Salzburg (https://github.com/oliversalzburg)"
     ],
     "version": "1.0.1",
-    "license": "SEE LICENSE IN LICENSE",
+    "license": "Unlicense",
     "keywords": [
         "stacktrace",
         "error",
@@ -15,14 +15,14 @@
         "client",
         "browser"
     ],
-    "homepage": "http://www.stacktracejs.com",
+    "homepage": "https://www.stacktracejs.com",
     "repository": {
         "type": "git",
         "url": "git://github.com/stacktracejs/stacktrace.js.git"
     },
     "dependencies": {
         "error-stack-parser": "~1.2",
-        "stack-generator": "~1",
+        "stack-generator": "~1.0",
         "stacktrace-gps": "~2"
     },
     "devDependencies": {
@@ -39,7 +39,7 @@
         "jasmine-ajax": "^3.2.0",
         "jasmine-core": "^2.3.4",
         "json3": "^3.3.2",
-        "karma": "^0.13.9",
+        "karma": "^0.13.15",
         "karma-chrome-launcher": "^0.2.1",
         "karma-coverage": "^0.5.2",
         "karma-firefox-launcher": "^0.1.7",
@@ -50,6 +50,7 @@
         "karma-phantomjs2-launcher": "^0.3.2",
         "karma-safari-launcher": "^0.1.1",
         "karma-sauce-launcher": "^0.2.14",
+        "karma-spec-reporter": "0.0.23",
         "run-sequence": "^1.1.2"
     },
     "bugs": {
