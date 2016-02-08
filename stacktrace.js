@@ -127,7 +127,7 @@
             var instrumented = function StackTrace$$instrumented() {
                 try {
                     this.get().then(callback, errback)['catch'](errback);
-                    fn.apply(thisArg || this, arguments);
+                    return fn.apply(thisArg || this, arguments);
                 } catch (e) {
                     if (_isShapedLikeParsableError(e)) {
                         this.fromError(e).then(callback, errback)['catch'](errback);
