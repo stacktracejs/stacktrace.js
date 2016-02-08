@@ -20,14 +20,14 @@ var dependencies = [
 ];
 var sources = 'stacktrace.js';
 
-gulp.task('lint', function () {
+gulp.task('lint', function() {
     return gulp.src(sources)
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
         .pipe(jshint.reporter('fail'));
 });
 
-gulp.task('test', function (done) {
+gulp.task('test', function(done) {
     var server = new karma.Server({
         configFile: __dirname + '/karma.conf.js',
         singleRun: true
@@ -35,7 +35,7 @@ gulp.task('test', function (done) {
     server.start();
 });
 
-gulp.task('test-pr', ['dist'], function (done) {
+gulp.task('test-pr', ['dist'], function(done) {
     new karma.Server({
         configFile: __dirname + '/karma.conf.js',
         browsers: ['Firefox', 'Chrome_Travis'],
@@ -43,7 +43,7 @@ gulp.task('test-pr', ['dist'], function (done) {
     }, done).start();
 });
 
-gulp.task('test-ci', ['dist'], function (done) {
+gulp.task('test-ci', ['dist'], function(done) {
     var server = new karma.Server({
         configFile: __dirname + '/karma.conf.ci.js',
         singleRun: true
@@ -51,7 +51,7 @@ gulp.task('test-ci', ['dist'], function (done) {
     server.start();
 });
 
-gulp.task('dist', function () {
+gulp.task('dist', function() {
     gulp.src(polyfills.concat(dependencies.concat(sources)))
         .pipe(sourcemaps.init())
         .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.min.js')))
@@ -69,11 +69,11 @@ gulp.task('dist', function () {
 
 gulp.task('clean', del.bind(null, ['build', 'coverage', 'dist']));
 
-gulp.task('ci', ['lint', 'test-ci'], function () {
+gulp.task('ci', ['lint', 'test-ci'], function() {
     gulp.src('./coverage/**/lcov.info')
         .pipe(coveralls());
 });
 
-gulp.task('default', ['clean'], function (cb) {
+gulp.task('default', ['clean'], function(cb) {
     runSequence('lint', 'dist', 'test', cb);
 });

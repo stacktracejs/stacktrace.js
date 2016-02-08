@@ -1,4 +1,4 @@
-(function (root, factory) {
+(function(root, factory) {
     'use strict';
     // Universal Module Definition (UMD) to support AMD, CommonJS/Node.js, Rhino, and browsers.
 
@@ -12,7 +12,7 @@
     }
 }(this, function StackTrace(ErrorStackParser, StackGenerator, StackTraceGPS) {
     var _options = {
-        filter: function (stackframe) {
+        filter: function(stackframe) {
             // Filter out stackframes for this library by default
             return (stackframe.functionName || '').indexOf('StackTrace$$') === -1 &&
                 (stackframe.functionName || '').indexOf('ErrorStackParser$$') === -1 &&
@@ -24,15 +24,16 @@
     /**
      * Merge 2 given Objects. If a conflict occurs the second object wins.
      * Does not do deep merges.
-     * @param first Object
-     * @param second Object
-     * @returns new Object merged first and second
+     *
+     * @param {Object} first base object
+     * @param {Object} second overrides
+     * @returns {Object} merged first and second
      * @private
      */
     function _merge(first, second) {
         var target = {};
 
-        [first, second].forEach(function (obj) {
+        [first, second].forEach(function(obj) {
             for (var prop in obj) {
                 if (obj.hasOwnProperty(prop)) {
                     target[prop] = obj[prop];
@@ -51,8 +52,9 @@
     return {
         /**
          * Get a backtrace from invocation point.
-         * @param opts Options Object
-         * @return Array[StackFrame]
+         *
+         * @param {Object} opts
+         * @returns {Array} of StackFrame
          */
         get: function StackTrace$$get(opts) {
             try {
@@ -69,20 +71,21 @@
 
         /**
          * Given an error object, parse it.
-         * @param error Error object
-         * @param opts Object for options
-         * @return Array[StackFrame]
+         *
+         * @param {Error} error object
+         * @param {Object} opts
+         * @returns {Promise} for Array[StackFrame}
          */
         fromError: function StackTrace$$fromError(error, opts) {
             opts = _merge(_options, opts);
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 var stackframes = ErrorStackParser.parse(error);
                 if (typeof opts.filter === 'function') {
                     stackframes = stackframes.filter(opts.filter);
                 }
-                resolve(Promise.all(stackframes.map(function (sf) {
-                    return new Promise(function (resolve) {
-                        function resolveOriginal(_) {
+                resolve(Promise.all(stackframes.map(function(sf) {
+                    return new Promise(function(resolve) {
+                        function resolveOriginal() {
                             resolve(sf);
                         }
 
@@ -95,8 +98,9 @@
 
         /**
          * Use StackGenerator to generate a backtrace.
-         * @param opts Object options
-         * @returns Array[StackFrame]
+         *
+         * @param {Object} opts
+         * @returns {Promise} of Array[StackFrame]
          */
         generateArtificially: function StackTrace$$generateArtificially(opts) {
             opts = _merge(_options, opts);
@@ -144,7 +148,7 @@
          * Given a function that has been instrumented,
          * revert the function to it's original (non-instrumented) state.
          *
-         * @param fn {Function}
+         * @param {Function} fn to de-instrument
          */
         deinstrument: function StackTrace$$deinstrument(fn) {
             if (typeof fn !== 'function') {
@@ -160,11 +164,11 @@
         /**
          * Given an Array of StackFrames, serialize and POST to given URL.
          *
-         * @param stackframes - Array[StackFrame]
-         * @param url - URL as String
+         * @param {Array} stackframes
+         * @param {String} url
          */
         report: function StackTrace$$report(stackframes, url) {
-            return new Promise(function (resolve, reject) {
+            return new Promise(function(resolve, reject) {
                 var req = new XMLHttpRequest();
                 req.onerror = reject;
                 req.onreadystatechange = function onreadystatechange() {
