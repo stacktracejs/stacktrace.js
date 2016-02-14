@@ -6,7 +6,7 @@
         "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)",
         "Oliver Salzburg (https://github.com/oliversalzburg)"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "license": "Unlicense",
     "keywords": [
         "stacktrace",
@@ -23,13 +23,13 @@
     "dependencies": {
         "error-stack-parser": "~1.2",
         "stack-generator": "~1.0",
-        "stacktrace-gps": "~2"
+        "stacktrace-gps": "~2.4"
     },
     "devDependencies": {
         "colors": "^1.1.2",
         "del": "^1.2.0",
-        "es6-promise": "^3.0.2",
-        "gulp": "^3.9.0",
+        "es6-promise": "^3.1.2",
+        "gulp": "^3.9.1",
         "gulp-concat": "^2.6.0",
         "gulp-coveralls": "^0.1.4",
         "gulp-jshint": "^1.12.0",
