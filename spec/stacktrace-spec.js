@@ -76,7 +76,7 @@ describe('StackTrace', function() {
 
             function callback(stackFrames) {
                 expect(stackFrames.length).toEqual(1);
-                expect(stackFrames[0]).toMatchStackFrame(['null', undefined, 'file.js', 3, 4]);
+                expect(stackFrames[0]).toMatchStackFrame(['increment', undefined, 'http://path/to/file.js', 3, 4]);
                 done();
             }
         });
