@@ -36,26 +36,11 @@ module.exports = function (config) {
             base: 'SauceLabs',
             browserName: 'chrome'
         },
-        slChromeBeta: {
-            base: 'SauceLabs',
-            browserName: 'chrome',
-            version: 'beta'
-        },
-        slChromeCanary: {
-            base: 'SauceLabs',
-            browserName: 'chrome',
-            version: 'dev'
-        },
-        slFirefox42: {
+        slFirefox43: {
             base: 'SauceLabs',
             browserName: 'firefox',
             platform: 'Windows 8.1',
             version: '43.0'
-        },
-        slFirefoxDev: {
-            base: 'SauceLabs',
-            browserName: 'firefox',
-            version: 'dev'
         },
         slSafari8: {
             base: 'SauceLabs',
