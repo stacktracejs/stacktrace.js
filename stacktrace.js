@@ -166,8 +166,9 @@
          *
          * @param {Array} stackframes
          * @param {String} url
+         * @param {Object} ajaxOptions ajax options including headers object
          */
-        report: function StackTrace$$report(stackframes, url) {
+        report: function StackTrace$$report(stackframes, url, ajaxOptions) {
             return new Promise(function(resolve, reject) {
                 var req = new XMLHttpRequest();
                 req.onerror = reject;
@@ -182,6 +183,12 @@
                 };
                 req.open('post', url);
                 req.setRequestHeader('Content-Type', 'application/json');
+                if (ajaxOptions && ajaxOptions.headers) {
+                    var headers = ajaxOptions.headers;
+                    for(var header in headers) {
+                        req.setRequestHeader(header, headers[header]);
+                    }
+                }
                 req.send(JSON.stringify({stack: stackframes}));
             });
         }
