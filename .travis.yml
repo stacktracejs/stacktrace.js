@@ -16,4 +16,4 @@ before_install:
 before_script:
 - npm install
 script:
-- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then gulp ci; else gulp pr; fi
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then gulp ci; else gulp test-pr; fi
