@@ -134,13 +134,7 @@ Example JSON POST data:
 * **url: String** - URL to POST stack JSON to
 
 ## Browser Support
-* Chrome 1+
-* Firefox 3+
-* Safari 5+
-* Opera 9+
-* IE 6+
-* iOS 7+
-* Android 4.0+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/stacktracejs.svg)](https://saucelabs.com/u/stacktracejs)
 
 > **HEADS UP**: You won't get the benefit of [source maps](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/)
 in IE9- or other very old browsers.
