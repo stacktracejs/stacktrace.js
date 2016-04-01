@@ -18,7 +18,8 @@
                 (stackframe.functionName || '').indexOf('ErrorStackParser$$') === -1 &&
                 (stackframe.functionName || '').indexOf('StackTraceGPS$$') === -1 &&
                 (stackframe.functionName || '').indexOf('StackGenerator$$') === -1;
-        }
+        },
+        sourceCache: {}
     };
 
     /**
@@ -78,6 +79,7 @@
          */
         fromError: function StackTrace$$fromError(error, opts) {
             opts = _merge(_options, opts);
+            var gps = new StackTraceGPS(opts);
             return new Promise(function(resolve) {
                 var stackframes = ErrorStackParser.parse(error);
                 if (typeof opts.filter === 'function') {
@@ -89,8 +91,7 @@
                             resolve(sf);
                         }
 
-                        new StackTraceGPS(opts).pinpoint(sf)
-                            .then(resolve, resolveOriginal)['catch'](resolveOriginal);
+                        gps.pinpoint(sf).then(resolve, resolveOriginal)['catch'](resolveOriginal);
                     });
                 })));
             }.bind(this));
