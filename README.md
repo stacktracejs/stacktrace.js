@@ -1,5 +1,6 @@
 # stacktrace.js
-## Framework-agnostic, micro-library for getting stack traces in all web browsers
+
+> Framework-agnostic, micro-library for getting stack traces in all web browsers
 [![Build Status](https://travis-ci.org/stacktracejs/stacktrace.js.svg?branch=master)](https://travis-ci.org/stacktracejs/stacktrace.js) [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg)](https://coveralls.io/r/stacktracejs/stacktrace.js?branch=master) [![GitHub license](https://img.shields.io/github/license/stacktracejs/stacktrace.js.svg)](http://unlicense.org)
 
 Debug and profile your JavaScript with a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify).
@@ -9,7 +10,7 @@ stacktrace.js uses browsers' `Error.stack` mechanism to generate stack traces, p
 [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 to return an Array of [StackFrames](https://github.com/stacktracejs/stackframe).
 
-#### Upgrading? Check the [0.x -> 1.x Migration Guide](http://www.stacktracejs.com/#!/docs/v0-migration-guide)
+#### Upgrading? Check the [0.x -> 1.x Migration Guide](https://www.stacktracejs.com/#!/docs/v0-migration-guide)
 
 ## Usage
 #### Get a stack trace from current location
