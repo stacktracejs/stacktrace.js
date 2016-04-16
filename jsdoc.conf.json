@@ -1,0 +1,11 @@
+{
+    "docset" : {
+        "name": "StackTraceJS",
+        "icon": "../logos/StackTraceLogo16x16.png",
+        "enableJavascript": true
+    },
+    "opts": {
+        "template": "node_modules/jsdoc-dash-template",
+        "destination": "../"
+    }
+}
