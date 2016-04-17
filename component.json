@@ -1,10 +1,22 @@
 {
     "name": "stacktrace.js",
-    "version": "0.6.0",
-    "repo": "eriwen/javascript-stacktrace",
+    "repository": "stacktracejs/stacktrace.js",
+    "description": "Framework-agnostic, micro-library for getting stack traces in all environments",
+    "version": "1.1.0",
+    "keywords": [
+        "stacktrace",
+        "error",
+        "debugger",
+        "client",
+        "browser"
+    ],
     "main": "stacktrace.js",
     "scripts": [
-      "stacktrace.js"
+        "stacktrace.js"
     ],
-    "dependencies": {}
+    "dependencies": {
+        "stacktracejs/error-stack-parser": "1.3",
+        "stacktracejs/stack-generator": "1",
+        "stacktracejs/stacktrace-gps": "2"
+    }
 }

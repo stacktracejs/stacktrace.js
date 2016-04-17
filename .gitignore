@@ -1,7 +1,17 @@
-.gradle
-*/.DS_Store
-.DS_Store
-target
-.idea
-node_modules
+*.seed
+*.log
+*.out
+*.pid
+*.gz
 
+pids
+logs
+results
+
+bower_components
+node_modules
+build
+coverage
+
+.idea
+.coveralls.yml
