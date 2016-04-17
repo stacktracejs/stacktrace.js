@@ -147,11 +147,11 @@ It has a very similar API and also supports source maps.
 ## Contributing
 This project adheres to the [Open Code of Conduct](http://todogroup.org/opencodeofconduct/#stacktrace.js/me@eriwen.com). By participating, you are expected to honor this code.
 
-Want to be listed as a *Contributor*? Start with the [Contributing Guide](https://github.com/stacktracejs/stacktrace.js/blob/master/CONTRIBUTING.md)!
+Want to be listed as a *Contributor*? Start with the [Contributing Guide](https://github.com/stacktracejs/stacktrace.js/blob/master/.github/CONTRIBUTING.md)!
 
 This project is made possible due to the efforts of these fine people:
 
-* [Eric Wendelin](http://www.eriwen.com)
+* [Eric Wendelin](https://www.eriwen.com)
 * [Victor Homyakov](https://github.com/victor-homyakov)
 * [Oliver Salzburg](https://github.com/oliversalzburg)
 * [Many others](https://github.com/stacktracejs/stacktrace.js/graphs/contributors)

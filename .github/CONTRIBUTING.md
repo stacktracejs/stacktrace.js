@@ -18,7 +18,7 @@ Want to be listed as a *Contributor*? Make a pull request with:
 * Please keep code style consistent with surrounding code.
 
 ## Dev Setup
-* Make sure you have [NodeJS v0.10](http://nodejs.org/) installed
+* Make sure you have [NodeJS v4.0+](http://nodejs.org/) installed
 * Run `npm install` from the project directory
 
 ## Testing
