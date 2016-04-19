@@ -59,7 +59,6 @@ gulp.task('dist', function() {
         .pipe(gulp.dest('dist'))
         .pipe(uglify())
         .pipe(rename({extname:'.min.js'}))
-        .pipe(debug())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 
