@@ -1,5 +1,6 @@
 language: node_js
-sudo: false
+sudo: required
+dist: trusty
 node_js: stable
 addons:
   sauce_connect: true
