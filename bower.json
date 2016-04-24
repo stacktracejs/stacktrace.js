@@ -1,9 +1,9 @@
 {
     "name": "stacktrace-js",
-    "main": "./stacktrace.js",
+    "main": "./dist/stacktrace.concat.js",
     "homepage": "https://github.com/stacktracejs/stacktrace.js",
     "authors": [
-        "Eric Wendelin <me@eriwen.com> (http://www.eriwen.com)",
+        "Eric Wendelin <me@eriwen.com> (https://www.eriwen.com)",
         "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)",
         "Oliver Salzburg (https://github.com/oliversalzburg)"
     ],
