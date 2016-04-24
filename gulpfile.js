@@ -4,6 +4,7 @@ var del = require('del');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var karma = require('karma');
+var rename = require('gulp-rename');
 var runSequence = require('run-sequence');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
@@ -54,13 +55,17 @@ gulp.task('test-ci', ['dist'], function(done) {
 gulp.task('dist', function() {
     gulp.src(polyfills.concat(dependencies.concat(sources)))
         .pipe(sourcemaps.init())
-        .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.min.js')))
+        .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.js')))
+        .pipe(gulp.dest('dist'))
         .pipe(uglify())
+        .pipe(rename({extname:'.min.js'}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 
     return gulp.src(dependencies.concat(sources))
         .pipe(sourcemaps.init())
+        .pipe(concat(sources.replace('.js', '.concat.js')))
+        .pipe(gulp.dest('dist'))
         .pipe(concat(sources.replace('.js', '.min.js')))
         .pipe(uglify())
         .pipe(sourcemaps.write('./'))
