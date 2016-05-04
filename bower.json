@@ -1,6 +1,6 @@
 {
     "name": "stacktrace-js",
-    "main": "./dist/stacktrace.concat.js",
+    "main": "./dist/stacktrace-with-promises-and-json-polyfills.js",
     "homepage": "https://github.com/stacktracejs/stacktrace.js",
     "authors": [
         "Eric Wendelin <me@eriwen.com> (https://www.eriwen.com)",
@@ -28,9 +28,5 @@
         "node_modules",
         "spec"
     ],
-    "dependencies": {
-        "error-stack-parser": "~1.2.3",
-        "stack-generator": "~1.0.7",
-        "stacktrace-gps": "~2.3.0"
-    }
+    "dependencies": {}
 }
