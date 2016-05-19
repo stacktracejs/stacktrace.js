@@ -194,15 +194,16 @@ describe('StackTrace', function() {
 
         it('sends POST request to given URL', function(done) {
             var url = 'http://domain.ext/endpoint';
+            var errorMsg = 'BOOM';
             var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
 
-            StackTrace.report(stackframes, url).then(callback, done.fail)['catch'](done.fail);
+            StackTrace.report(errorMsg, stackframes, url).then(callback, done.fail)['catch'](done.fail);
 
             var postRequest = jasmine.Ajax.requests.mostRecent();
             postRequest.respondWith({status: 201, contentType: 'text/plain', responseText: 'OK'});
 
             function callback() {
-                expect(postRequest.data()).toEqual({stack: stackframes});
+                expect(postRequest.data()).toEqual({message: errorMsg, stack: stackframes});
                 expect(postRequest.method).toBe('post');
                 expect(postRequest.url).toBe(url);
                 done();
@@ -211,10 +212,11 @@ describe('StackTrace', function() {
 
         it('rejects if POST request fails', function(done) {
             var url = 'http://domain.ext/endpoint';
+            var errorMsg = 'BOOM';
             var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
 
             jasmine.Ajax.stubRequest(url).andError();
-            StackTrace.report(stackframes, url).then(done.fail, done)['catch'](done);
+            StackTrace.report(errorMsg, stackframes, url).then(done.fail, done)['catch'](done);
         });
     });
 });

@@ -163,12 +163,12 @@
         },
 
         /**
-         * Given an Array of StackFrames, serialize and POST to given URL.
+         * Given an error message and Array of StackFrames, serialize and POST to given URL.
          *
          * @param {Array} stackframes
          * @param {String} url
          */
-        report: function StackTrace$$report(stackframes, url) {
+        report: function StackTrace$$report(errorMsg, stackframes, url) {
             return new Promise(function(resolve, reject) {
                 var req = new XMLHttpRequest();
                 req.onerror = reject;
@@ -183,7 +183,7 @@
                 };
                 req.open('post', url);
                 req.setRequestHeader('Content-Type', 'application/json');
-                req.send(JSON.stringify({stack: stackframes}));
+                req.send(JSON.stringify({message: errorMsg, stack: stackframes}));
             });
         }
     };
