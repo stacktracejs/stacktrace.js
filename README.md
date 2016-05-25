@@ -117,7 +117,7 @@ Given a function that has been instrumented, revert the function to it's origina
 
 * **fn: Function** - Instrumented Function
 
-#### `StackTrace.report(message, stackframes, url)` => [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)(String)
+#### `StackTrace.report(stackframes, url, message)` => [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)(String)
 Given an an error message and Array of StackFrames, serialize and POST to given URL. Promise is resolved with response text from POST request.
 
 Example JSON POST data:
