@@ -1,3 +1,8 @@
+## v1.2.0
+
+* `StackTrace.report` now accepts an error message argument, and will add a `message: "given thing"` to the JSON payload if it is provided.
+* Various bug fixes from v1.1.0
+
 ## v1.1.0
 
 ### Better parsing
