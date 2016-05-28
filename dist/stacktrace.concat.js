@@ -430,12 +430,13 @@
         },
 
         /**
-         * Given an Array of StackFrames, serialize and POST to given URL.
+         * Given an error message and Array of StackFrames, serialize and POST to given URL.
          *
          * @param {Array} stackframes
          * @param {String} url
+         * @param {String} errorMsg
          */
-        report: function StackTrace$$report(stackframes, url) {
+        report: function StackTrace$$report(stackframes, url, errorMsg) {
             return new Promise(function(resolve, reject) {
                 var req = new XMLHttpRequest();
                 req.onerror = reject;
@@ -450,7 +451,13 @@
                 };
                 req.open('post', url);
                 req.setRequestHeader('Content-Type', 'application/json');
-                req.send(JSON.stringify({stack: stackframes}));
+
+                var reportPayload = {stack: stackframes};
+                if (errorMsg != undefined) {
+                    reportPayload.message = errorMsg;
+                }
+
+                req.send(JSON.stringify(reportPayload));
             });
         }
     };
