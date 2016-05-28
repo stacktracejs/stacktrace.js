@@ -187,7 +187,7 @@
 
                 var reportPayload = {stack: stackframes};
                 if (errorMsg != undefined) {
-                  reportPayload.message = errorMsg;
+                    reportPayload.message = errorMsg;
                 }
 
                 req.send(JSON.stringify(reportPayload));
