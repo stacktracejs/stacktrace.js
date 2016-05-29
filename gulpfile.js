@@ -58,7 +58,7 @@ gulp.task('dist', function() {
         .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.js')))
         .pipe(gulp.dest('dist'))
         .pipe(uglify())
-        .pipe(rename({extname:'.min.js'}))
+        .pipe(rename({extname: '.min.js'}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 
@@ -73,6 +73,11 @@ gulp.task('dist', function() {
 });
 
 gulp.task('clean', del.bind(null, ['build', 'coverage', 'dist']));
+
+gulp.task('pr', ['lint', 'test-pr'], function() {
+    gulp.src('./coverage/**/lcov.info')
+        .pipe(coveralls());
+});
 
 gulp.task('ci', ['lint', 'test-ci'], function() {
     gulp.src('./coverage/**/lcov.info')
