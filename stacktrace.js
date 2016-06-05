@@ -86,7 +86,7 @@
             }
             return Promise.all(stackframes.map(function(sf) {
                 return gps.pinpoint(sf);
-            }).catch(function(error) {
+            })["catch"](function(error) {
                 return sf;
             }));
         },
