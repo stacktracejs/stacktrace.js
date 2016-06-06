@@ -453,7 +453,7 @@
                 req.setRequestHeader('Content-Type', 'application/json');
 
                 var reportPayload = {stack: stackframes};
-                if (errorMsg != undefined) {
+                if (errorMsg !== undefined) {
                     reportPayload.message = errorMsg;
                 }
 
