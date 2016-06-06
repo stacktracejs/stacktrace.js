@@ -80,15 +80,21 @@
         fromError: function StackTrace$$fromError(error, opts) {
             opts = _merge(_options, opts);
             var gps = new StackTraceGPS(opts);
-            var stackframes = ErrorStackParser.parse(error);
-            if (typeof opts.filter === 'function') {
-                stackframes = stackframes.filter(opts.filter);
-            }
-            return Promise.all(stackframes.map(function(sf) {
-                return gps.pinpoint(sf);
-            }).catch(function(error) {
-                return sf;
-            }));
+            return new Promise(function(resolve) {
+                var stackframes = ErrorStackParser.parse(error);
+                if (typeof opts.filter === 'function') {
+                    stackframes = stackframes.filter(opts.filter);
+                }
+                resolve(Promise.all(stackframes.map(function(sf) {
+                    return new Promise(function(resolve) {
+                        function resolveOriginal() {
+                            resolve(sf);
+                        }
+
+                        gps.pinpoint(sf).then(resolve, resolveOriginal)['catch'](resolveOriginal);
+                    });
+                })));
+            }.bind(this));
         },
 
         /**
