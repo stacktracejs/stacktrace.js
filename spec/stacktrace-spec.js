@@ -27,7 +27,7 @@ describe('StackTrace', function() {
 
         it('does not filter if filter is explictly disabled', function() {
             var stackframes = StackTrace.getSync({filter: null});
-            expect(stackframes[0].functionName).toEqual('StackTrace$$GenerateError');
+            expect(stackframes[0].functionName).toMatch(/(StackGenerator\$\$backtrace|StackTrace\$\$GenerateError)/);
         });
     });
 
