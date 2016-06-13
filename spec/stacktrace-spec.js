@@ -19,6 +19,13 @@ describe('StackTrace', function() {
         });
     });
 
+    describe('#getSync', function() {
+        it('gets stacktrace from current location', function testStackTraceGetSync() {
+            var stackframes = StackTrace.getSync();
+            expect(stackframes[0].functionName).toMatch(/.*testStackTraceGetSync/);
+        });
+    });
+
     describe('#fromError', function() {
         beforeEach(function() {
             jasmine.Ajax.install();

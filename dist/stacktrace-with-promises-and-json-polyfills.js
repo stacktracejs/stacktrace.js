@@ -2274,6 +2274,15 @@ if (!Array.prototype.forEach) {
         sourceCache: {}
     };
 
+    var _generateError = function StackTrace$$GenerateError() {
+        try {
+            // Error must be thrown to get stack in IE
+            throw new Error();
+        } catch (err) {
+            return err;
+        }
+    };
+
     /**
      * Merge 2 given Objects. If a conflict occurs the second object wins.
      * Does not do deep merges.
@@ -2310,16 +2319,36 @@ if (!Array.prototype.forEach) {
          * @returns {Array} of StackFrame
          */
         get: function StackTrace$$get(opts) {
-            try {
-                // Error must be thrown to get stack in IE
-                throw new Error();
-            } catch (err) {
-                if (_isShapedLikeParsableError(err)) {
-                    return this.fromError(err, opts);
-                } else {
-                    return this.generateArtificially(opts);
-                }
+            var err = _generateError();
+            if (_isShapedLikeParsableError(err)) {
+                return this.fromError(err, opts);
+            } else {
+                return this.generateArtificially(opts);
             }
+        },
+
+        /**
+         * Get a backtrace from invocation point.
+         * IMPORTANT: Does not handle source maps or guess function names!
+         *
+         * @param {Object} opts
+         * @returns {Array} of StackFrame
+         */
+        getSync: function StackTrace$$getSync(opts) {
+            opts = _merge(_options, opts);
+            var err = _generateError();
+            var stackframes;
+
+            if (_isShapedLikeParsableError(err)) {
+                stackframes = ErrorStackParser.parse(err);
+            } else {
+                stackframes = StackGenerator.backtrace(opts);
+            }
+
+            if (typeof opts.filter === 'function') {
+                stackframes = stackframes.filter(opts.filter);
+            }
+            return stackframes;
         },
 
         /**

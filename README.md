@@ -85,6 +85,12 @@ Generate a backtrace from invocation point, then parse and enhance it.
 * *sourceCache: Object (String URL => String Source)* - Pre-populate source cache to avoid network requests
 * *offline: Boolean (default: false)* - Set to `true` to prevent all network requests
 
+#### `StackTrace.getSync(/*optional*/ options)` => Array[[StackFrame](https://github.com/stacktracejs/stackframe)]
+Generate a backtrace from invocation point, then parse it. **HEADS UP:** This method does not use source maps or guess anonymous functions.  
+
+**(Optional) options: Object**
+* *filter: Function([StackFrame](https://github.com/stacktracejs/stackframe) => Boolean)* - Only include stack entries matching for which `filter` returns `true`
+
 #### `StackTrace.fromError(error, /*optional*/ options)` => [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)(Array[[StackFrame](https://github.com/stacktracejs/stackframe)])
 Given an Error object, use [error-stack-parser](https://github.com/stacktracejs/error-stack-parser)
 to parse it and enhance location information with [stacktrace-gps](https://github.com/stacktracejs/stacktrace-gps).
