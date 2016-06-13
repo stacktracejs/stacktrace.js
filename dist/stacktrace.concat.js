@@ -326,6 +326,13 @@
         return err.stack || err['opera#sourceloc'];
     }
 
+    function _filtered(stackframes, filter) {
+        if (typeof filter === 'function') {
+            return stackframes.filter(filter);
+        }
+        return stackframes;
+    }
+
     return {
         /**
          * Get a backtrace from invocation point.
@@ -335,11 +342,7 @@
          */
         get: function StackTrace$$get(opts) {
             var err = _generateError();
-            if (_isShapedLikeParsableError(err)) {
-                return this.fromError(err, opts);
-            } else {
-                return this.generateArtificially(opts);
-            }
+            return _isShapedLikeParsableError(err) ? this.fromError(err, opts) : this.generateArtificially(opts);
         },
 
         /**
@@ -352,18 +355,8 @@
         getSync: function StackTrace$$getSync(opts) {
             opts = _merge(_options, opts);
             var err = _generateError();
-            var stackframes;
-
-            if (_isShapedLikeParsableError(err)) {
-                stackframes = ErrorStackParser.parse(err);
-            } else {
-                stackframes = StackGenerator.backtrace(opts);
-            }
-
-            if (typeof opts.filter === 'function') {
-                stackframes = stackframes.filter(opts.filter);
-            }
-            return stackframes;
+            var stack = _isShapedLikeParsableError(err) ? ErrorStackParser.parse(err) : StackGenerator.backtrace(opts);
+            return _filtered(stack, opts.filter);
         },
 
         /**
@@ -377,10 +370,7 @@
             opts = _merge(_options, opts);
             var gps = new StackTraceGPS(opts);
             return new Promise(function(resolve) {
-                var stackframes = ErrorStackParser.parse(error);
-                if (typeof opts.filter === 'function') {
-                    stackframes = stackframes.filter(opts.filter);
-                }
+                var stackframes = _filtered(ErrorStackParser.parse(error), opts.filter);
                 resolve(Promise.all(stackframes.map(function(sf) {
                     return new Promise(function(resolve) {
                         function resolveOriginal() {
