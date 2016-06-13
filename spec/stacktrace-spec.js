@@ -24,6 +24,11 @@ describe('StackTrace', function() {
             var stackframes = StackTrace.getSync();
             expect(stackframes[0].functionName).toMatch(/.*testStackTraceGetSync/);
         });
+
+        it('does not filter if filter is explictly disabled', function() {
+            var stackframes = StackTrace.getSync({filter: null});
+            expect(stackframes[0].functionName).toEqual('StackTrace$$GenerateError');
+        });
     });
 
     describe('#fromError', function() {
