@@ -1,23 +1,22 @@
+var browserify = require('browserify');
 var concat = require('gulp-concat');
 var coveralls = require('gulp-coveralls');
 var del = require('del');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var karma = require('karma');
+var path = require('path');
 var rename = require('gulp-rename');
 var runSequence = require('run-sequence');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
+var vinylBuffer = require('vinyl-buffer');
+var vinylSourceStream = require('vinyl-source-stream');
 
 var polyfills = [
     './node_modules/es6-promise/dist/es6-promise.js',
     './node_modules/json3/lib/json3.js',
     './polyfills.js'
-];
-var dependencies = [
-    './node_modules/stacktrace-gps/dist/stacktrace-gps.min.js',
-    './node_modules/stack-generator/dist/stack-generator.js',
-    './node_modules/error-stack-parser/dist/error-stack-parser.js'
 ];
 var sources = 'stacktrace.js';
 
@@ -53,21 +52,31 @@ gulp.task('test-ci', ['dist'], function(done) {
 });
 
 gulp.task('dist', function() {
-    gulp.src(polyfills.concat(dependencies.concat(sources)))
-        .pipe(sourcemaps.init())
-        .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.js')))
+    browserify({
+        entries: sources,
+        debug: true,
+        standalone: 'StackTrace'
+    }).bundle()
+        .pipe(vinylSourceStream(sources))
         .pipe(gulp.dest('dist'))
-        .pipe(uglify())
+        .pipe(vinylBuffer())
         .pipe(rename({extname: '.min.js'}))
+        .pipe(uglify())
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 
-    return gulp.src(dependencies.concat(sources))
-        .pipe(sourcemaps.init())
-        .pipe(concat(sources.replace('.js', '.concat.js')))
-        .pipe(gulp.dest('dist'))
-        .pipe(concat(sources.replace('.js', '.min.js')))
+    browserify({
+        entries: polyfills.concat(sources),
+        debug: true,
+        standalone: 'StackTrace'
+    }).bundle()
+        .pipe(vinylSourceStream('stacktrace.js'))
+        .pipe(vinylBuffer())
+        .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.js')))
         .pipe(uglify())
+        .pipe(rename({extname: '.min.js'}))
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 });
