@@ -207,7 +207,7 @@ describe('StackTrace', function() {
         it('sends POST request to given URL with a message', function(done) {
             var url = 'http://domain.ext/endpoint';
             var errorMsg = 'BOOM';
-            var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
+            var stackframes = [new StackFrame({functionName: 'fn', fileName: 'file.js', lineNumber: 32, columnNumber: 1})];
 
             StackTrace.report(stackframes, url, errorMsg).then(callback, done.fail)['catch'](done.fail);
 
@@ -224,7 +224,7 @@ describe('StackTrace', function() {
 
         it('sends POST request to given URL without a message', function(done) {
             var url = 'http://domain.ext/endpoint';
-            var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
+            var stackframes = [new StackFrame({functionName: 'fn', fileName: 'file.js', lineNumber: 32, columnNumber: 1})];
 
             StackTrace.report(stackframes, url).then(callback, done.fail)['catch'](done.fail);
 
@@ -241,7 +241,7 @@ describe('StackTrace', function() {
 
         it('rejects if POST request fails', function(done) {
             var url = 'http://domain.ext/endpoint';
-            var stackframes = [new StackFrame('fn', undefined, 'file.js', 32, 1)];
+            var stackframes = [new StackFrame({functionName: 'fn', fileName: 'file.js', lineNumber: 32, columnNumber: 1})];
 
             jasmine.Ajax.stubRequest(url).andError();
             StackTrace.report(stackframes, url).then(done.fail, done)['catch'](done);
