@@ -216,8 +216,6 @@ describe('StackTrace', function() {
 
             function callback() {
                 expect(postRequest.data()).toEqual({message: errorMsg, stack: stackframes});
-                expect(postRequest.method).toBe('post');
-                expect(postRequest.url).toBe(url);
                 done();
             }
         });
@@ -245,6 +243,23 @@ describe('StackTrace', function() {
 
             jasmine.Ajax.stubRequest(url).andError();
             StackTrace.report(stackframes, url).then(done.fail, done)['catch'](done);
+        });
+
+        it('allows specification of request headers', function(done) {
+            var url = 'http://domain.ext/endpoint';
+            var stackframes = [new StackFrame({functionName: 'fn', fileName: 'file.js', lineNumber: 32, columnNumber: 1})];
+            var requestOptions = {headers: {'Access-Control-Request-Method': 'POST'}};
+
+            StackTrace.report(stackframes, url, null, requestOptions).then(callback, done.fail)['catch'](done.fail);
+
+            var postRequest = jasmine.Ajax.requests.mostRecent();
+            postRequest.respondWith({status: 201, contentType: 'text/plain', responseText: 'OK'});
+
+            function callback() {
+                expect(postRequest.data()).toEqual({stack: stackframes});
+                expect(postRequest.requestHeaders).toEqual({'Access-Control-Request-Method': 'POST', 'Content-Type': 'application/json'});
+                done();
+            }
         });
     });
 });

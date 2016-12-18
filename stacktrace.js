@@ -187,8 +187,9 @@
          * @param {Array} stackframes
          * @param {String} url
          * @param {String} errorMsg
+         * @param {Object} requestOptions
          */
-        report: function StackTrace$$report(stackframes, url, errorMsg) {
+        report: function StackTrace$$report(stackframes, url, errorMsg, requestOptions) {
             return new Promise(function(resolve, reject) {
                 var req = new XMLHttpRequest();
                 req.onerror = reject;
@@ -202,10 +203,20 @@
                     }
                 };
                 req.open('post', url);
+
+                // Set request headers
                 req.setRequestHeader('Content-Type', 'application/json');
+                if (requestOptions && typeof requestOptions.headers === 'object') {
+                    var headers = requestOptions.headers;
+                    for (var header in headers) {
+                        if (headers.hasOwnProperty(header)) {
+                            req.setRequestHeader(header, headers[header]);
+                        }
+                    }
+                }
 
                 var reportPayload = {stack: stackframes};
-                if (errorMsg !== undefined) {
+                if (errorMsg !== undefined && errorMsg !== null) {
                     reportPayload.message = errorMsg;
                 }
 
