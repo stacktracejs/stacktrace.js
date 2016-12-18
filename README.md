@@ -24,9 +24,9 @@ var callback = function(stackframes) {
 
 var errback = function(err) { console.log(err.message); };
 
-StackTrace.get().then(callback).catch(errback)
-=> Promise(Array[StackFrame], Error)
-=> callback([StackFrame('func1', [], 'file.js', 203, 9), StackFrame('func2', [], 'http://localhost:3000/file.min.js', 1, 3284)])
+StackTrace.get().then(callback).catch(errback);
+//===> Promise(Array[StackFrame], Error)
+//===> callback([StackFrame('func1', [], 'file.js', 203, 9), StackFrame('func2', [], 'http://localhost:3000/file.min.js', 1, 3284)])
 ```
 
 #### window.onerror integration
@@ -42,29 +42,29 @@ window.onerror = function(msg, file, line, col, error) {
 ```js
 var error = new Error('BOOM!');
 
-StackTrace.fromError(error).then(callback).catch(errback)
-=> Promise(Array[StackFrame], Error)
+StackTrace.fromError(error).then(callback).catch(errback);
+//===> Promise(Array[StackFrame], Error)
 ```
 
 #### Generate a stacktrace from walking arguments.callee
 This might capture arguments information, but isn't supported in ES5 strict-mode
 ```js
-StackTrace.generateArtificially().then(callback).catch(errback)
-=> Promise(Array[StackFrame], Error)
+StackTrace.generateArtificially().then(callback).catch(errback);
+//===> Promise(Array[StackFrame], Error)
 ```
 
 #### Trace every time a given function is invoked
 ```js
 // callback is called with an Array[StackFrame] every time wrapped function is called
-var myFunc = function(arg) { return 'Hello ' + arg; }
-var myWrappedFunc = StackTrace.instrument(myFunc, callback, errback)
-=> Instrumented Function
+var myFunc = function(arg) { return 'Hello ' + arg; };
+var myWrappedFunc = StackTrace.instrument(myFunc, callback, errback);
+//===> Instrumented Function
 myWrappedFunc('world');
-=> 'Hello world'
+//===> 'Hello world'
 
 // Use this if you overwrote you original function
-myFunc = StackTrace.deinstrument(myFunc)
-=> De-instrumented Function
+myFunc = StackTrace.deinstrument(myFunc);
+//===> De-instrumented Function
 ```
 
 ## Get stacktrace.js

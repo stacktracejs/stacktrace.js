@@ -16,13 +16,13 @@ All you have to do to get stacktrace.js v0.x behavior is call `.toString()` on a
 v0.x:
 ```js
 printStackTrace();
-=> Array[String]
+//===> Array[String]
 ```
 
 v1.x:
 ```js
 StackTrace.get().then(callback).catch(errback);
-=> Promise(Array[StackFrame], Error)
+//===> Promise(Array[StackFrame], Error)
 ```
 
 `StackTrace.get()` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
@@ -34,14 +34,14 @@ v0.x:
 ```js
 var error = new Error('Boom');
 printStackTrace({e: error});
-=> Array[String]
+//===> Array[String]
 ```
 
 v1.x:
 ```js
 var error = new Error('Boom');
 StackTrace.fromError(error).then(callback).catch(errback);
-=> Promise(Array[StackFrame], Error)
+//===> Promise(Array[StackFrame], Error)
 ```
 
 If this is all you need, you don't even need the full stacktrace.js library! Just use [error-stack-parser](https://github.com/stacktracejs/error-stack-parser)!
@@ -55,23 +55,23 @@ Instrumenting now takes `Function` references instead of `String`s.
 
 v0.x:
 ```js
-function interestingFn() {...}; 
+function interestingFn() {/* ... */}
 
 var p = new printStackTrace.implementation();
 p.instrumentFunction(this, 'interestingFn', logStackTrace);
-=> Function (instrumented)
+//===> Function (instrumented)
 
 p.deinstrumentFunction(this, 'interestingFn');
-=> Function (original)
+//===> Function (original)
 ```
 
 v1.x:
 ```js
-function interestingFn() {...};
+function interestingFn() {/* ... */}
  
 StackTrace.instrument(interestingFn, callback, errback);
-=> Function (instrumented)
+//===> Function (instrumented)
 
 StackTrace.deinstrument(interestingFn);
-=> Function (original)
+//===> Function (original)
 ```
