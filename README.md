@@ -26,7 +26,21 @@ var errback = function(err) { console.log(err.message); };
 
 StackTrace.get().then(callback).catch(errback);
 //===> Promise(Array[StackFrame], Error)
-//===> callback([StackFrame('func1', [], 'file.js', 203, 9), StackFrame('func2', [], 'http://localhost:3000/file.min.js', 1, 3284)])
+//===> callback([
+//    StackFrame({functionName: 'func1', args: [], fileName: 'file.js', lineNumber: 203, columnNumber: 9}), 
+//    StackFrame({functionName: 'func2', args: [], fileName: 'http://localhost:3000/file.min.js', lineNumber: 1, columnNumber: 3284})
+//])
+```
+
+#### You can also get a stack trace synchronously
+**HEADS UP:** This method does not resolve source maps or guess anonymous function names.
+
+```js
+StackTrace.getSync();
+//==> [
+//      StackFrame({functionName: 'func1', args: [], fileName: 'file.js', lineNumber: 203, columnNumber: 9}), 
+//      StackFrame({functionName: 'func2', args: [], fileName: 'http://localhost:3000/file.min.js', lineNumber: 1, columnNumber: 3284})
+//]
 ```
 
 #### window.onerror integration
@@ -86,7 +100,7 @@ Generate a backtrace from invocation point, then parse and enhance it.
 * *offline: Boolean (default: false)* - Set to `true` to prevent all network requests
 
 #### `StackTrace.getSync(/*optional*/ options)` => Array[[StackFrame](https://github.com/stacktracejs/stackframe)]
-Generate a backtrace from invocation point, then parse it. **HEADS UP:** This method does not use source maps or guess anonymous functions.  
+Generate a backtrace from invocation point, then parse it. This method does not use source maps or guess anonymous functions.  
 
 **(Optional) options: Object**
 * *filter: Function([StackFrame](https://github.com/stacktracejs/stackframe) => Boolean)* - Only include stack entries matching for which `filter` returns `true`
