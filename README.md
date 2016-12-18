@@ -137,7 +137,7 @@ Given a function that has been instrumented, revert the function to it's origina
 
 * **fn: Function** - Instrumented Function
 
-#### `StackTrace.report(stackframes, url, message)` => [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)(String)
+#### `StackTrace.report(stackframes, url, message, requestOptions)` => [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)(String)
 Given an an error message and Array of StackFrames, serialize and POST to given URL. Promise is resolved with response text from POST request.
 
 Example JSON POST data:
@@ -152,9 +152,10 @@ Example JSON POST data:
 }
 ```
 
-* **message: String** - The error message
 * **stackframes: Array([StackFrame](https://github.com/stacktracejs/stackframe))** - Previously wrapped Function
 * **url: String** - URL to POST stack JSON to
+* **message: String** - The error message
+* **requestOptions: Object** - HTTP request options object. Only `headers: {key: val}` is supported.
 
 ## Browser Support
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/stacktracejs.svg)](https://saucelabs.com/u/stacktracejs)
