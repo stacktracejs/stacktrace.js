@@ -5,9 +5,9 @@ Generate, parse and enhance JavaScript stack traces in all browsers
 [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg?style=flat-square)](https://coveralls.io/r/stacktracejs/stacktrace.js?branch=master) 
 [![GitHub license](https://img.shields.io/github/license/stacktracejs/stacktrace.js.svg?style=flat-square)](http://unlicense.org)
 [![CDNJS](https://img.shields.io/cdnjs/v/stacktrace.js.svg?style=flat-square)](https://cdnjs.com/libraries/stacktrace.js)
-[![size with dependencies](https://img.shields.io/badge/size-30k-green.svg?style=flat-square)](https://github.com/stacktracejs/stacktrace.js/releases)
+[![size with dependencies](https://img.shields.io/badge/size-29.9k-green.svg?style=flat-square)](https://github.com/stacktracejs/stacktrace.js/releases)
 [![gzip size](https://img.shields.io/badge/gzipped-9.1k-green.svg?style=flat-square)](https://github.com/stacktracejs/stacktrace.js/releases)
-[![module format](https://img.shields.io/badge/module%20format-umd-lightgrey.svg?style=flat-square&color=ff69b4)](https://github.com/stacktracejs/stacktrace.js/releases)
+[![module format](https://img.shields.io/badge/module%20format-umd-lightgrey.svg?style=flat-square&colorB=ff69b4)](https://github.com/stacktracejs/stacktrace.js/releases)
 
 Debug and profile your JavaScript with a [stack trace](http://en.wikipedia.org/wiki/Stack_trace) of function calls leading to an error (or any condition you specify).
 
