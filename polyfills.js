@@ -13,16 +13,16 @@ if (typeof Promise === 'undefined') {
 // ES5 Polyfills
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 if (!Function.prototype.bind) {
-    Function.prototype.bind = function (oThis) {
+    Function.prototype.bind = function(oThis) {
         if (typeof this !== 'function') {
             throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
         }
 
         var aArgs = Array.prototype.slice.call(arguments, 1);
         var fToBind = this;
-        var NoOp = function () {
+        var NoOp = function() {
         };
-        var fBound = function () {
+        var fBound = function() {
             return fToBind.apply(this instanceof NoOp && oThis ? this : oThis,
                 aArgs.concat(Array.prototype.slice.call(arguments)));
         };
@@ -33,7 +33,6 @@ if (!Function.prototype.bind) {
         return fBound;
     };
 }
-
 
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 if (!Array.prototype.map) {
@@ -55,7 +54,8 @@ if (!Array.prototype.map) {
         var k = 0;
 
         while (k < len) {
-            var kValue, mappedValue;
+            var kValue;
+            var mappedValue;
             if (k in O) {
                 kValue = O[k];
                 mappedValue = callback.call(T, kValue, k, O);
@@ -99,7 +99,8 @@ if (!Array.prototype.filter) {
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
 if (!Array.prototype.forEach) {
     Array.prototype.forEach = function(callback, thisArg) {
-        var T, k;
+        var T;
+        var k;
         if (this === null || this === undefined) {
             throw new TypeError(' this is null or not defined');
         }
