@@ -3,7 +3,7 @@ Generate, parse and enhance JavaScript stack traces in all browsers
 
 [![Build Status](https://img.shields.io/travis/stacktracejs/stacktrace.js/master.svg?style=flat-square)](https://travis-ci.org/stacktracejs/stacktrace.js) 
 [![Coverage Status](https://img.shields.io/coveralls/stacktracejs/stacktrace.js.svg?style=flat-square)](https://coveralls.io/r/stacktracejs/stacktrace.js?branch=master) 
-[![GitHub license](https://img.shields.io/github/license/stacktracejs/stacktrace.js.svg?style=flat-square)](http://unlicense.org)
+[![GitHub license](https://img.shields.io/github/license/stacktracejs/stacktrace.js.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![CDNJS](https://img.shields.io/cdnjs/v/stacktrace.js.svg?style=flat-square)](https://cdnjs.com/libraries/stacktrace.js)
 [![size with dependencies](https://img.shields.io/badge/size-29.9k-green.svg?style=flat-square)](https://github.com/stacktracejs/stacktrace.js/releases)
 [![gzip size](https://img.shields.io/badge/gzipped-9.1k-green.svg?style=flat-square)](https://github.com/stacktracejs/stacktrace.js/releases)
