@@ -74,6 +74,7 @@ gulp.task('dist', function() {
         .pipe(vinylSourceStream('stacktrace.js'))
         .pipe(vinylBuffer())
         .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.js')))
+        .pipe(gulp.dest('dist'))
         .pipe(uglify())
         .pipe(rename({extname: '.min.js'}))
         .pipe(sourcemaps.init({loadMaps: true}))
