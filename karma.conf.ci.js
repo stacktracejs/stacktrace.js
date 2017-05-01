@@ -18,7 +18,13 @@ module.exports = function(config) {
             base: 'SauceLabs',
             browserName: 'iPhone',
             platform: 'OS X 10.11',
-            version: '9.1'
+            version: '9.2'
+        },
+        slIOS10: {
+            base: 'SauceLabs',
+            browserName: 'iPhone',
+            platform: 'macOS 10.12',
+            version: '10.2'
         },
         slAndroid4: {
             base: 'SauceLabs',
@@ -32,33 +38,49 @@ module.exports = function(config) {
             platform: 'Linux',
             version: '5.1'
         },
+        slAndroid6: {
+            base: 'SauceLabs',
+            browserName: 'Android',
+            platform: 'Linux',
+            version: '6.0'
+        },
         slChrome: {
             base: 'SauceLabs',
-            browserName: 'chrome'
+            browserName: 'chrome',
+            version: 'latest'
         },
-        slFirefox43: {
+        slChromeBeta: {
+            base: 'SauceLabs',
+            browserName: 'chrome',
+            version: 'beta'
+        },
+        slFirefox: {
             base: 'SauceLabs',
             browserName: 'firefox',
-            platform: 'Windows 8.1',
-            version: '43.0'
+            version: 'latest'
+        },
+        slFirefoxBeta: {
+            base: 'SauceLabs',
+            browserName: 'firefox',
+            version: 'beta'
         },
         slSafari8: {
             base: 'SauceLabs',
             browserName: 'safari',
             platform: 'OS X 10.10',
-            version: '8'
+            version: '8.0'
         },
         slSafari9: {
             base: 'SauceLabs',
             browserName: 'safari',
             platform: 'OS X 10.11',
-            version: '9'
+            version: '9.0'
         },
         slSafari10: {
             base: 'SauceLabs',
             browserName: 'safari',
-            platform: 'OS X 10.11',
-            version: '10'
+            platform: 'macOS 10.12',
+            version: '10.0'
         },
         slOpera: {
             base: 'SauceLabs',
@@ -69,6 +91,12 @@ module.exports = function(config) {
             browserName: 'microsoftedge',
             platform: 'Windows 10',
             version: '14.14393'
+        },
+        slEdge13: {
+            base: 'SauceLabs',
+            browserName: 'microsoftedge',
+            platform: 'Windows 10',
+            version: '13.10586'
         },
         slIE11: {
             base: 'SauceLabs',
@@ -86,15 +114,15 @@ module.exports = function(config) {
             base: 'SauceLabs',
             browserName: 'internet explorer',
             platform: 'Windows 7',
-            version: '9'
+            version: '9.0'
         }
-        // Commented out due to lack of polyfills for SourceMapConsumer
-        //slIE8: {
-        //    base: 'SauceLabs',
-        //    browserName: 'internet explorer',
-        //    platform: 'Windows XP',
-        //    version: '8'
-        //},
+        // Too unreliable on Sauce :(
+        // slIE8: {
+        //     base: 'SauceLabs',
+        //     browserName: 'internet explorer',
+        //     platform: 'Windows XP',
+        //     version: '8.0'
+        // }
         //slIE7: {
         //    base: 'SauceLabs',
         //    browserName: 'internet explorer',
