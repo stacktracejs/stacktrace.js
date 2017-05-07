@@ -15,16 +15,22 @@ module.exports = function(config) {
             version: '8.4'
         },
         slIOS9: {
+            appiumVersion: '1.6.3',
             base: 'SauceLabs',
-            browserName: 'iPhone',
-            platform: 'OS X 10.11',
-            version: '9.2'
+            browserName: 'Safari',
+            deviceName: 'iPhone 6s Simulator',
+            deviceOrientation: 'portrait',
+            platformName: 'iOS',
+            platformVersion: '9.3'
         },
         slIOS10: {
+            appiumVersion: '1.6.3',
             base: 'SauceLabs',
-            browserName: 'iPhone',
-            platform: 'macOS 10.12',
-            version: '10.2'
+            browserName: 'Safari',
+            deviceName: 'iPhone 7 Simulator',
+            deviceOrientation: 'portrait',
+            platformName: 'iOS',
+            platformVersion: '10.2'
         },
         slAndroid4: {
             base: 'SauceLabs',
