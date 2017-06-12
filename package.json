@@ -38,7 +38,7 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.5.1",
     "jasmine": "^2.3.2",
-    "jasmine-ajax": "^3.2.0",
+    "jasmine-ajax": "^3.3.1",
     "jasmine-core": "^2.3.4",
     "jscs": "^2.9.0",
     "jsdoc-dash-template": "^1.2.0",
