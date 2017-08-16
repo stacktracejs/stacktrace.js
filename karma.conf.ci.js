@@ -65,11 +65,6 @@ module.exports = function(config) {
             browserName: 'firefox',
             version: 'latest'
         },
-        slFirefoxBeta: {
-            base: 'SauceLabs',
-            browserName: 'firefox',
-            version: 'beta'
-        },
         slSafari8: {
             base: 'SauceLabs',
             browserName: 'safari',
