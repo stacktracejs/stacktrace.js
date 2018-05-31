@@ -4,7 +4,8 @@
   "maintainers": [
     "Eric Wendelin <me@eriwen.com> (https://www.eriwen.com)",
     "Victor Homyakov <vkhomyackov@gmail.com> (https://github.com/victor-homyakov)",
-    "Oliver Salzburg (https://github.com/oliversalzburg)"
+    "Oliver Salzburg (https://github.com/oliversalzburg)",
+    "Ben Gourley (https://github.com/bengourley)"
   ],
   "version": "2.0.0",
   "license": "MIT",
