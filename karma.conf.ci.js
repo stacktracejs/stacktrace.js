@@ -8,12 +8,6 @@ module.exports = function(config) {
     // Commented some of these out just so CI doesn't take forever.
     // Check out https://saucelabs.com/platforms for all browser/platform combos
     var customLaunchers = {
-        slIOS8: {
-            base: 'SauceLabs',
-            browserName: 'iPhone',
-            platform: 'OS X 10.10',
-            version: '8.4'
-        },
         slIOS9: {
             appiumVersion: '1.6.3',
             base: 'SauceLabs',
@@ -82,10 +76,6 @@ module.exports = function(config) {
             browserName: 'safari',
             platform: 'macOS 10.12',
             version: '10.0'
-        },
-        slOpera: {
-            base: 'SauceLabs',
-            browserName: 'opera'
         },
         slEdge14: {
             base: 'SauceLabs',
