@@ -89,7 +89,7 @@ myFunc = StackTrace.deinstrument(myFunc);
 
 ## Get stacktrace.js
 ```
-npm install stacktrace-js
+npm i --save stacktrace-js
 bower install stacktrace-js
 component install stacktracejs/stacktrace.js
 http://cdnjs.com/libraries/stacktrace.js
