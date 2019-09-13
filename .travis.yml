@@ -1,6 +1,6 @@
 language: node_js
 sudo: required
-dist: trusty
+dist: xenial
 node_js:
   - 8
 addons:
