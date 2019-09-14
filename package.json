@@ -69,8 +69,10 @@
     "CHANGELOG.md",
     "README.md",
     "stacktrace.js",
+    "stacktrace-js.d.ts",
     "dist/"
   ],
+  "typings": "./stacktrace-js.d.ts",
   "scripts": {
     "test": "gulp test",
     "prepublish": "gulp dist"
