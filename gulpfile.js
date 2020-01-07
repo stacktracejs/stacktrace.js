@@ -25,9 +25,9 @@ gulp.task('dist', function() {
         .pipe(vinylSourceStream(sources))
         .pipe(gulp.dest('dist'))
         .pipe(vinylBuffer())
-        .pipe(rename({extname: '.min.js'}))
-        .pipe(uglify())
         .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
+            .pipe(rename({extname: '.min.js'}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 
@@ -40,9 +40,9 @@ gulp.task('dist', function() {
         .pipe(vinylBuffer())
         .pipe(concat(sources.replace('.js', '-with-promises-and-json-polyfills.js')))
         .pipe(gulp.dest('dist'))
-        .pipe(uglify())
-        .pipe(rename({extname: '.min.js'}))
         .pipe(sourcemaps.init({loadMaps: true}))
+            .pipe(uglify())
+            .pipe(rename({extname: '.min.js'}))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 });

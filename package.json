@@ -27,7 +27,7 @@
     "stacktrace-gps": "^3.0.4"
   },
   "devDependencies": {
-    "browserify": "^13.3.0",
+    "browserify": "^16.3.0",
     "colors": "^1.1.2",
     "del": "^3.0.0",
     "es6-promise": "^3.1.2",
@@ -40,7 +40,7 @@
     "jasmine": "^2.7.0",
     "jasmine-ajax": "^3.2.0",
     "jasmine-core": "^2.7.0",
-    "jsdoc-dash-template": "^1.2.0",
+    "jsdoc-dash-template": "^2.1.0",
     "json3": "^3.3.2",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
