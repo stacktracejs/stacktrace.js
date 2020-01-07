@@ -1,4 +1,4 @@
-module.exports = function(config) {
+module.exports = function (config) {
     'use strict';
     if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
         console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.');
@@ -95,7 +95,9 @@ module.exports = function(config) {
             connectOptions: {
                 port: 5757,
                 logfile: 'sauce_connect.log'
-            }
+            },
+            build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString(),
+            tags: [process.env.TRAVIS_BRANCH || "local"]
         },
         customLaunchers: customLaunchers,
         browsers: Object.keys(customLaunchers),
