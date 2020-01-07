@@ -45,7 +45,7 @@
 
         [first, second].forEach(function(obj) {
             for (var prop in obj) {
-                if (obj.hasOwnProperty(prop)) {
+                if (Object.prototype.hasOwnProperty.call(obj, prop)) {
                     target[prop] = obj[prop];
                 }
             }
@@ -209,7 +209,7 @@
                 if (requestOptions && typeof requestOptions.headers === 'object') {
                     var headers = requestOptions.headers;
                     for (var header in headers) {
-                        if (headers.hasOwnProperty(header)) {
+                        if (Object.prototype.hasOwnProperty.call(headers, header)) {
                             req.setRequestHeader(header, headers[header]);
                         }
                     }

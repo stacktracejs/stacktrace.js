@@ -24,7 +24,7 @@ module.exports = function(config) {
             }
         },
         //browsers: ['ChromeCanary', 'Firefox'],
-        browsers: ['PhantomJS2'],
+        browsers: ['PhantomJS'],
         singleRun: false
     });
 };
