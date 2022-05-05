@@ -13,6 +13,7 @@ declare namespace StackTrace {
         filter?: (stackFrame: StackFrame) => boolean;
         sourceCache?: SourceCache;
         offline?: boolean;
+        atob?: (input: string) => string;
     }
 
     export interface StackFrame {
