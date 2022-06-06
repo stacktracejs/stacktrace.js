@@ -3,6 +3,8 @@
 // Definitions by: Eric Wendelin <https://github.com/exceptionless>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
+import StackFrame = require("stackframe");
+
 declare namespace StackTrace {
 
     export interface SourceCache {
@@ -15,55 +17,7 @@ declare namespace StackTrace {
         offline?: boolean;
     }
 
-    export interface StackFrame {
-        constructor(object: StackFrame): StackFrame;
-
-        isConstructor?: boolean;
-        getIsConstructor(): boolean;
-        setIsConstructor(): void;
-
-        isEval?: boolean;
-        getIsEval(): boolean;
-        setIsEval(): void;
-
-        isNative?: boolean;
-        getIsNative(): boolean;
-        setIsNative(): void;
-
-        isTopLevel?: boolean;
-        getIsTopLevel(): boolean;
-        setIsTopLevel(): void;
-
-        columnNumber?: number;
-        getColumnNumber(): number;
-        setColumnNumber(): void;
-
-        lineNumber?: number;
-        getLineNumber(): number;
-        setLineNumber(): void;
-
-        fileName?: string;
-        getFileName(): string;
-        setFileName(): void;
-
-        functionName?: string;
-        getFunctionName(): string;
-        setFunctionName(): void;
-
-        source?: string;
-        getSource(): string;
-        setSource(): void;
-
-        args?: any[];
-        getArgs(): any[];
-        setArgs(): void;
-
-        evalOrigin?: StackFrame;
-        getEvalOrigin(): StackFrame;
-        setEvalOrigin(): void;
-
-        toString(): string;
-    }
+    export type {StackFrame};
 
     /**
      * Get a backtrace from invocation point.
@@ -129,6 +83,6 @@ declare namespace StackTrace {
     export function report(stackframes: StackFrame[], url: string, errorMsg?: string, requestOptions?: object): Promise<any>;
 }
 
-declare module "stacktrace-js" {
-    export = StackTrace;
-}
+export = StackTrace;
+
+export as namespace StackTrace; // global for non-module UMD users
