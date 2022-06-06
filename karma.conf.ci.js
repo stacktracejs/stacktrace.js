@@ -1,7 +1,7 @@
 module.exports = function (config) {
     'use strict';
     if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_ACCESS_KEY) {
-        console.log('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.');
+        console.error('Make sure the SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables are set.');
         process.exit(1);
     }
 
@@ -91,23 +91,24 @@ module.exports = function (config) {
         captureTimeout: 240000,
         sauceLabs: {
             testName: 'stacktrace.js unit tests',
+            commandTimeout: 600,
+            idleTimeout: 600,
             recordScreenshots: false,
-            connectOptions: {
-                port: 5757,
-                logfile: 'sauce_connect.log'
-            },
-            build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString(),
-            tags: [process.env.TRAVIS_BRANCH || "local"]
+            recordVideo: false,
+            retryLimit: 3
         },
         customLaunchers: customLaunchers,
         browsers: Object.keys(customLaunchers),
-        reporters: ['progress', 'saucelabs', 'coverage', 'coveralls'],
+        reporters: ['dots', 'saucelabs', 'coverage', 'coveralls'],
         preprocessors: {
             'stacktrace.js': 'coverage'
         },
         coverageReporter: {
             type: 'lcov',
-            dir: 'coverage'
+            dir: 'coverage',
+            subdir: function(browser) {
+                return browser.toLowerCase().split(/[ /-]/)[0];
+            }
         },
         singleRun: true
     });

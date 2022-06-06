@@ -12,19 +12,28 @@ module.exports = function(config) {
             'spec/spec-helper.js',
             'spec/*-spec.js'
         ],
-        reporters: ['spec'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
         customLaunchers: {
-            Chrome_Travis: {
+            Chrome_No_Sandbox: {
                 base: 'Chrome',
                 flags: ['--no-sandbox']
             }
         },
-        //browsers: ['ChromeCanary', 'Firefox'],
         browsers: ['PhantomJS'],
+        reporters: ['spec', 'saucelabs', 'coverage', 'coveralls'],
+        preprocessors: {
+            'stacktrace.js': 'coverage'
+        },
+        coverageReporter: {
+            type: 'lcov',
+            dir: 'coverage',
+            subdir: function(browser) {
+                return browser.toLowerCase().split(/[ /-]/)[0];
+            }
+        },
         singleRun: false
     });
 };

@@ -1,7 +1,8 @@
-// Type definitions for stacktrace.js v2.0.0
+// Type definitions for stacktrace.js v2.0
 // Project: https://github.com/stacktracejs/stacktrace.js
 // Definitions by: Eric Wendelin <https://github.com/exceptionless>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+import StackFrame from "stackframe";
 
 declare namespace StackTrace {
 
@@ -13,56 +14,6 @@ declare namespace StackTrace {
         filter?: (stackFrame: StackFrame) => boolean;
         sourceCache?: SourceCache;
         offline?: boolean;
-    }
-
-    export interface StackFrame {
-        constructor(object: StackFrame): StackFrame;
-
-        isConstructor?: boolean;
-        getIsConstructor(): boolean;
-        setIsConstructor(): void;
-
-        isEval?: boolean;
-        getIsEval(): boolean;
-        setIsEval(): void;
-
-        isNative?: boolean;
-        getIsNative(): boolean;
-        setIsNative(): void;
-
-        isTopLevel?: boolean;
-        getIsTopLevel(): boolean;
-        setIsTopLevel(): void;
-
-        columnNumber?: number;
-        getColumnNumber(): number;
-        setColumnNumber(): void;
-
-        lineNumber?: number;
-        getLineNumber(): number;
-        setLineNumber(): void;
-
-        fileName?: string;
-        getFileName(): string;
-        setFileName(): void;
-
-        functionName?: string;
-        getFunctionName(): string;
-        setFunctionName(): void;
-
-        source?: string;
-        getSource(): string;
-        setSource(): void;
-
-        args?: any[];
-        getArgs(): any[];
-        setArgs(): void;
-
-        evalOrigin?: StackFrame;
-        getEvalOrigin(): StackFrame;
-        setEvalOrigin(): void;
-
-        toString(): string;
     }
 
     /**

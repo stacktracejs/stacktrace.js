@@ -1,4 +1,13 @@
-<!--- Provide a general summary of the issue in the Title above -->
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: a:bug
+assignees: ''
+
+---
+
+<!--- Provide a general summary of the issue in the title above -->
 
 ## Expected Behavior
 <!--- If you're describing a bug, tell us what should happen -->
@@ -18,9 +27,9 @@
 
 ## Your Environment
 <!--- Include as many relevant details about the environment you experienced the bug in -->
-* stacktrace.js version:
-* Browser Name and version:
-* Operating System and version (desktop or mobile):
+* Package version:
+* Browser name and version:
+* OS version (desktop or mobile):
 * Link to your project:
 
 ## Possible Solution

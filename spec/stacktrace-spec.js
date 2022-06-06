@@ -1,4 +1,3 @@
-// jscs:disable maximumLineLength
 /* global Errors: false */
 describe('StackTrace', function() {
 
