@@ -50,5 +50,5 @@ gulp.task('dist', function() {
 gulp.task('clean', del.bind(null, ['build', 'dist']));
 
 gulp.task('default', ['clean'], function(cb) {
-    runSequence('dist', 'test', cb);
+    runSequence('dist', cb);
 });
